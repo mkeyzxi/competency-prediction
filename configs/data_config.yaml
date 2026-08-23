@@ -1,0 +1,52 @@
+data:
+  path: data/raw/data_testing_praktikum.xlsx
+  sheets:
+    - A
+    - C
+
+columns:
+  id:
+    - No
+    - NIM
+    - Nama
+  metadata:
+    - Kelas
+  final_individual: Final_Individu
+  final_group: Final_Kelompok
+  total: 
+    - Kehadiran_Total
+    - Laporan_Total
+    - TP_Total
+    - Respon_Total
+    - Final_Total
+    - NILAI_AKHIR
+    - PREDIKAT
+  attendance:
+    - Kehadiran_1
+    - Kehadiran_2
+    - Kehadiran_3
+    - Kehadiran_4
+    - Kehadiran_5
+    - Kehadiran_6
+    - Kehadiran_7
+  tp:
+    - TP_1
+    - TP_2
+    - TP_3
+    - TP_4
+    - TP_5
+    - TP_6
+  respons:
+    - Respon_1
+    - Respon_2
+    - Respon_3
+    - Respon_4
+    - Respon_5
+    - Respon_6
+  laporan:
+    - Laporan_1
+    - Laporan_2
+    - Laporan_3
+    - Laporan_4
+    - Laporan_5
+    - Laporan_6

@@ -1,0 +1,26 @@
+random_state: 42
+
+split:
+  test_size: 0.20
+  stratify: true
+
+cv:
+  strategy: StratifiedKFold
+  n_splits: 5
+  shuffle: true
+
+scoring:
+  primary: f1
+  secondary:
+    - recall
+    - precision
+    - accuracy
+
+experiments:
+  - S1
+  - S2
+  - S3
+
+models:
+  - DecisionTree
+  - RandomForest

@@ -1,0 +1,6 @@
+Metric,Value
+num_rows,64
+num_cols,43
+missing_values,{'TP_6': 1}
+duplicate_nims,0
+valid_final_individu_count,64

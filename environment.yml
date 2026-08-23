@@ -1,0 +1,21 @@
+name: ml-kompetensi
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.12
+  - pandas
+  - numpy
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - openpyxl
+  - pyyaml
+  - joblib
+  - jupyterlab
+  - ipykernel
+  - pip
+  - pip:
+      - shap
