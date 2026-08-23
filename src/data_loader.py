@@ -1,95 +1,136 @@
 import pandas as pd
 import os
+import numpy as np
 from src.utils import load_config
+
+def load_ac_data(path):
+    all_data = []
+    for sheet in ["A", "C"]:
+        df = pd.read_excel(path, sheet_name=sheet, header=None)
+        # Data starts from row 3
+        df = df.iloc[3:].copy()
+        
+        extracted = pd.DataFrame()
+        extracted['NIM'] = df[1]
+        extracted['Nama'] = df[2]
+        extracted['Class'] = sheet
+        extracted['Scoring_Scheme'] = 'AC'
+        extracted['Assistant_Group'] = 'GROUP AC'
+        
+        # Drop empty rows
+        extracted = extracted.dropna(subset=['NIM']).copy()
+        valid_indices = extracted.index
+        df = df.loc[valid_indices]
+        
+        # Kehadiran 1-6 from excel (cols 3 to 8) mapped to M2-M7 later
+        for i in range(6):
+            extracted[f'Kehadiran_raw_{i+1}'] = df[3+i]
+            
+        # Laporan 1-7
+        for i in range(7):
+            extracted[f'Laporan_{i+1}'] = df[15+i]
+            
+        # TP 1-6
+        for i in range(6):
+            extracted[f'TP_{i+1}'] = df[23+i]
+            
+        # Respons 1-6
+        for i in range(6):
+            extracted[f'Respons_{i+1}'] = df[30+i]
+            
+        # Final Individu
+        extracted['Final_Individu'] = df[37]
+        
+        all_data.append(extracted)
+    return pd.concat(all_data, ignore_index=True)
+
+def load_bde_data(path):
+    all_data = []
+    for sheet in ["KELAS B", "KELAS D", "KELAS E"]:
+        df = pd.read_excel(path, sheet_name=sheet, header=4)
+        
+        # Drop rows where NIM is NaN
+        df = df.dropna(subset=['NIM']).copy()
+        
+        extracted = pd.DataFrame()
+        extracted['NIM'] = df['NIM']
+        extracted['Nama'] = df['NAMA']
+        extracted['Class'] = sheet.replace('KELAS ', '')
+        extracted['Scoring_Scheme'] = 'BDE'
+        extracted['Assistant_Group'] = 'GROUP BDE'
+        
+        # Kehadiran 1-8 (cols 2 to 9)
+        for i in range(8):
+            extracted[f'Kehadiran_raw_{i+1}'] = df.iloc[:, 2+i]
+            
+        # TP + Respons (cols 24 to 30) -> 7 items
+        for i in range(7):
+            extracted[f'TP_Respons_{i+1}'] = df.iloc[:, 24+i]
+            
+        # Laporan (cols 32 to 38) -> 7 items
+        for i in range(7):
+            extracted[f'Laporan_{i+1}'] = df.iloc[:, 32+i]
+            
+        all_data.append(extracted)
+    return pd.concat(all_data, ignore_index=True)
+
+def load_final_uas(path):
+    df_final = pd.read_excel(path, sheet_name="PENILAIAN_UAS")
+    df_final = df_final.dropna(subset=['NIM']).copy()
+    
+    # Clean NIM
+    df_final['NIM'] = df_final['NIM'].astype(str).str.strip().str.replace('.0', '', regex=False)
+    
+    # Handle duplicates according to rules:
+    # If identical, drop 1. If different, keep highest 'final'
+    df_final = df_final.sort_values(by='final', ascending=False)
+    df_final = df_final.drop_duplicates(subset=['NIM'], keep='first')
+    
+    return df_final
 
 def load_and_clean_data(config_path: str = 'configs/data_config.yaml'):
     """
-    Load data from raw excel file, handle both sheets, clean column names, 
-    and remove metadata rows.
+    Load data from raw excel files according to PRD v1.1.
+    Merges AC and BDE schemes with PENILAIAN_UAS.
     """
     config = load_config(config_path)
-    file_path = config['data']['path']
-    sheets = config['data']['sheets']
     
-    # Expected columns based on user recommendation to avoid 'Total' duplication
-    expected_cols = [
-        "No", "NIM", "Nama",
-        "Kehadiran_1", "Kehadiran_2", "Kehadiran_3", "Kehadiran_4", "Kehadiran_5", "Kehadiran_6", "Kehadiran_7", "Kehadiran_8", "Kehadiran_9", "Kehadiran_10",
-        "Kehadiran_Ket", "Kehadiran_Total",
-        "Laporan_1", "Laporan_2", "Laporan_3", "Laporan_4", "Laporan_5", "Laporan_6", "Laporan_7", "Laporan_Total",
-        "TP_1", "TP_2", "TP_3", "TP_4", "TP_5", "TP_6", "TP_Total",
-        "Respon_1", "Respon_2", "Respon_3", "Respon_4", "Respon_5", "Respon_6", "Respon_Total",
-        "Final_Individu", "Final_Kelompok", "Final_Total",
-        "NILAI_AKHIR", "PREDIKAT"
-    ]
+    ac_path = config['data']['ac_path']
+    bde_path = config['data']['bde_path']
     
-    all_data = []
+    df_ac = load_ac_data(ac_path)
+    df_bde = load_bde_data(bde_path)
     
-    for sheet in sheets:
-        try:
-            # Skip the first 2 rows of merged headers
-            df_raw = pd.read_excel(file_path, sheet_name=sheet, skiprows=2)
-            
-            # If the number of columns doesn't match expected, we might have an issue
-            # We will try to map by index if the count matches exactly, 
-            # otherwise we will try to rename duplicates.
-            
-            # Let's clean the metadata rows at the bottom.
-            # Usually, real student rows have a numeric 'No' or valid 'NIM'.
-            # We will coerce 'No' or the first column to numeric. If it's NaN, we drop the row.
-            
-            # Rename columns if lengths match:
-            if len(df_raw.columns) == len(expected_cols):
-                df_raw.columns = expected_cols
-            else:
-                print(f"Warning: Columns count in sheet {sheet} ({len(df_raw.columns)}) doesn't match expected ({len(expected_cols)}).")
-                # Fallback: rename 'Total.1', 'Total.2' etc. based on some heuristic, but user provided explicit list.
-                # If they don't match, we still try our best.
-            
-            # Drop rows that are just metadata. 
-            if "NIM" in df_raw.columns:
-                # Drop rows where NIM is NaN
-                df_clean = df_raw.dropna(subset=['NIM']).copy()
-                # Ensure NIM is string to check for non-student rows
-                df_clean['NIM'] = df_clean['NIM'].astype(str)
-                # Drop rows where NIM looks like text description (e.g. "Bobot", "Asisten")
-                mask_valid = ~df_clean['NIM'].str.contains('Asisten|Bobot|Nilai', case=False, na=False)
-                df_clean = df_clean[mask_valid]
-                
-                # Filter out dropouts (Kehadiran <= 1)
-                kehadiran_cols = [f'Kehadiran_{i}' for i in range(1, 11)]
-                # Extract valid Kehadiran columns that actually exist in the dataframe
-                valid_kehadiran_cols = [col for col in kehadiran_cols if col in df_clean.columns]
-                
-                if valid_kehadiran_cols:
-                    temp_kehadiran = df_clean[valid_kehadiran_cols].apply(pd.to_numeric, errors='coerce')
-                    # Count how many times they attended (> 0 or not null)
-                    attendance_count = (temp_kehadiran > 0).sum(axis=1)
-                    # Keep only students who attended more than 1 time
-                    df_clean = df_clean[attendance_count > 1].copy()
-            else:
-                df_clean = df_raw
-            
-            # Add Kelas column
-            df_clean['Kelas'] = sheet
-            all_data.append(df_clean)
-            
-        except Exception as e:
-            print(f"Error loading sheet {sheet}: {e}")
-            
-    if not all_data:
-        raise ValueError("No data could be loaded. Please check the dataset and configuration.")
-        
-    df_final = pd.concat(all_data, ignore_index=True)
+    # Combine activity datasets
+    df_activity = pd.concat([df_ac, df_bde], ignore_index=True)
+    
+    # Clean NIM on activity dataset
+    df_activity['NIM'] = df_activity['NIM'].astype(str).str.strip().str.replace('.0', '', regex=False)
+    
+    # Remove obvious non-student rows if any snuck in
+    mask_valid = ~df_activity['NIM'].str.contains('Asisten|Bobot|Nilai|NIM|nan', case=False, na=False)
+    df_activity = df_activity[mask_valid].copy()
+    
+    # Load and clean Final UAS
+    df_final = load_final_uas(bde_path)
+    
+    # Merge activity with Final UAS (Final UAS acts as truth for Final Individu for BDE, and attendance)
+    # df_final columns: NIM, final, nilai flowchart, nilai kodingan
+    df_merged = pd.merge(df_activity, df_final, on='NIM', how='left')
+    
+    # Set Final_Individu for BDE from the UAS 'final' column
+    bde_mask = df_merged['Scoring_Scheme'] == 'BDE'
+    df_merged.loc[bde_mask, 'Final_Individu'] = df_merged.loc[bde_mask, 'final']
     
     # Save the interim data
     os.makedirs('data/interim', exist_ok=True)
-    df_final.to_csv('data/interim/combined_data.csv', index=False)
+    df_merged.to_csv('data/interim/combined_data.csv', index=False)
     
-    return df_final
+    return df_merged
 
 if __name__ == "__main__":
     df = load_and_clean_data()
     print("Data loaded successfully. Shape:", df.shape)
     print("Columns:", df.columns.tolist())
-    print("Sample:\n", df.head())
+    print("Sample AC:", df[df['Scoring_Scheme'] == 'AC'].head(1))
+    print("Sample BDE:", df[df['Scoring_Scheme'] == 'BDE'].head(1))

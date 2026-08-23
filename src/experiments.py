@@ -8,6 +8,40 @@ from src.models import get_model
 from src.tuning import tune_hyperparameters
 from src.evaluation import evaluate_cv, evaluate_test
 
+def run_context_analysis(test_predictions, df_results):
+    os.makedirs('results/reports', exist_ok=True)
+    
+    # We want to calculate accuracy, precision, recall for AC vs BDE
+    report = []
+    for col in test_predictions.columns:
+        if col.endswith('_pred'):
+            scenario_model = col.replace('_pred', '')
+            
+            for scheme in ['AC', 'BDE']:
+                mask = test_predictions['Scoring_Scheme'] == scheme
+                if mask.sum() == 0:
+                    continue
+                
+                subset = test_predictions[mask]
+                y_true = subset['true_label']
+                y_pred = subset[col]
+                
+                from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+                
+                report.append({
+                    'model_scenario': scenario_model,
+                    'scheme': scheme,
+                    'accuracy': accuracy_score(y_true, y_pred),
+                    'precision': precision_score(y_true, y_pred, zero_division=0),
+                    'recall': recall_score(y_true, y_pred, zero_division=0),
+                    'f1': f1_score(y_true, y_pred, zero_division=0),
+                    'support': len(y_true)
+                })
+                
+    df_report = pd.DataFrame(report)
+    df_report.to_csv('results/reports/context_analysis.csv', index=False)
+    print("Context analysis saved to results/reports/context_analysis.csv")
+
 def run_all_experiments(df_featured: pd.DataFrame, config_path: str = 'configs/experiment_config.yaml'):
     config = load_config(config_path)
     scenarios = config['experiments']
@@ -25,7 +59,8 @@ def run_all_experiments(df_featured: pd.DataFrame, config_path: str = 'configs/e
     # Test set predictions tracking
     test_predictions = pd.DataFrame({
         'row_id': X_test_full.index,
-        'true_label': y_test.values
+        'true_label': y_test.values,
+        'Scoring_Scheme': df_featured.loc[X_test_full.index, 'Scoring_Scheme'].values
     })
     
     for scenario in scenarios:
@@ -80,5 +115,8 @@ def run_all_experiments(df_featured: pd.DataFrame, config_path: str = 'configs/e
     
     # Save final predictions
     test_predictions.to_csv('results/predictions/final_predictions.csv', index=False)
+    
+    # Run context analysis
+    run_context_analysis(test_predictions, df_results)
     
     return df_results
