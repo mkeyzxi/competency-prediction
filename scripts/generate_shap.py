@@ -6,25 +6,26 @@ import pandas as pd
 from src.shap_analysis import run_shap_analysis
 from src.split import get_train_test_split
 from src.feature_registry import get_features
-from src.utils import load_config
+from src.utils import load_config, load_model
+from src.preprocessing import preprocess_data
+from src.feature_engineering import compute_features
 
 def main():
-    print("Generating SHAP explanations...")
+    print("Generating SHAP explanations for Random Forest...")
     
-    if not os.path.exists('data/processed/featured_full.csv'):
-        print("Featured dataset not found. Please run build_features.py first.")
+    if not os.path.exists('data/interim/combined_data.csv'):
+        print("Dataset not found.")
         return
         
-    df = pd.read_csv('data/processed/featured_full.csv')
+    df_interim = pd.read_csv('data/interim/combined_data.csv')
+    df_eligible = preprocess_data(df_interim)
+    df_featured = compute_features(df_eligible, cutoff_session='PreFinal')
     
-    # We need X_test for the models.
-    # The split is deterministic because of random_state
     config_path = 'configs/experiment_config.yaml'
     config = load_config(config_path)
     scenarios = config['experiments']
-    model_names = config['models']
     
-    X_train_full, X_test_full, _, _ = get_train_test_split(df, config_path)
+    X_train_full, X_test_full, y_train, y_test = get_train_test_split(df_featured, config_path)
     
     for scenario in scenarios:
         features = get_features(scenario)
@@ -33,15 +34,18 @@ def main():
             
         X_test = X_test_full[features]
         
-        for model_name in model_names:
-            model_path = f'models/{scenario}_{model_name}.pkl'
-            if os.path.exists(model_path):
-                try:
-                    run_shap_analysis(model_path, X_test, scenario, model_name)
-                except Exception as e:
-                    print(f"Error running SHAP for {scenario} {model_name}: {e}")
-            else:
-                print(f"Model {model_path} not found. Skipping SHAP.")
+        model_name = 'RandomForest'
+        model_path = f'models/{scenario}_{model_name}.pkl'
+        
+        if os.path.exists(model_path):
+            try:
+                model = load_model(model_path)
+                y_pred = model.predict(X_test)
+                run_shap_analysis(model_path, X_test, y_test, y_pred, scenario, model_name)
+            except Exception as e:
+                print(f"Error running SHAP for {scenario} {model_name}: {e}")
+        else:
+            print(f"Model {model_path} not found. Skipping SHAP.")
                 
     print("SHAP generation completed.")
 

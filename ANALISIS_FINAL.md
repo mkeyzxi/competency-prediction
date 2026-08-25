@@ -1,89 +1,71 @@
-# Analisis Final: Prediksi Kompetensi Praktikum Logika Pemrograman
+# Laporan Hasil Analisis Komprehensif (SINTA 2) - *Audit Recall Teroptimasi*
 
-Dokumen ini merangkum analisis mendalam pasca-audit preprocessing (*Pipeline* PRD v1.1). Arsitektur terbaru ini mengakomodasi dua skema kelas (AC dan BDE) secara bersamaan dengan membasmi secara absolut masalah *Temporal Leakage* (kebocoran masa depan) serta merombak penanganan data absen/struktural.
+Laporan ini menyajikan hasil dari 4 eksperimen utama untuk memprediksi kelulusan (kompetensi) mahasiswa pada praktikum Logika Pemrograman. Data dikumpulkan dari dua dosen dengan skema penilaian yang berbeda (AC dan BDE). Berdasarkan audit terbaru, parameter optimasi (`GridSearchCV`) dan pengaturan bobot (`class_weight='balanced_subsample'`) telah diperbaiki untuk menargetkan performa metrik pada kelas **Belum Kompeten (0)** demi kebutuhan *Early Warning System*.
 
----
+## 1. Perbandingan Model dan Set Fitur (Eksperimen 1)
 
-## 1. Latar Belakang dan Permasalahan
+Eksperimen pertama bertujuan untuk membandingkan 3 skenario ekstraksi fitur (S1: Basic Means, S2: Completion Rates, S3: Relational Gaps). Evaluasi dilakukan dengan `RepeatedStratifiedKFold` (5 split, 5 ulangan) guna mendapatkan Confidence Interval (CI) 95%. 
 
-Dalam upaya membangun kecerdasan buatan untuk sistem peringatan dini (*early warning system*) kelulusan praktikum, terdapat variasi data yang sangat signifikan antar kelas:
-1. **Skema AC (Kelas A dan C)**: Memiliki nilai Tugas Pendahuluan (`TP`) dan `Respons` secara terpisah, dan memiliki pertemuan absensi yang terdedikasi untuk responsif Final.
-2. **Skema BDE (Kelas B, D, dan E)**: Menggabungkan bobot Tugas Pendahuluan dan Respons ke dalam satu komponen `TP_Respons`, serta memvalidasi kehadiran pertemuan 9 dan 10 menggunakan pengerjaan Ujian Akhir (Flowchart dan Kodingan).
+**Tabel 1: Rata-Rata Cross Validation (Fokus: Belum Kompeten)**
 
-Masalah mendasar pada model ML sebelumnya adalah:
-- **Temporal Leakage**: Fitur tingkat kehadiran (`Attendance_Rate`) dibangun menggunakan rata-rata absolut dari ke-10 sesi praktikum. Masuknya sesi ke-9 dan ke-10 (yang merupakan sesi Final/UAS) ke dalam fitur membuat model **bukan lagi alat prediksi *Early Warning***, melainkan "menebak masa lalu dari masa depan" (*post-event*).
-- **Pemaknaan Structural Zero**: Model sebelumnya memaksakan angka $0$ pada fitur yang "tidak berlaku" di suatu kelas (misal, `Respons_Mean` untuk BDE dikunci jadi $0$). Secara akademik, nilai $0$ bermakna "mahasiswa tidak mengerjakan", sehingga pemaksaan ini mencampurkan dua makna (tidak mengerjakan vs tidak ada instrumen) dan merusak pola logika pohon keputusan.
-
----
-
-## 2. Metodologi Resolusi & Pembersihan (*Anti-Leakage*)
-
-Untuk memulihkan kejujuran eksperimen, tiga pilar pembersihan diimplementasikan:
-
-1. **Strict Pre-Final Features (No Leakage)** 
-   Sistem kini menggunakan fitur `Attendance_PreFinal_Rate` yang secara eksklusif hanya memantau absensi yang **benar-benar tersedia sebelum Ujian Akhir**.
-   - Kelas AC: Menggunakan rata-rata tingkat absensi hanya dari Pertemuan 2 s.d. 7 (M1 konstan, M8-M10 berkaitan dengan final).
-   - Kelas BDE: Menggunakan rata-rata absensi dari Pertemuan 1 s.d. 8 (M9-M10 berkaitan dengan pengerjaan Kodingan dan Flowchart).
-
-2. **Imputasi *Missing Indicator* yang Jujur**
-   - Skor `0` dari data asli murni dipertahankan sebagai **"Tidak Mengerjakan"**.
-   - Kolom instrumen yang **Tidak Berlaku** untuk skema tertentu (seperti `TP_Mean` untuk grup BDE) kini dikembalikan sebagai nilai mutlak `NaN` (*Not Applicable / Missing*).
-   - Proses penggabungan ke algoritma prediksi dibungkus di dalam *Scikit-learn Pipeline* menggunakan fungsi `SimpleImputer(strategy='constant', fill_value=-1, add_indicator=True)`. Model murni mempelajari indikator *missing* ini untuk mengenali heterogenitas skema tanpa merusak skala nilai asli mahasiswa.
-
-3. **Penyaringan Subjek (Populasi Valid)**
-   - Variabel penanda akademik seperti `absence_count` dan `Early_Exit_Flag` murni difungsikan sebagai **filter populasi** di awal (hanya membuang mahasiswa yang absen $\geq 4$ kali), dan dipastikan **tidak bocor ke matriks prediktor ($X$)**.
-
----
-
-## 3. Hasil Eksperimen Global (120 Sampel Valid)
-
-Dengan dataset 120 mahasiswa *eligible* yang kini 100% bebas dari kebocoran masa depan, berikut adalah performa model menggunakan 5-Fold Stratified Cross Validation:
-
-| Skenario | Model | Mean CV F1-Score | F1-Score (Test Set) |
-| :--- | :--- | :--- | :--- |
-| **S1** (Basic) | Decision Tree | 0.721 | 0.593 |
-| **S1** (Basic) | Random Forest | 0.742 | 0.733 |
-| **S2** (Behavioral) | Decision Tree | 0.714 | 0.593 |
-| **S2** (Behavioral) | Random Forest | **0.754** | **0.733** |
-| **S3** (Relational) | Decision Tree | 0.702 | 0.593 |
-| **S3** (Relational) | Random Forest | **0.756** | **0.733** |
-
-**Kesimpulan Utama Hasil Skenario:**
-- **Evaluasi Realistis (Anti-Leakage):** Terjadi penurunan F1-Score dari eksperimen lawas (0.838) ke angka **0.733**. Penurunan ini adalah indikasi **sangat positif dan jujur**, membuktikan bahwa tingginya metrik sebelumnya diperoleh secara palsu (*over-optimistic*) dari kebocoran nilai kehadiran Ujian Akhir. Model yang baru kini benar-benar murni bertindak sebagai alat peringatan dini.
-- **Keunggulan Ensembling:** *Random Forest* menunjukkan ketahanan (robustness) yang luar biasa menembus angka Test F1 sebesar **0.733**, sementara *Decision Tree* tunggal langsung jatuh (0.593) akibat kerumitan variasi data yang jujur ini.
-- **Dampak Feature Engineering:** Penambahan fitur *behavioral* (tingkat konsistensi penyelesaian di S2) secara nyata memberikan dorongan kestabilan `CV_F1` dari 0.742 menjadi **0.754**, memperkuat bukti bahwa rutinitas pengumpulan harian memengaruhi hasil akhir.
-
----
-
-## 4. Analisis Konteks (Context Analysis): AC vs BDE
-
-Meskipun model *Random Forest* (S2/S3) digabung dalam satu atap dengan *imputation indicator*, model ini ternyata memiliki performa yang sangat berbeda jika diuji silang per kelompok skema:
-
-| Kelompok | Akurasi | Presisi | Recall | F1-Score | Support (N Test) |
+| Skenario | Model | CV F1-Score | CI 95% F1-Score | CV Recall | CV Precision |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **AC** | 54.5% | 62.5% | 71.4% | 66.7% | 11 |
-| **BDE** | 76.9% | 75.0% | 85.7% | 80.0% | 13 |
+| S1 | Decision Tree | 0.607 ± 0.104 | [0.563, 0.651] | 0.691 | 0.556 |
+| S1 | Random Forest | 0.640 ± 0.092 | [0.601, 0.679] | 0.690 | 0.615 |
+| S2 | Decision Tree | 0.593 ± 0.105 | [0.548, 0.637] | 0.655 | 0.556 |
+| S2 | Random Forest | 0.640 ± 0.107 | [0.595, 0.685] | 0.681 | 0.625 |
+| S3 | Decision Tree | 0.552 ± 0.105 | [0.507, 0.596] | 0.611 | 0.520 |
+| S3 | Random Forest | 0.659 ± 0.121 | [0.608, 0.710] | 0.701 | 0.639 |
 
-**Interpretasi Konteks:**
-Perbedaan performa antara AC (F1: 66.7%) dan BDE (F1: 80.0%) memperlihatkan adanya **heterogenitas konteks penilaian**. 
-Hal ini menandakan bahwa sistem penggabungan instrumen pada skema BDE (di mana *TP* dan *Respons* dirangkum jadi satu) secara struktural jauh lebih linier terhadap nilai UAS dan lebih mudah dikenali pola resikonya (Recall BDE mencapai 85.7%) jika dibandingkan dengan skema pecahan di kelompok A/C. Perbedaan metrik ini adalah bukti dinamika alamiah operasional asisten praktikum, bukan cacat pada model algoritmik.
+**Analisis Skenario 1 (Pascaperbaikan):**
+- **Kenaikan Signifikan:** Melalui optimasi yang menargetkan kelas "Belum Kompeten", nilai CV Recall melonjak tinggi ke kisaran **68%-70%** (berbanding ~50-57% sebelum audit).
+- **Rekomendasi Set Fitur:** Meskipun S3 secara CV menunjukkan performa tertinggi (F1 0.659), S2 sangat dekat (F1 0.640, Recall 0.681). Mengingat S2 difokuskan pada proporsi penyelesaian (Completion Rate) yang lebih kebal terhadap perbedaan skema, S2 dipertahankan sebagai fokus *Context Robustness*. Precision di angka ~62% merupakan *trade-off* yang masuk akal (beberapa alarm palsu, tapi tidak berlebihan, demi menangkap sebagian besar yang akan gagal).
 
----
+## 2. Analisis Peringatan Dini / Temporal Early Warning (Eksperimen 2)
 
-## 5. Insight dari Ekstraksi TreeSHAP
+Eksperimen ini mengevaluasi apakah model Random Forest (dengan fitur S2) dapat memprediksi ketidaklulusan mahasiswa secara dini. 
 
-Berkat arsitektur interpolasi yang transparan, kita telah menggunakan pustaka **TreeSHAP** (SHapley Additive exPlanations) untuk membedah bagaimana *Random Forest* membuat keputusannya. Berdasarkan grafik plot (terlampir di map `results/shap/`):
+**Tabel 2: Performa Prediksi Seiring Berjalannya Waktu**
 
-1. **Kehadiran Murni Mendominasi (Attendance_PreFinal_Rate)**
-   Tingkat absensi murni tanpa bocoran UAS muncul sebagai pendorong terkuat untuk probabilitas kelas "Belum Kompeten". Titik distribusi SHAP membuktikan bahwa semakin minim partisipasi fisik pre-final, skor akhir pasti anjlok secara drastis.
-2. **Sinyal Kedisiplinan (Laporan_Completion_Rate)**
-   Menyusul di tempat kedua pada eksperimen S2, rasio penyelesaian laporan menduduki parameter kritis. Fitur ini membantu model mengenali tren: *mahasiswa mungkin hadir, namun jika rasionya kosong (selalu mendapat nilai 0 dari asisten), ia diprediksi tidak akan lolos UAS.*
-3. **Pemanfaatan Missing Indicator (`missingindicator_...`)**
-   Fitur indikator "ketiadaan instrumen" yang di-injeksi otomatis oleh `SimpleImputer(add_indicator=True)` ternyata dipakai oleh Random Forest secara aktif sebagai "gerbang logika percabangan awal" untuk memisahkan gaya *scoring* BDE dan AC. 
+| Cutoff | CV F1-Score | CI 95% F1 | CV Recall | Test F1-Score | Test Recall |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Minggu 3 (M3)** | 0.618 ± 0.128 | [0.564, 0.672] | 0.659 | 0.636 | 0.700 |
+| **Minggu 5 (M5)** | 0.644 ± 0.098 | [0.602, 0.686] | 0.723 | 0.608 | 0.700 |
+| **Minggu 7 (M7)** | 0.661 ± 0.103 | [0.617, 0.704] | 0.723 | 0.500 | 0.500 |
+| **Pre-Final** | 0.640 ± 0.107 | [0.595, 0.685] | 0.681 | 0.555 | 0.500 |
 
----
+**Analisis Skenario 2:**
+- **Momen Kritis:** Menariknya, prediksi pada Minggu ke-5 (M5) sudah sangat optimal, mencapai CV Recall **72.3%** dan Test Recall **70%**. 
+- Ini membuktikan bahwa **asisten laboratorium bisa meluncurkan intervensi seawal M5**, mengingat menunda hingga M7 tidak memberikan kenaikan Recall yang berarti pada dataset tak kasat mata (Test Set).
 
-## 6. Kesimpulan Praktis & Rekomendasi Skripsi
+## 3. Ketahanan Konteks / Context Robustness (Eksperimen 3)
 
-Arsitektur pipeline ini kini diklaim **aman secara metodologis, bebas dari bias waktu (*temporal leakage*), dan secara konseptual jujur (*honest imputation*)**. 
-Sistem ini sangat direkomendasikan untuk dijalankan menggunakan **Random Forest pada skenario S2 (Behavioral)**. Walaupun akurasi keseluruhannya 0.733, F1-Score ini adalah cerminan sesungguhnya dari batas prediktabilitas *Early Warning System*, di mana 85.7% dari seluruh mahasiswa kelompok B/D/E yang berisiko gagal berhasil dideteksi dengan sukses jauh sebelum mereka menyentuh Ujian Akhir Praktikum.
+Pendekatan *Leave-Group-Out* digunakan untuk menguji apakah fitur S2 kebal (robust) terhadap perbedaan aturan main dosen.
+
+**Tabel 3: Generalisasi Skema Penilaian (Model: Random Forest S2)**
+
+| Skenario Latih -> Uji | Test Accuracy | Test Recall (Belum Kompeten) | Test Precision | Test F1-Score |
+| :--- | :--- | :--- | :--- | :--- |
+| **Latih di AC -> Uji di BDE** | 0.615 | 0.969 | 0.563 | 0.713 |
+| **Latih di BDE -> Uji di AC** | 0.672 | 0.053 | 1.000 | 0.100 |
+
+**Analisis Skenario 3:**
+- **Ketahanan Asimetris yang Ekstrem:** Model yang dilatih dengan standar pengumpulan ketat (AC) memiliki Recall yang sangat agresif (96.9%) saat dibawa ke kelas fleksibel (BDE). Artinya ia berhasil membunyikan alarm bagi hampir seluruh mahasiswa berisiko, dengan Precision 56.3% (tingkat toleransi *false positive* yang cukup baik).
+- Sebaliknya, model yang dididik dalam budaya telat (BDE) menjadi sangat "pemaaf" dan buta terhadap standar AC, sehingga hanya mampu mendeteksi 5.3% mahasiswa gagal.
+- **Nilai Novelty SINTA 2:** Data pendidikan heterogen **tidak boleh** sekadar digabung (pooled). Model prediksi kinerja akademik membawa "nilai dan standar" bawaan dari budaya kelas asalnya.
+
+## 4. Penjelasan Model (TreeSHAP) (Eksperimen 4)
+
+TreeSHAP (fokus pada prediksi Belum Kompeten) mengungkapkan mekanisme pengambilan keputusan. File lengkap dapat dilihat di folder `results/shap/`.
+
+1. **Global Importance:**
+   - Fitur terkait Laporan (*Laporan_Completion_Rate*, *Laporan_Mean*) tetap menjadi variabel dominan. Ini mencerminkan bahwa komitmen penulisan laporan praktikum adalah cerminan utama dari potensi kompetensi individu di akhir semester.
+
+2. **Local Interpretability (Waterfall Plots):**
+   - **True Positive (Tepat Prediksi Gagal):** Mahasiswa yang terdeteksi secara dini sering kali sudah menunjukkan pola bolong-bolong dalam pengumpulan *Laporan* sejak minggu ke-2 dan ke-3.
+   - **False Negative (Gagal Memprediksi):** Kasus mahasiswa rajin hadir dan mengumpulkan tugas asal-asalan sering kali menipu model. Kehadiran fisik (yang terekam) tidak menjamin perolehan nilai final yang tinggi, menyebabkan prediksi *miss*.
+
+## 5. Kesimpulan Publikasi
+
+1. **Efektivitas Evaluasi Metrik:** Penggunaan optimasi hiperparameter berbasis *Recall (pos_label=0)* dan *balanced_subsample* sukses meningkatkan laju deteksi mahasiswa berisiko dari ~55% menjadi ~70%. Penurunan *Precision* akibat hal ini (berada di angka ~60%) sangat bisa ditoleransi dalam skema Sistem Peringatan Dini.
+2. **Timing & Konteks:** Mitigasi optimal berada di **Minggu ke-5**, dan pengembangan sistem lintas-dosen di masa depan harus selalu menggunakan model yang dilatih pada himpunan data dengan kebijakan yang lebih ketat, guna menghindari fenomena kebutaan prediktif (seperti kasus BDE->AC).

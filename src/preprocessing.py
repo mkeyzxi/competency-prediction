@@ -26,36 +26,10 @@ def clean_attendance_value(val):
         return 0.0
 
 def preprocess_data(df, config_path='configs/attendance_mapping.yaml'):
-    # We don't necessarily need to load the yaml because the logic is hardcoded per PRD requirements, 
-    # but we follow the PRD rules.
-    
-    # 1. Reconstruct 10 attendances
+    # 1. Reconstruct 10 attendances uniformly for all classes
     for i in range(1, 11):
-        df[f'Attendance_{i}'] = 0.0
-        
-    # AC Scheme rules
-    ac_mask = df['Scoring_Scheme'] == 'AC'
-    df.loc[ac_mask, 'Attendance_1'] = 1.0
-    for i in range(2, 8):
-        # M2-M7 maps to Kehadiran_raw_1 to Kehadiran_raw_6
-        df.loc[ac_mask, f'Attendance_{i}'] = df.loc[ac_mask, f'Kehadiran_raw_{i-1}'].apply(clean_attendance_value)
-    
-    df.loc[ac_mask, 'Attendance_8'] = df.loc[ac_mask, 'Final_Individu'].apply(check_presence)
-    
-    # Actually for AC, Final_Individu IS the final score. Let's assume Final Individu presence = M8 presence.
-    # What about M9? PRD says M9: presence(final_score). Since we dropped NILAI_AKHIR from X, if there is a Final_Individu, they attended the final.
-    # For now, let's map M9 to Final_Individu presence as well for AC, or just 1.
-    df.loc[ac_mask, 'Attendance_9'] = df.loc[ac_mask, 'Final_Individu'].apply(check_presence)
-    df.loc[ac_mask, 'Attendance_10'] = 1.0
-    
-    # BDE Scheme rules
-    bde_mask = df['Scoring_Scheme'] == 'BDE'
-    for i in range(1, 9):
-        # M1-M8 maps to Kehadiran_raw_1 to Kehadiran_raw_8
-        df.loc[bde_mask, f'Attendance_{i}'] = df.loc[bde_mask, f'Kehadiran_raw_{i}'].apply(clean_attendance_value)
-    
-    df.loc[bde_mask, 'Attendance_9'] = df.loc[bde_mask, 'nilai flowchart'].apply(check_presence)
-    df.loc[bde_mask, 'Attendance_10'] = df.loc[bde_mask, 'nilai kodingan'].apply(check_presence)
+        raw_col = f'Kehadiran_raw_{i}'
+        df[f'Attendance_{i}'] = df[raw_col].apply(clean_attendance_value)
     
     # 2. Calculate absence count
     attendance_cols = [f'Attendance_{i}' for i in range(1, 11)]

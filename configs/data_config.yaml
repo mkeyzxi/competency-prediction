@@ -1,9 +1,6 @@
 data:
-  ac_path: "data/raw/PENILAIAN LOGIKA PEMROGRAMAN KELAS A DAN C .xlsx"
-  ac_sheets: ["A", "C"]
-  bde_path: "data/raw/PENILAIAN LOGIKA PMEROGRAMAN KELAS B, D, DAN E.xlsx"
-  bde_sheets: ["KELAS B", "KELAS D", "KELAS E"]
-  bde_final_sheet: "PENILAIAN_UAS"
+  merged_path: "data/raw/data gabungan.xlsx"
+  sheets: ["A", "B", "C", "D", "E"]
 
 columns:
   id:
@@ -15,19 +12,11 @@ columns:
     - Assistant_Group
 
 scoring_scheme:
-  AC:
-    classes: ['A', 'C']
+  UNIFIED:
+    classes: ['A', 'B', 'C', 'D', 'E']
     weights:
       attendance: 0.10
       tp: 0.15
       response: 0.15
       report: 0.35
       final: 0.25
-  BDE:
-    classes: ['B', 'D', 'E']
-    weights:
-      tp_response: 0.20
-      report: 0.30
-      activity: 0.10
-      final: 0.30
-      attendance: 0.10

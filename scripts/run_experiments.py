@@ -17,7 +17,24 @@ def main():
     results = run_all_experiments(df)
     
     print("Experiments completed. Summary of results:")
-    print(results[['scenario', 'model', 'cv_f1_mean', 'test_f1']])
+    
+    # Pilih metrik yang komprehensif untuk ditampilkan
+    metrics = [
+        'scenario', 'model', 
+        'cv_accuracy_mean', 'test_accuracy',
+        'cv_precision_mean', 'test_precision',
+        'cv_recall_mean', 'test_recall',
+        'cv_f1_mean', 'test_f1',
+        'cv_specificity_mean', 'test_specificity'
+    ]
+    
+    # Filter hanya kolom yang benar-benar ada (berjaga-jaga jika ada versi lama)
+    available_metrics = [m for m in metrics if m in results.columns]
+    
+    # Cetak tabel lengkap (bisa diatur agar semua kolom terlihat)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', 1000)
+    print(results[available_metrics].to_string(index=False))
 
 if __name__ == "__main__":
     main()

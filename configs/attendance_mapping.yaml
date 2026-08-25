@@ -1,16 +1,12 @@
 attendance:
-  AC:
-    M1: 1.0 # always_present
-    M2: '1'
-    M3: '2'
-    M4: '3'
-    M5: '4'
-    M6: '5'
-    M7: '6'
-    M8: presence_individual_score # From 'Final Individu' presence
-    M9: presence_final_score # From 'NILAI AKHIR' or 'Total.4' presence
-    M10: 1.0 # always_present
-  BDE:
-    M1_M8: attendance_columns_1_to_8 # Using columns index 2 to 9 which corresponds to Kehadiran 1 to 8
-    M9: flowchart # PENILAIAN_UAS 'nilai flowchart'
-    M10: kodingan # PENILAIAN_UAS 'nilai kodingan'
+  UNIFIED:
+    M1: '1'
+    M2: '2'
+    M3: '3'
+    M4: '4'
+    M5: '5'
+    M6: '6'
+    M7: '7'
+    M8: '8'
+    M9: '9'
+    M10: '10'

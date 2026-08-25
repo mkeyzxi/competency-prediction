@@ -44,6 +44,6 @@ def get_param_grid(model_name: str):
             'model__max_depth': [None, 5, 10],
             'model__min_samples_split': [2, 5],
             'model__min_samples_leaf': [1, 2],
-            'model__class_weight': [None, 'balanced']
+            'model__class_weight': [None, 'balanced', 'balanced_subsample']
         }
     return {}
