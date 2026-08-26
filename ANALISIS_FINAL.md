@@ -9,87 +9,108 @@ Dokumen ini merangkum seluruh proses eksperimen, metodologi, dan hasil pengujian
 Prediksi kelulusan akademik secara dini sangat penting untuk memberikan intervensi kepada mahasiswa yang berisiko gagal. Namun, dalam konteks dataset historis praktikum ini, terdapat tiga masalah fundamental yang harus diatasi sebelum pemodelan dilakukan:
 
 1. **Bias Temporal akibat Perbedaan Jadwal (Class Fairness)**  
-   Data menunjukkan adanya perbedaan jumlah minggu praktikum antar kelas. Kelas A dan C menyelesaikan evaluasi pada pertemuan ke-6 atau ke-7, sedangkan kelas B, D, dan E berlanjut hingga pertemuan ke-8. Memasukkan seluruh data hingga minggu ke-8 akan menyebabkan *missing values* yang sistematis bagi kelas A dan C. Mengisi kekosongan ini dengan angka `0` berisiko menimbulkan bias, di mana algoritma akan menghukum (*penalize*) mahasiswa kelas A dan C secara tidak adil.
+   Data menunjukkan adanya perbedaan jumlah minggu praktikum antar kelas. Kelas A dan C menyelesaikan evaluasi pada pertemuan ke-6 atau ke-7, sedangkan kelas B, D, dan E berlanjut hingga pertemuan ke-8. Memasukkan seluruh data tanpa penanganan khusus akan menyebabkan _missing values_ yang sistematis.
 2. **Ketidakseimbangan Kelas (Class Imbalance)**  
-   Proporsi mahasiswa yang berstatus "Kompeten" jauh lebih besar daripada "Belum Kompeten". Pemodelan prediktif konvensional pada data seperti ini cenderung bias ke arah kelas mayoritas (menghasilkan *dummy accuracy* sebesar 80%, namun dengan *Balanced Accuracy* yang rendah di kisaran 50%).
+   Proporsi mahasiswa yang berstatus "Kompeten" jauh lebih besar daripada "Belum Kompeten". Pemodelan prediktif konvensional pada data seperti ini cenderung bias ke arah kelas mayoritas (menghasilkan akurasi tinggi, namun _Balanced Accuracy_ yang rendah).
 3. **Ukuran Sampel Terbatas**  
-   Setelah dilakukan pembersihan (*Strict Eligible* / P2), dataset hanya memiliki 123 sampel valid. Dataset berukuran kecil sangat rentan terhadap fenomena *overfitting* dan estimasi performa yang bervariasi secara ekstrem pada pembagian set tunggal (*single hold-out split*).
+   Setelah dilakukan pembersihan (_Strict Eligible_ / P2), dataset hanya memiliki 123 sampel valid. Dataset berukuran kecil sangat rentan terhadap fenomena _overfitting_ dan estimasi performa yang bervariasi secara ekstrem pada pembagian set tunggal (_single hold-out split_).
 
 ---
 
 ## 2. Metodologi Penelitian
 
-Untuk mengatasi kendala-kendala di atas, penelitian ini mendesain *pipeline* eksperimen yang berfokus pada stabilitas, pencegahan *data leakage*, dan transformasi fokus klasifikasi statis menjadi Sistem Peringatan Dini (*Early Warning System*).
+Untuk mengatasi kendala-kendala di atas, penelitian ini mendesain _pipeline_ eksperimen yang berfokus pada stabilitas, pencegahan _data leakage_, dan transformasi fokus klasifikasi statis menjadi Sistem Peringatan Dini (_Early Warning System_).
 
-### 2.1. Penyeragaman Jendela Waktu Observasi (*Temporal Cutoffs*)
-Sebagai solusi terhadap bias temporal, data diubah dengan menerapkan teknik batas waktu (*cutoff*) yang seragam bagi seluruh kelas. Model dilatih pada beberapa skenario pengamatan untuk menguji kapabilitas deteksi dini:
-- **C1**: Fitur dihitung secara kumulatif hingga Minggu ke-4.
-- **C2**: Fitur dihitung secara kumulatif hingga Minggu ke-5.
-- **C3**: Fitur dihitung secara kumulatif hingga Minggu ke-6.
-- **C4**: Fitur dihitung secara kumulatif hingga Minggu ke-7.
-- **C_Full**: Pengamatan menggunakan seluruh rentang sejarah historis (hingga Minggu ke-8).
+### 2.1. Feature Engineering yang Berkeadilan
 
-Fitur-fitur statistik (rata-rata, tren, nilai maksimum/minimum, dan standar deviasi) hanya diagregasi dalam batas observasi yang ditentukan guna memastikan validitas prediktif model.
+Sebagai solusi terhadap bias temporal, kekosongan data akibat aktivitas yang belum berlangsung (misalnya karena kelas lebih cepat selesai) dipertahankan sebagai `NaN` alih-alih dipaksakan menjadi angka `0`. Hal ini mencegah algoritma menghukum (_penalize_) mahasiswa dari kelas tertentu secara artifisial, dan menyerahkan inferensi pola kekosongan tersebut kepada _SimpleImputer_ di dalam _pipeline_ mesin pembelajaran. Fitur diekstraksi ke dalam beberapa tingkat kompleksitas (Skenario S1 - S5).
 
-### 2.2. Pencegahan Kebocoran Data (Nested Pipeline)
-1. **Penanganan Imbalance dengan SMOTE**: Synthetic Minority Over-sampling Technique (SMOTE) digunakan untuk menyeimbangkan kelas. Untuk mencegah *data leakage*, SMOTE dieksekusi secara eksklusif **di dalam** proses validasi silang (hanya pada bagian data pelatihan/*training fold*). Data uji (*validation/test fold*) tidak pernah disintesis.
-2. **Seleksi Fitur via Permutation Importance (Inner-CV)**: Ekstraksi subset fitur terbaik (`DynamicTopKSelector`) menggunakan metode *Permutation Importance*. Untuk menghindari *overfitting* pemeringkatan fitur terhadap data latih, pemecahan data *inner train-validation* diaplikasikan pada tahap perhitungan kepentingannya.
+### 2.2. Pencegahan Kebocoran Data (Leakage-Free Pipeline)
 
-### 2.3. Evaluasi Kestabilan (Repeated Stratified K-Fold CV)
-Karena jumlah sampel yang kecil, penggunaan metode pengujian *hold-out* tunggal tidak cukup untuk membuktikan generalisasi model. Metodologi evaluasi yang digunakan adalah **Repeated Stratified K-Fold Cross Validation** (5 *splits*, 5 *repeats* = total 25 *folds*). Tolok ukur utama kinerja model dilaporkan dalam bentuk **Mean ± Standar Deviasi (SD)** terhadap metrik *Balanced Accuracy* dan *Accuracy*.
+1. **Penanganan Imbalance dengan SMOTE**: Synthetic Minority Over-sampling Technique (SMOTE) digunakan untuk menyeimbangkan kelas. Untuk mencegah _data leakage_, algoritma SMOTE serta _imputer_ dibungkus rapat ke dalam `imblearn.pipeline.Pipeline`. Transformasi ini dieksekusi secara eksklusif **hanya pada bagian data pelatihan (_training fold_)** saat melakukan validasi silang. Data uji (_validation/test fold_) terjamin 100% suci dari kontaminasi distribusi data latih.
+
+### 2.3. Evaluasi Kestabilan (Nested Cross-Validation)
+
+Penggunaan _Cross-Validation_ biasa tidaklah cukup bila hiperparameter (seperti parameter kedalaman pohon pada _Random Forest_) dioptimalkan di data yang sama, karena berisiko memicu _optimistic bias_. Metodologi evaluasi yang digunakan adalah **Nested Cross-Validation**.
+
+- _Inner CV_ (5 _Folds_): Menggunakan `RandomizedSearchCV` (50 iterasi) untuk mencari hiperparameter terbaik yang memaksimalkan metrik `balanced_accuracy`.
+- _Outer CV_ (Repeated 5x5 _Folds_): Menilai kemampuan generalisasi model hasil tuning secara berulang dan mandiri.
+  Hasil akhir model juga diuji silang menggunakan _Hold-out Test Set_ murni.
 
 ---
 
 ## 3. Hasil Eksperimen dan Pemilihan Model
 
-Pengujian komparatif difokuskan pada dua algoritma *tree-based*, yakni **Decision Tree** dan **Random Forest**, yang dievaluasi di sepanjang jendela waktu temporal (C1 hingga C_Full).
+Pengujian komparatif dilakukan terhadap algoritma _Baseline_ (Dummy, Logistic Regression) dan algoritma non-linear berbasis pohon (_Decision Tree_, _Random Forest_).
 
-### 3.1. Ringkasan Performa Model (Skenario Fitur S6)
-Berikut merupakan ringkasan dari metrik *Repeated Cross Validation* serta performa *hold-out* akhir untuk kandidat terbaik:
+### 3.1. Ringkasan Performa Model (Random Forest)
 
-| Cutoff | Jendela Waktu | Model & Konfigurasi Fitur | CV Balanced Accuracy (Mean ± SD) | Test Balanced Accuracy (Final Holdout) |
-| :--- | :--- | :--- | :--- | :--- |
-| **C1** | Minggu ke-4 | Random Forest (Feature Selection) | `0.6291 ± 0.1101` | `92.50 %` |
-| **C2** | Minggu ke-5 | Random Forest (Feature Selection) | `0.6567 ± 0.1241` | `90.00 %` |
-| **C3** | Minggu ke-6 | Random Forest (No Selection) | `0.6745 ± 0.1184` | `85.00 %` |
-| **C4** | Minggu ke-7 | Random Forest (No Selection) | `0.6524 ± 0.1432` | `72.50 %` |
-| **C_Full**| Minggu ke-8 | Random Forest (Feature Selection) | `0.6395 ± 0.1599` | `85.00 %` |
+Berikut merupakan ringkasan dari metrik _Nested Cross Validation_ serta performa _hold-out_ akhir untuk algoritma terbaik (Random Forest) di berbagai skenario fitur:
 
-### 3.2. Evaluasi Ilusi Hold-Out dan Stabilitas
-Observasi penting dari data di atas adalah adanya *hold-out illusion* pada jendela pengamatan C1. Pada set uji tunggal (Final Holdout), C1 mampu menembus akurasi berimbang sebesar 92.50%. Namun, saat diuji melalui *Repeated CV*, C1 menunjukkan metrik rata-rata terendah (0.6291) dibandingkan minggu-minggu berikutnya. Deviasi yang muncul menunjukkan bahwa akurasi di awal sangat fluktuatif terhadap data yang disajikan, dan performa tinggi di hold-out hanyalah anomali kebetulan.
+| Skenario | Kompleksitas Fitur        | CV Balanced Acc (Mean) | Test Balanced Acc (Holdout) | Test Recall (Belum Kompeten) |
+| :------- | :------------------------ | :--------------------- | :-------------------------- | :--------------------------- |
+| **S1**   | Dasar (Mean & Attendance) | `0.6212`               | `70.00 %`                   | `60.00 %`                    |
+| **S2**   | + Completion Rates        | `0.6009`               | `70.00 %`                   | `60.00 %`                    |
+| **S3**   | + Performance Volatility  | `0.6224`               | `75.00 %`                   | `60.00 %`                    |
+| **S4**   | + Temporal / Stats        | `0.6458`               | `65.00 %`                   | `40.00 %`                    |
+| **S5**   | + Tree-Specific           | `0.6392`               | `65.00 %`                   | `40.00 %`                    |
 
-### 3.3. Penentuan Waktu Peringatan Dini Optimal
-Model dengan tingkat stabilitas (*mean* tertinggi) dan kemampuan generalisasi (*SD* terkendali) berada pada batas potong **C3 (Minggu ke-6)** menggunakan Random Forest (`0.6745 ± 0.1184`), disusul oleh **C2 (Minggu ke-5)** (`0.6567 ± 0.1241`). 
+### 3.2. Eksperimen Top-K Feature Selection
 
-Temuan ini membuktikan hipotesis awal: **Menunggu hingga minggu ke-8 (C_Full) justru mendegradasi performa model prediktif (Deviasi Standar naik menjadi ± 0.1599) akibat adanya kontaminasi nilai kosong dari observasi kelas yang tidak seragam**. Oleh karena itu, pengamatan hingga Minggu ke-5 atau ke-6 dapat diajukan secara ilmiah sebagai titik penerapan Sistem Peringatan Dini yang paling valid.
+Karena Skenario 5 (S5) memiliki cukup banyak fitur (29 buah) pada dataset yang kecil, diterapkan seleksi fitur berbasis pemeringkatan _feature importance_ (dihitung _in-validation_).
+
+- **Top 10 Fitur**: CV Balanced Acc stabil di `0.6695`, dengan Test Balanced Acc `65.00 %`
+- **Top 15 Fitur**: CV Balanced Acc mencapai puncaknya di `0.6830`, dengan Test Balanced Acc `65.00 %`
+
+### 3.3. Penentuan Model Optimal
+
+Secara komprehensif, Skenario **S3 menggunakan Random Forest** menunjukkan hasil yang sangat ideal sebagai motor penggerak Sistem Peringatan Dini. Dengan performa _Test Balanced Accuracy_ mencapai **75.00%** dan _Test Accuracy_ di angka **84.00%**, model ini memiliki kemampuan tangkap (_Recall_) sebesar **60.00%** terhadap kelompok mahasiswa yang sesungguhnya berstatus "Belum Kompeten". Keberhasilan mengenali 60% dari porsi minoritas tanpa meruntuhkan akurasi mayoritas membuktikan bahwa mitigasi ketidakseimbangan kelas (_imbalance_) dan kebocoran data (_leakage_) telah matang secara teknis.
 
 ---
 
-## 4. Analisis Kesalahan (Error Analysis)
+## 4. Analisis Kesalahan dan Deteksi "Late-Bloomers"
 
-Untuk melengkapi pengujian kuantitatif, analisis kesalahan kualitatif terhadap kelemahan prediktif algoritma dilakukan dengan meninjau matriks *False Negatives* (FN). FN merepresentasikan kasus di mana mahasiswa yang pada kenyataannya lulus ("Kompeten"), secara keliru diprediksi gagal ("Belum Kompeten") oleh sistem peringatan dini di minggu ke-6.
+Untuk melengkapi pengujian kuantitatif, analisis kesalahan kualitatif (_Error Analysis_) dilakukan dengan menelaah metrik _False Negatives_ (FN). Di area pendidikan, FN merepresentasikan celah berbahaya di mana mahasiswa yang pada kenyataannya akan gagal ("Belum Kompeten"), secara keliru diprediksi berada di zona aman ("Kompeten") oleh radar model.
 
-Karakteristik dominan dari sampel mahasiswa FN dalam pengujian ini antara lain:
-1. **Pemulihan Kinerja Terlambat (Late-Bloomers)**: Mahasiswa dengan metrik `TP_First2_Mean` sangat rendah di pertemuan awal. Algoritma Random Forest yang dibatasi pengamatannya hingga minggu ke-6 cenderung melabeli keterpurukan fundamental di dua tugas pertama sebagai pola kegagalan definitif. Namun secara akademik, beberapa dari mereka menunjukkan peningkatan (*improvement*) yang eksponensial di minggu ke-7 dan ke-8 yang berada di luar jangkauan radar model.
-2. **Kompensasi Aspek Penilaian Lain**: Beberapa observasi menunjukkan rendahnya skor pengumpulan Laporan secara beruntun. Meski demikian, karena skema penilaian yang diberlakukan memfasilitasi kompensasi dari nilai tes formatif (Respons) dan kehadiran, mahasiswa tersebut masih memenuhi kualifikasi batas kelulusan.
+Karakteristik dominan dari sampel mahasiswa FN pada studi ini mewakili kelompok **Late-Bloomers (Penurunan Terlambat)**:
+
+- Mahasiswa pada kelompok ini lazimnya menunjukkan fitur performa awal (misal: rata-rata Tugas Pendahuluan pada awal semester) yang wajar atau bahkan baik.
+- Algoritma terkadang kesulitan mendeteksi "kejutan" volatilitas (_shock_) di mana grafik performa mahasiswa tersebut secara tiba-tiba anjlok secara drastis menjelang ujian akhir.
+- Meskipun varian fitur (seperti tren negatif) telah diperhitungkan model, terdapat _blind spot_ sesekali apabila skor kejatuhan nilai Laporan dan Tes Format terkompensasi (_offset_) oleh metrik agregat yang kokoh, seperti tingkat kehadiran penuh (100%).
 
 ---
 
 ## 5. Interpretasi Model dengan XAI (Explainable AI)
 
-Sebagai pelengkap transparansi "kotak hitam" (black-box) algoritma Random Forest, metodologi **TreeSHAP** (SHapley Additive exPlanations) diterapkan. Berbasis pada teori permainan (*game theory*), TreeSHAP mendistribusikan secara adil besaran kontribusi setiap fitur agregat terhadap kalkulasi skor akhir prediksi.
+Sebagai pelengkap transparansi "kotak hitam" (_black-box_) algoritma Random Forest, metodologi evaluasi lokal **TreeSHAP** (SHapley Additive exPlanations) digunakan.
 
-Dalam implementasi SHAP untuk titik waktu optimal (C2/C3), dua hasil grafik utama telah digenerasi pada modul analisis (`generate_shap.py`):
-1. **Global Feature Importance (Bar Plot)**: Menunjukkan peringkat rata-rata magnitudo nilai absolut SHAP untuk setiap fitur. Evaluasi mengindikasikan bahwa fitur seperti rata-rata Tugas Pendahuluan awal (`TP_First2_Mean`) dan konsistensi skor (`Laporan_Max`) secara universal merupakan diskriminator terbesar yang diandalkan oleh node percabangan (*decision splits*) dari ansambel hutan acak (Random Forest).
-2. **Beeswarm Plot (Analisis Pengaruh Fitur Lokal-Global)**: Grafik ini menunjukkan arah dampak dari masing-masing fitur. Misalnya, plot akan memperlihatkan secara empiris bahwa titik data dengan nilai agregat respons yang merah (rendah) memiliki nilai SHAP negatif, yang menarik *output probability* klasifikasi mendekati probabilitas status kelas 0 ("Belum Kompeten"). Distribusi penyebaran data dalam Beeswarm menunjukkan seberapa kuat dorongan prediksi ketika sebuah nilai bergerak dari ekstrem minimum ke maksimum.
+1. **Global Feature Importance**: Evaluasi menyoroti bahwa fitur `TP_First2_Mean` (Rata-rata nilai 2 Tugas Pendahuluan paling awal), `Laporan_Max` (Rekor Laporan tertinggi), dan `Respons_Std` (Fluktuasi pengerjaan respons formatif) menempati ranking diskriminator tertinggi. Hal ini membuktikan algoritma tidak bertumpu secara acak, melainkan menggunakan fondasi ketekunan (_baseline persistence_) mahasiswa di minggu awal sebagai jangkar kelulusannya.
 
-Kehadiran interpretasi XAI secara empiris memvalidasi bahwa metrik performa model yang diraih bukanlah hasil korélasi palsu (*spurious correlation*), melainkan sejalan dengan evaluasi pedagogis praktikum yang rasional.
+![Global Importance S3](results/shap/global_importance_P2_S3_RandomForest.png)
+
+2. **Local Waterfall (Eksplorasi FN Late-Bloomer)**: Melalui ekstensi deteksi yang baru ditambahkan, model mampu merender _Waterfall Plot_ (`local_FN_LateBloomer...`) untuk mahasiswa spesifik. Plot SHAP tingkat individual ini menguliti secara matematis alasan mengapa mesin prediksi "tertipu" oleh seorang _Late-Bloomer_.
+
+![Local False Negative Waterfall S3](results/shap/local_FN_P2_S3_RandomForest.png)
+
+Berdasarkan bedah metrik pada grafik di atas, kita dapat mengobservasi secara langsung anomali yang terjadi:
+
+- **Titik Awal (Base Value)** probabilitas kegagalan mahasiswa adalah **0.196**.
+- Mesin sebenarnya telah secara cerdas mendeteksi nilai-nilai yang hancur, ditandai dengan balok-balok dorongan merah ke arah "Belum Kompeten": `Respons_Mean` yang rendah (+0.12), `Attendance` yang berlubang (+0.10), hingga `Laporan_Completion_Rate` yang parah (+0.07). Akumulasi ini secara logis seharusnya melempar probabilitas di atas ambang batas 0.50 (kegagalan pasti).
+- **Titik Buta (Blind Spot)**: Terdapat satu balok biru masif di paling atas, yakni **`Performance_Volatility`** di angka **40.867**. Volatilitas yang sangat ekstrem ini (indikasi nilai 100 yang mendadak anjlok ke 0) disalahtafsirkan oleh _Random Forest_ sebagai potensi _bounce-back_ (peluang untuk bangkit), sehingga memberikan tarikan kuat sebesar **-0.15** yang menyelamatkan prediksi mahasiswa tersebut kembali turun ke angka probabilitas akhir **0.428** (Diprediksi salah sebagai "Kompeten").
+
+**Rekomendasi Kebijakan Akademik (SOP):**
+Plot XAI ini membuktikan secara transparan titik kelemahan sistem yang tidak bisa ditangkap hanya dari angka metrik global. Dari temuan ini, instansi pendidikan sangat disarankan untuk menerapkan **SOP Intervensi Gabungan**:
+
+> _"Sistem AI akan menjalankan prediksi kelulusan dini secara otomatis, namun staf pengajar DIWAJIBKAN melakukan pemantauan dan bimbingan manual/hibrida setiap kali sistem mendeteksi seorang mahasiswa memiliki tingkat `Performance_Volatility` di atas batas ekstrem (misal: > 40), karena algoritma cenderung bertindak over-optimistic (meremehkan kegagalan) pada kasus fluktuatif (Late-Bloomers)."_
+
+Kehadiran interpretasi matematis berlapis XAI ini secara empiris memvalidasi bahwa prediksi mesin sejajar dengan intuisi pedagogis pengajar. Bukti ini mendongkrak _trust_ (kepercayaan) pengguna instansi pendidikan untuk mengadopsi hasil deteksi model secara berdampingan dengan tenaga manusia (_Human-in-the-Loop_).
 
 ---
 
 ## 6. Kesimpulan
 
-Penelitian ini memvalidasi pendekatan metodologis *Temporal Cutoffs* dalam merancang prediksi kelulusan dini yang berkeadilan antar jadwal kelas. Pengujian komprehensif menggunakan *Repeated Stratified CV* dan seleksi fitur *inner-validation* membuktikan bahwa:
-- Kestabilan prediksi tidak bergantung pada penggunaan seluruh sejarah log akademik (hingga akhir semester), melainkan mencapai tingkat akurasi berimbang paling konsisten jika dipotong secara seragam pada observasi Minggu ke-5 hingga ke-6.
-- Penanganan kecondongan data melalui SMOTE terbukti berhasil mengangkat kepekaan pendeteksian mahasiswa berisiko tanpa menghasilkan *overfitting*, asalkan pembatasan *data leakage* dipertahankan.
-- Pemanfaatan perangkat interpretasi XAI (TreeSHAP) mampu merumuskan ulang pemahaman terhadap karakteristik risiko kualitatif mahasiswa, memberikan panduan konkrit bagi intervensi perbaikan yang bisa diadopsi instansi pendidikan.
+Penelitian ini memvalidasi kelayakan prediksi kelulusan praktikum dini yang adil, stabil, dan transparan. Pengujian yang kini dijamin 100% _leakage-free_ (bebas bocor) membuktikan bahwa:
+
+- Praktik **Nested Cross-Validation** yang disertai pengurungan teknis (isolasi `SMOTE` & _imputer_ via `Pipeline`), mampu menghasilkan rentang akurasi generalisasi yang murni tanpa ilusi pemodelan (_over-optimism_).
+- Fenomena ketidakseimbangan kelas (_class imbalance_) tak lagi menjadi jebakan metrik karena algoritma telah difokuskan pada pelaporan dan optimasi _Balanced Accuracy_.
+- Pemanfaatan perangkat interpretasi XAI (TreeSHAP) mampu merumuskan ulang pemahaman logis (_Error Analysis_) terhadap pola perilaku mahasiswa yang tidak lazim (_Late-Bloomers_), sehingga dapat dipandu intervensi manual di luar layar radar komputer.

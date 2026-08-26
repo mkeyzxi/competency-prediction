@@ -74,6 +74,13 @@ def run_shap_analysis(model_path: str, X_test: pd.DataFrame, y_test: pd.Series, 
         'FN': fn_indices[0] if len(fn_indices) > 0 else None
     }
     
+    # Specific detection for FN Late-Bloomers
+    if 'Performance_Trend' in X_test_transformed.columns and len(fn_indices) > 0:
+        for idx in fn_indices:
+            if X_test_transformed.iloc[idx]['Performance_Trend'] < 0:
+                cases_to_plot['FN_LateBloomer'] = idx
+                break
+    
     for case_type, idx in cases_to_plot.items():
         if idx is not None:
             plt.figure()

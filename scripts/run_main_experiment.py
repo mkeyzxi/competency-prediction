@@ -84,9 +84,12 @@ def run_topk_feature_selection(df_featured, pop_name, config_path='configs/exper
         print(f"\n  Top-{k} features ({len(top_features_available)} available)...")
         
         base_k = get_model('RandomForest', config_path)
-        best_k, best_params_k = tune_hyperparameters(base_k, 'RandomForest', X_train_k, y_train, config_path)
         
-        cv_results = evaluate_cv(best_k, X_train_k, y_train, config_path)
+        # Nested CV Evaluation
+        cv_results = evaluate_cv(base_k, 'RandomForest', X_train_k, y_train, config_path)
+        
+        # Final Tuning
+        best_k, best_params_k = tune_hyperparameters(base_k, 'RandomForest', X_train_k, y_train, config_path)
         
         thresh_metrics, best_threshold, _ = evaluate_thresholds(best_k, X_train_k, y_train)
         

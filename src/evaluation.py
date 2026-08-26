@@ -12,6 +12,7 @@ from sklearn.metrics import (
 )
 from sklearn.model_selection import cross_validate, RepeatedStratifiedKFold
 from src.utils import load_config
+from src.tuning import build_search_estimator
 
 def specificity_score(y_true, y_pred, pos_label=0):
     tn, fp, fn, tp = confusion_matrix(y_true, y_pred, labels=[0, 1]).ravel()
@@ -25,9 +26,11 @@ def specificity_score(y_true, y_pred, pos_label=0):
         return 0.0
     return tn / (tn + fp)
 
-def evaluate_cv(model, X_train, y_train, config_path='configs/experiment_config.yaml'):
+def evaluate_cv(model, model_name, X_train, y_train, config_path='configs/experiment_config.yaml'):
     """
     Evaluates the model using RepeatedStratifiedKFold on training set.
+    For models with hyperparameters, this performs Nested Cross-Validation
+    by wrapping the parameter search inside the outer evaluation loop.
     Returns a dictionary of mean, std metrics, and 95% CI for F1.
     """
     config = load_config(config_path)
@@ -38,6 +41,9 @@ def evaluate_cv(model, X_train, y_train, config_path='configs/experiment_config.
     
     cv = RepeatedStratifiedKFold(n_splits=cv_splits, n_repeats=n_repeats, random_state=random_state)
     
+    # Build the inner CV search estimator (Nested CV setup)
+    search_estimator = build_search_estimator(model, model_name, config_path)
+    
     scoring = {
         'accuracy': make_scorer(accuracy_score),
         'balanced_accuracy': make_scorer(balanced_accuracy_score),
@@ -47,7 +53,11 @@ def evaluate_cv(model, X_train, y_train, config_path='configs/experiment_config.
         'roc_auc': make_scorer(roc_auc_score, response_method='predict_proba', multi_class='ovr')
     }
     
-    scores = cross_validate(model, X_train, y_train, cv=cv, scoring=scoring)
+    # Nested CV execution
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        scores = cross_validate(search_estimator, X_train, y_train, cv=cv, scoring=scoring)
     
     results = {}
     for metric in scoring.keys():

@@ -112,13 +112,13 @@ def run_all_experiments(df_featured: pd.DataFrame, pop_name: str, config_path: s
             
             base_model = get_model(model_name, config_path)
             
-            # Tune and Fit
+            # 1. Nested CV Evaluation (evaluates the model selection process)
+            cv_results = evaluate_cv(base_model, model_name, X_train, y_train, config_path)
+            
+            # 2. Final tuning on full training set
             best_model, best_params = tune_hyperparameters(base_model, model_name, X_train, y_train, config_path)
             
             save_model(best_model, f'models/{pop_name}_{scenario}_{model_name}.pkl')
-            
-            # CV Evaluation
-            cv_results = evaluate_cv(best_model, X_train, y_train, config_path)
             
             # Threshold Optimization (on training set predictions to avoid data leakage)
             thresh_metrics, best_threshold, best_thresh_bal_acc = evaluate_thresholds(best_model, X_train, y_train)
