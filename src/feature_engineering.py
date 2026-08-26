@@ -19,17 +19,17 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     pre_final_cols = [f'Attendance_{i}' for i in range(1, idx_max + 1)]
     
     # Task columns logic
-    task_idx_max = min(idx_max, 6) # Max TP and Respons is 6
-    lap_idx_max = min(idx_max, 7) # Max Laporan is 7
+    task_idx_max = min(idx_max, 8) # Max TP and Respons is 8 for B,D,E
+    lap_idx_max = min(idx_max, 8) # Max Laporan is 8 for B,D,E
     
     tp_cols = [f'TP_{i}' for i in range(1, task_idx_max + 1)]
     respon_cols = [f'Respons_{i}' for i in range(1, task_idx_max + 1)]
     laporan_cols = [f'Laporan_{i}' for i in range(1, lap_idx_max + 1)]
     
     all_raw_cols = [f'Attendance_{i}' for i in range(1, 11)] + \
-                   [f'TP_{i}' for i in range(1, 7)] + \
-                   [f'Respons_{i}' for i in range(1, 7)] + \
-                   [f'Laporan_{i}' for i in range(1, 8)]
+                   [f'TP_{i}' for i in range(1, 9)] + \
+                   [f'Respons_{i}' for i in range(1, 9)] + \
+                   [f'Laporan_{i}' for i in range(1, 9)]
                    
     for col in all_raw_cols:
         if col in df.columns:
@@ -38,20 +38,20 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     # ================================================================
     # S1: BASIC FEATURES (Mean & Attendance Rate)
     # ================================================================
-    df['Attendance_PreFinal_Rate'] = df[pre_final_cols].fillna(0).mean(axis=1) if pre_final_cols else 0.0
+    df['Attendance_PreFinal_Rate'] = df[pre_final_cols].mean(axis=1) if pre_final_cols else 0.0
     
     df['TP_Response_Source'] = 'SEPARATE'
     
-    df['Laporan_Mean'] = df[laporan_cols].fillna(0).mean(axis=1) if laporan_cols else 0.0
-    df['TP_Mean'] = df[tp_cols].fillna(0).mean(axis=1) if tp_cols else 0.0
-    df['Respons_Mean'] = df[respon_cols].fillna(0).mean(axis=1) if respon_cols else 0.0
+    df['Laporan_Mean'] = df[laporan_cols].mean(axis=1) if laporan_cols else 0.0
+    df['TP_Mean'] = df[tp_cols].mean(axis=1) if tp_cols else 0.0
+    df['Respons_Mean'] = df[respon_cols].mean(axis=1) if respon_cols else 0.0
     
     # ================================================================
     # S2: COMPLETION RATES
     # ================================================================
-    df['Laporan_Completion_Rate'] = (df[laporan_cols].fillna(0) > 0).mean(axis=1) if laporan_cols else 0.0
-    df['TP_Completion_Rate'] = (df[tp_cols].fillna(0) > 0).mean(axis=1) if tp_cols else 0.0
-    df['Respons_Completion_Rate'] = (df[respon_cols].fillna(0) > 0).mean(axis=1) if respon_cols else 0.0
+    df['Laporan_Completion_Rate'] = (df[laporan_cols] > 0).mean(axis=1) if laporan_cols else 0.0
+    df['TP_Completion_Rate'] = (df[tp_cols] > 0).mean(axis=1) if tp_cols else 0.0
+    df['Respons_Completion_Rate'] = (df[respon_cols] > 0).mean(axis=1) if respon_cols else 0.0
     
     # Keep Respons_TP_Gap for backward compatibility (not used in new S3)
     df['Respons_TP_Gap'] = df['Respons_Mean'] - df['TP_Mean']
@@ -63,7 +63,7 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     # This is independent of whether TP and Respons are separate or combined.
     all_score_cols = [c for c in tp_cols + respon_cols + laporan_cols if c in df.columns]
     if all_score_cols:
-        df['Performance_Volatility'] = df[all_score_cols].fillna(0).std(axis=1, ddof=0)
+        df['Performance_Volatility'] = df[all_score_cols].std(axis=1, ddof=0).fillna(0)
     else:
         df['Performance_Volatility'] = 0.0
     
@@ -79,10 +79,10 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
             df[f'{prefix}_Min'] = 0.0
             df[f'{prefix}_Max'] = 0.0
             return
-        filled = df[cols].fillna(0)
-        df[f'{prefix}_Std'] = filled.std(axis=1, ddof=0)
-        df[f'{prefix}_Min'] = filled.min(axis=1)
-        df[f'{prefix}_Max'] = filled.max(axis=1)
+        subset = df[cols]
+        df[f'{prefix}_Std'] = subset.std(axis=1, ddof=0).fillna(0)
+        df[f'{prefix}_Min'] = subset.min(axis=1).fillna(0)
+        df[f'{prefix}_Max'] = subset.max(axis=1).fillna(0)
     
     compute_stats(tp_cols, 'TP')
     compute_stats(respon_cols, 'Respons')
@@ -92,10 +92,10 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     def compute_last2_mean(cols, prefix):
         """Mean of the last 2 available sessions."""
         if not cols or len(cols) < 2:
-            df[f'{prefix}_Last2_Mean'] = df[cols].fillna(0).mean(axis=1) if cols else 0.0
+            df[f'{prefix}_Last2_Mean'] = df[cols].mean(axis=1).fillna(0) if cols else 0.0
             return
         last2 = cols[-2:]
-        df[f'{prefix}_Last2_Mean'] = df[last2].fillna(0).mean(axis=1)
+        df[f'{prefix}_Last2_Mean'] = df[last2].mean(axis=1).fillna(0)
     
     compute_last2_mean(tp_cols, 'TP')
     compute_last2_mean(respon_cols, 'Respons')
@@ -113,9 +113,9 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
         first_half = cols[:mid]
         second_half = cols[mid:]
         
-        df[f'{prefix}_First_Half_Mean'] = df[first_half].fillna(0).mean(axis=1)
-        df[f'{prefix}_Second_Half_Mean'] = df[second_half].fillna(0).mean(axis=1)
-        df[f'{prefix}_Trend'] = df[f'{prefix}_Second_Half_Mean'] - df[f'{prefix}_First_Half_Mean']
+        df[f'{prefix}_First_Half_Mean'] = df[first_half].mean(axis=1).fillna(0)
+        df[f'{prefix}_Second_Half_Mean'] = df[second_half].mean(axis=1).fillna(0)
+        df[f'{prefix}_Trend'] = (df[f'{prefix}_Second_Half_Mean'] - df[f'{prefix}_First_Half_Mean']).fillna(0)
         
     compute_trend(tp_cols, 'TP')
     compute_trend(respon_cols, 'Respons')
@@ -142,10 +142,10 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     def compute_first2_mean(cols, prefix):
         """Mean of the first 2 available sessions."""
         if not cols or len(cols) < 2:
-            df[f'{prefix}_First2_Mean'] = df[cols].fillna(0).mean(axis=1) if cols else 0.0
+            df[f'{prefix}_First2_Mean'] = df[cols].mean(axis=1).fillna(0) if cols else 0.0
             return
         first2 = cols[:2]
-        df[f'{prefix}_First2_Mean'] = df[first2].fillna(0).mean(axis=1)
+        df[f'{prefix}_First2_Mean'] = df[first2].mean(axis=1).fillna(0)
     
     compute_first2_mean(tp_cols, 'TP')
     compute_first2_mean(respon_cols, 'Respons')
@@ -162,9 +162,9 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     
     # --- Global Performance aggregates (across ALL task types) ---
     if all_score_cols:
-        all_scores_filled = df[all_score_cols].fillna(0)
-        df['Performance_Mean'] = all_scores_filled.mean(axis=1)
-        df['Performance_Std'] = all_scores_filled.std(axis=1, ddof=0)
+        all_scores = df[all_score_cols]
+        df['Performance_Mean'] = all_scores.mean(axis=1).fillna(0)
+        df['Performance_Std'] = all_scores.std(axis=1, ddof=0).fillna(0)
         
         # Late performance: mean of last 2 cols of each category, averaged
         late_cols = []
@@ -174,7 +174,7 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
             elif cols_group:
                 late_cols.extend(cols_group)
         if late_cols:
-            df['Performance_Late_Mean'] = df[late_cols].fillna(0).mean(axis=1)
+            df['Performance_Late_Mean'] = df[late_cols].mean(axis=1).fillna(0)
         else:
             df['Performance_Late_Mean'] = 0.0
         
@@ -186,7 +186,7 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
             elif cols_group:
                 early_cols.extend(cols_group)
         if early_cols:
-            df['Performance_Early_Mean'] = df[early_cols].fillna(0).mean(axis=1)
+            df['Performance_Early_Mean'] = df[early_cols].mean(axis=1).fillna(0)
         else:
             df['Performance_Early_Mean'] = 0.0
         

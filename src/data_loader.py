@@ -24,25 +24,42 @@ def load_sheet_data(df, sheet):
     
     # Kehadiran 1-10
     for i in range(10):
-        extracted[f'Kehadiran_raw_{i+1}'] = df[3+i]
+        extracted[f'Kehadiran_raw_{i+1}'] = pd.to_numeric(df[3+i], errors='coerce').fillna(0)
         
-    # Laporan 1-7
-    for i in range(7):
-        extracted[f'Laporan_{i+1}'] = df[15+i]
-        
-    # TP 1-6
-    for i in range(6):
-        extracted[f'TP_{i+1}'] = df[23+i]
-        
-    # Respons 1-6
-    for i in range(6):
-        extracted[f'Respons_{i+1}'] = df[30+i]
-        
-    # Final Individu
     if sheet in ['A', 'C']:
+        # Laporan 1-7 (col 15-21)
+        for i in range(7):
+            extracted[f'Laporan_{i+1}'] = pd.to_numeric(df[15+i], errors='coerce').fillna(0)
+        extracted['Laporan_8'] = np.nan
+        
+        # TP 1-6 (col 23-28)
+        for i in range(6):
+            extracted[f'TP_{i+1}'] = pd.to_numeric(df[23+i], errors='coerce').fillna(0)
+        extracted['TP_7'] = np.nan
+        extracted['TP_8'] = np.nan
+        
+        # Respons 1-6 (col 30-35)
+        for i in range(6):
+            extracted[f'Respons_{i+1}'] = pd.to_numeric(df[30+i], errors='coerce').fillna(0)
+        extracted['Respons_7'] = np.nan
+        extracted['Respons_8'] = np.nan
+        
         extracted['Final_Individu'] = df[37]
-    else:
-        extracted['Final_Individu'] = np.nan
+        
+    else: # B, D, E
+        # Laporan 1-8 (col 15-22)
+        for i in range(8):
+            extracted[f'Laporan_{i+1}'] = pd.to_numeric(df[15+i], errors='coerce').fillna(0)
+            
+        # TP 1-8 (col 24-31)
+        for i in range(8):
+            extracted[f'TP_{i+1}'] = pd.to_numeric(df[24+i], errors='coerce').fillna(0)
+            
+        # Respons 1-8 (col 33-40)
+        for i in range(8):
+            extracted[f'Respons_{i+1}'] = pd.to_numeric(df[33+i], errors='coerce').fillna(0)
+            
+        extracted['Final_Individu'] = df[44]
         
     return extracted
 
@@ -56,18 +73,11 @@ def load_and_clean_data(config_path: str = 'configs/data_config.yaml'):
     sheets = config['data']['sheets']
     
     all_data = []
-    uas_list = []
     
     for sheet in sheets:
         df_sheet_raw = pd.read_excel(merged_path, sheet_name=sheet, header=None)
         df_sheet_extracted = load_sheet_data(df_sheet_raw, sheet)
         all_data.append(df_sheet_extracted)
-        
-        if sheet in ['B', 'D', 'E']:
-            uas = pd.DataFrame()
-            uas['NIM'] = df_sheet_raw.iloc[3:][44]
-            uas['final_uas'] = df_sheet_raw.iloc[3:][45]
-            uas_list.append(uas)
             
     df_merged = pd.concat(all_data, ignore_index=True)
     
@@ -78,21 +88,7 @@ def load_and_clean_data(config_path: str = 'configs/data_config.yaml'):
     mask_valid = ~df_merged['NIM'].str.contains('Asisten|Bobot|Nilai|NIM|nan', case=False, na=False)
     df_merged = df_merged[mask_valid].copy()
     
-    # Process Master UAS
-    master_uas = pd.concat(uas_list, ignore_index=True)
-    master_uas['NIM'] = master_uas['NIM'].astype(str).str.strip().str.replace('.0', '', regex=False)
-    master_uas = master_uas[~master_uas['NIM'].str.contains('nan', case=False, na=False)]
-    master_uas = master_uas.dropna(subset=['NIM'])
-    
-    master_uas['final_uas'] = pd.to_numeric(master_uas['final_uas'], errors='coerce')
-    master_uas = master_uas.sort_values(by='final_uas', ascending=False)
-    master_uas = master_uas.drop_duplicates(subset=['NIM'], keep='first')
-    
-    # Merge and update Final_Individu
-    df_merged = pd.merge(df_merged, master_uas, on='NIM', how='left')
-    bde_mask = df_merged['Class'].isin(['B', 'D', 'E'])
-    df_merged.loc[bde_mask, 'Final_Individu'] = df_merged.loc[bde_mask, 'final_uas']
-    df_merged = df_merged.drop(columns=['final_uas'])
+    df_merged['Final_Individu'] = pd.to_numeric(df_merged['Final_Individu'], errors='coerce')
     
     # Save the interim data
     os.makedirs('data/interim', exist_ok=True)

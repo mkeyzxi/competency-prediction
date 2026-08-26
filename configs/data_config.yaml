@@ -1,5 +1,5 @@
 data:
-  merged_path: "data/raw/data gabungan.xlsx"
+  merged_path: "data/raw/data gabungan testing.xlsx"
   sheets: ["A", "B", "C", "D", "E"]
 
 columns:

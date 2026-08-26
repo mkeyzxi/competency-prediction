@@ -27,7 +27,7 @@ def tune_hyperparameters(model, model_name, X_train, y_train, config_path='confi
     
     # Calculate total parameter combinations
     total_combinations = len(ParameterGrid(param_grid))
-    n_iter = min(30, total_combinations)
+    n_iter = min(100, total_combinations)
     
     # Use RandomizedSearchCV instead of GridSearchCV to prevent combinatorial explosion
     with warnings.catch_warnings():
