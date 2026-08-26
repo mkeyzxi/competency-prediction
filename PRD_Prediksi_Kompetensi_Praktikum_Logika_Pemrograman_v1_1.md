@@ -169,42 +169,53 @@ Rekomendasi implementasi: simpan kedua flag pada dataset audit walaupun baris ak
 | Missing nilai flowchart/kodingan | Bukan otomatis nilai nol; konteksnya dipakai untuk rekonstruksi kehadiran sesuai aturan sumber | Jangan imputasi tanpa aturan. |
 
 ## 9. Feature Engineering
-Feature engineering dibangun berdasarkan makna komponen, bukan posisi kolom. Karena skema AC dan BDE berbeda, pipeline menggunakan semantic mapping per skema.
+Feature engineering dibangun berdasarkan makna komponen, bukan posisi kolom. Karena skema AC dan BDE berbeda, pipeline menggunakan *semantic mapping* per skema.
 
-### 9.1 Common features
+**Hipotesis Penelitian**:
+> Konsistensi representasi fitur lintas skema penilaian dapat menghasilkan feature space yang lebih seragam sehingga memungkinkan model belajar pola kompetensi lintas kelas secara lebih konsisten.
+
+### 9.1 Common features & Aturan Dual Feature Mapping
 | Feature | Definisi |
 | :--- | :--- |
 | Attendance_Rate | Jumlah skor kehadiran seluruh 10 pertemuan / 10; mempertahankan bobot 0.5 sebagai hadir parsial. |
 | TP_Mean | Rata-rata nilai TP yang tersedia dan berlaku. |
-| Respons_Mean | Rata-rata nilai respons yang tersedia dan terpisah secara eksplisit pada sumber. |
+| Respons_Mean | Rata-rata nilai respons. |
 | Laporan_Mean | Rata-rata nilai laporan/asistensi yang tersedia sesuai komponen laporan. |
+
+**Aturan untuk Kelas BDE**:
+Pada skema BDE, ketika komponen TP dan Respons hanya tersedia sebagai satu skor gabungan, skor gabungan tersebut dipetakan ke `TP_Mean` dan `Respons_Mean` dengan nilai yang sama (duplikasi nilai) untuk menjaga konsistensi feature space lintas kelompok. 
+Nilai tersebut **tidak dibagi menjadi dua** karena pembagian akan menciptakan nilai yang tidak merepresentasikan observasi asli (Misal: 85 tetap menjadi 85 di TP dan 85 di Respons). Catatan bahwa `TP_Mean == Respons_Mean` untuk observasi BDE yang berasal dari skor gabungan; kedua fitur ini BUKAN merupakan pengukuran independen. Feature duplication ini hanya untuk **menyamakan feature representation**.
 
 ### 9.2 S1 - Basic
 `S1 = [Attendance_Rate, TP_Mean, Respons_Mean, Laporan_Mean]`
-Untuk BDE, jika data hanya menyediakan satu skor gabungan TP+Respons tanpa pemisahan yang dapat dipercaya, pipeline tidak boleh mengarang Respons_Mean. Gunakan fitur agregat yang benar-benar tersedia dan dokumentasikan perbedaan skema.
+Model utama harus menggunakan struktur fitur yang sama untuk seluruh kelas (tidak ada lagi `TP_Respons_Mean` di output fitur akhir).
 
 ### 9.3 S2 - Behavioral
-`S2 = S1 + [TP_Completion_Rate, Respons_Completion_Rate, Laporan_Completion_Rate, optional Activity/Keaktifan feature]`
-Completion rate hanya boleh dibuat jika status pengerjaan benar-benar dapat diverifikasi dari data. Karena pengguna telah menyatakan blank/0 = tidak melaksanakan aktivitas, completion dapat dibuat untuk komponen yang konsisten dengan aturan tersebut. Nilai 0 yang bermakna tidak mengerjakan dapat dikodekan sebagai incomplete, tetapi nilai rendah nonzero tetap completed apabila ada bukti bahwa aktivitas dikerjakan.
+`S2 = S1 + [TP_Completion_Rate, Respons_Completion_Rate, Laporan_Completion_Rate]`
+Completion rate hanya boleh dibuat jika status pengerjaan benar-benar dapat diverifikasi. Untuk BDE dengan TP+Respons gabungan, `TP_Completion_Rate` dan `Respons_Completion_Rate` boleh memiliki nilai yang sama hanya apabila status aktivitas yang mendasarinya memang sama untuk komponen gabungan tersebut.
 
 ### 9.4 S3 - Relational
 `S3 = S2 + [Respons_TP_Gap]`
-Respons_TP_Gap hanya dibuat pada skema/kelompok yang memiliki TP dan Respons sebagai variabel terpisah. Jika BDE hanya memiliki komponen gabungan TP+Respons dan tidak ada respons terpisah, fitur gap tidak boleh dipaksakan ke BDE.
+Respons_TP_Gap didefinisikan sebagai `Respons_Mean - TP_Mean`. Karena pada BDE skor TP dan Respons adalah sama hasil duplikasi, maka fitur gap akan **selalu 0** untuk BDE. Fitur ini tetap disertakan untuk menjaga arsitektur *feature space* yang konsisten dengan A/C dan berperan sebagai eksperimen sensitivitas.
 
 ### 9.5 Keaktifan BDE
-Keaktifan adalah komponen khusus BDE. Ia dapat menjadi fitur skenario tambahan apabila nilainya tersedia dengan definisi yang konsisten. Jangan mengisi Keaktifan = 0 untuk A/C hanya karena komponen tersebut tidak ada pada skema AC. Untuk eksperimen lintas kelompok, opsi yang disarankan adalah membuat fitur umum tanpa Keaktifan sebagai model inti, lalu melakukan analisis sensitivitas dengan fitur Keaktifan pada subkelompok BDE.
+Keaktifan adalah komponen khusus BDE. Jangan membuat `Keaktifan = 0` untuk A/C. Keaktifan tidak boleh dimasukkan ke model utama lintas semua kelas apabila fitur tersebut tidak tersedia secara valid untuk seluruh kelas. Dapat dilakukan eksperimen tambahan khusus robustness pada subset BDE.
 
 ## 10. Desain Eksperimen
-| Eksperimen | Fitur | Model |
-| :--- | :--- | :--- |
-| E1 | S1 | Decision Tree |
-| E2 | S1 | Random Forest |
-| E3 | S2 | Decision Tree |
-| E4 | S2 | Random Forest |
-| E5 | S3 | Decision Tree |
-| E6 | S3 | Random Forest |
+Jangan mengasumsikan bahwa perubahan feature engineering pasti meningkatkan akurasi. Bandingkan secara empiris: Baseline lama vs Feature Space baru.
 
-Eksperimen utama dilakukan pada dataset eligible yang sudah melalui preprocessing dan resolusi target. Analisis AC vs BDE dilakukan sebagai analisis konteks/robustness. Jangan membuat lima model per kelas sebagai eksperimen utama.
+| Eksperimen | Fitur/Mapping | Model |
+| :--- | :--- | :--- |
+| E1 | Old Feature Mapping | Decision Tree |
+| E2 | Old Feature Mapping | Random Forest |
+| E3 | New Consistent Feature Mapping (S1) | Decision Tree |
+| E4 | New Consistent Feature Mapping (S1) | Random Forest |
+| E5 | New Consistent Feature Mapping (S2) | Decision Tree |
+| E6 | New Consistent Feature Mapping (S2) | Random Forest |
+| E7 | New Consistent Feature Mapping (S3) | Decision Tree |
+| E8 | New Consistent Feature Mapping (S3) | Random Forest |
+
+Eksperimen utama dilakukan pada dataset eligible yang sudah melalui preprocessing dan resolusi target. Gunakan split dan seed (42) yang konsisten agar perbandingan adil. Analisis AC vs BDE dilakukan sebagai analisis konteks/robustness.
 
 ### 10.1 Model selection
 - Gunakan CV 5-fold pada training sebagai dasar pemilihan konfigurasi.
@@ -307,9 +318,12 @@ run_S1_S2_S3(features)
 | Final unique per NIM | 1 nilai Final resmi per mahasiswa |
 | Target non-missing | 100% eligible rows |
 | Attendance sessions | 10 sesi per mahasiswa |
-| Forbidden columns in X | 0 |
+| Forbidden columns in X | 0 (tidak ada Final, NIM, Nama, NILAI_AKHIR, dll) |
 | Duplicate model rows | 0 |
 | Unresolved Final duplicates | 0 before modelling |
+| TP_Response_Source | Harus berisi `SEPARATE` (AC) atau `COMBINED_DUPLICATED` (BDE) |
+| TP_Mean == Respons_Mean | Harus True apabila TP_Response_Source == `COMBINED_DUPLICATED` |
+| Feature Columns | Harus mutlak identik untuk semua kelas (Attendance_Rate, TP_Mean, dll) |
 | Early Exit count | reported |
 | Attendance Ineligible count | reported |
 | Scoring group counts | reported |
@@ -447,8 +461,34 @@ DATA A/C + B/D/E + PENILAIAN UAS
                │
                ▼
       Overall vs AC vs BDE
-           Reporting
+            Reporting
 ```
+
+## 22. Keputusan Metodologis Terkait Validitas Data dan Performa (Revisi Evaluasi)
+Berdasarkan tinjauan dan evaluasi terhadap iterasi awal model, beberapa penegasan metodologis penting telah disepakati untuk menjaga integritas keilmuan penelitian ini:
+
+### 22.1. Mempertahankan Nilai 0 (Zero-Value) sebagai Observasi Valid
+Nilai 0 pada tugas atau laporan bukanlah *missing value* atau anomali yang harus dihapus, melainkan wujud nyata dari perilaku akademik (misal: tidak mengumpulkan tugas). 
+- Jika sistem secara sah memberikan nilai 0 untuk tugas yang tidak dikerjakan, maka **0 dipertahankan secara mutlak**. 
+- Memodifikasi nilai 0 menjadi nilai lain (imputasi, median, drop) demi menaikkan performa model (akurasi) adalah manipulasi observasi yang mencederai keabsahan ilmiah. Korelasi alami (walaupun rendah) antara nilai 0 dan ketidaklulusan adalah pola yang secara sah harus ditemukan oleh model, bukan direkayasa oleh *engineer*.
+
+### 22.2. Definisi Tegas Populasi Penelitian (158 ke 122 Mahasiswa)
+Penurunan jumlah data dari 158 *raw students* menjadi 122 *eligible students* pada *featured dataset* bukanlah proses "membuang data yang membuat model jelek". Ini adalah proses seleksi populasi yang terdokumentasi dan terjustifikasi oleh aturan akademik (kelayakan praktikum).
+- **Early Exit / Ineligible**: Mahasiswa yang *absence count > 1* atau *absence count > 3* diidentifikasi sebagai peserta yang secara *de facto* tidak layak melanjutkan praktikum, sehingga di-*exclude* dari pemodelan utama.
+- **Missing Target (Final)**: Mahasiswa tanpa nilai evaluasi Final yang valid juga di-*exclude* secara spesifik (`reason = MISSING_FINAL`), karena target kompetensi tidak dapat dibentuk dari data yang kosong.
+Proses audit populasi ini mencatat angka riil peralihan dari 158 data mentah menuju 122 dataset final secara transparan.
+
+### 22.3. Pendekatan *Sensitivity Analysis* Alih-alih Rekayasa Data
+Demi memperkuat pembuktian ilmiah, penelitian melakukan eksperimen *sensitivity analysis* berlapis, mencakup:
+1. **Raw-Valid Data**: Melatih model dengan semua data sah, mempertahankan seluruh nilai 0 orisinal.
+2. **Eligible Population**: Meng-*exclude* populasi yang secara sah terkena `Early_Exit_Flag`.
+3. **Strict Eligible Population**: Meng-*exclude* peserta dengan `Attendance_Ineligible_Flag`.
+Perbedaan performa akibat pengurangan populasi ini menjadi temuan bahwa *exclusion* berdasarkan aturan akademik memengaruhi model, bukan karena kita memilah angka secara sepihak.
+
+### 22.4. Interpretasi Performa Realistis dan Limitasi Fitur S3
+Hasil uji coba menunjukkan bahwa Akurasi dan F1 macro pada dataset *strict eligible* berkisar antara **0.55 hingga 0.62**, dan skenario yang lebih kompleks (S3) tidak selalu lebih unggul dari skenario dasar (S1).
+- Performa ~0.60 adalah refleksi murni batasan dataset (tidak adanya korelasi sempurna antara tugas harian dengan ujian final). Ini bukan sebuah kegagalan riset, melainkan *insight* valid tentang dinamika kelas terkait.
+- Pada kelompok BDE, perhitungan `Respons_TP_Gap` pada skenario S3 akan secara konsisten bernilai 0 karena TP dan Respons tergabung pada skor tunggal. Maka, wajar apabila S3 berpotensi menurunkan model; hal tersebut bukan kerusakan model, melainkan konfirmasi logis bahwa fitur turunan (*derived features*) yang dipaksakan pada arsitektur hibrid tidak selamanya memberi informasi prediktif baru.
 
 ## Lampiran A. Mapping Konfigurasi yang Direkomendasikan
 ```yaml

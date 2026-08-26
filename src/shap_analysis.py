@@ -4,24 +4,36 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+import numpy as np
 from src.utils import load_model
 
-def run_shap_analysis(model_path: str, X_test: pd.DataFrame, scenario: str, model_name: str):
+def run_shap_analysis(model_path: str, X_test: pd.DataFrame, y_test: pd.Series, y_pred: np.ndarray, scenario: str, model_name: str):
     """
     Runs TreeSHAP explanation for the given model and test set.
     """
     model = load_model(model_path)
     
-    # Initialize explainer
-    # TreeExplainer works for RandomForest and DecisionTree
-    explainer = shap.TreeExplainer(model)
-    shap_values = explainer(X_test)
+    if hasattr(model, 'named_steps'):
+        clf = model.named_steps['model']
+        imputer = model.named_steps['imputer']
+        X_test_transformed = imputer.transform(X_test)
+        
+        if hasattr(imputer, 'get_feature_names_out'):
+            new_cols = imputer.get_feature_names_out(X_test.columns)
+        else:
+            new_cols = X_test.columns
+            
+        X_test_transformed = pd.DataFrame(X_test_transformed, columns=new_cols, index=X_test.index)
+    else:
+        clf = model
+        X_test_transformed = X_test
     
-    # Note: For classification, shap_values might be a list of arrays (one for each class)
-    # We want the explanation for the positive class (Competen, index 1)
+    explainer = shap.TreeExplainer(clf)
+    shap_values = explainer(X_test_transformed)
+    
+    # We want the explanation for the positive class (Belum Kompeten, index 0)
     if isinstance(shap_values.values, list) or len(shap_values.shape) == 3:
-        # shap_values[..., 1] gets the values for the positive class
-        shap_values_pos = shap_values[..., 1]
+        shap_values_pos = shap_values[..., 0]
     else:
         shap_values_pos = shap_values
         
@@ -29,7 +41,7 @@ def run_shap_analysis(model_path: str, X_test: pd.DataFrame, scenario: str, mode
     
     # Global Importance Plot (Bar)
     plt.figure()
-    shap.summary_plot(shap_values_pos, X_test, plot_type="bar", show=False)
+    shap.summary_plot(shap_values_pos, X_test_transformed, plot_type="bar", show=False)
     plt.title(f'Global SHAP Importance - {scenario} {model_name}')
     plt.tight_layout()
     plt.savefig(f'results/shap/global_importance_{scenario}_{model_name}.png')
@@ -37,23 +49,42 @@ def run_shap_analysis(model_path: str, X_test: pd.DataFrame, scenario: str, mode
     
     # Beeswarm plot
     plt.figure()
-    shap.summary_plot(shap_values_pos, X_test, show=False)
+    shap.summary_plot(shap_values_pos, X_test_transformed, show=False)
     plt.title(f'SHAP Beeswarm - {scenario} {model_name}')
     plt.tight_layout()
     plt.savefig(f'results/shap/beeswarm_{scenario}_{model_name}.png')
     plt.close()
     
-    # Local explanation (first 2 cases as example)
-    for i in range(min(2, len(X_test))):
-        plt.figure()
-        shap.plots.waterfall(shap_values_pos[i], show=False)
-        plt.title(f'Local SHAP Waterfall - Case {i} - {scenario} {model_name}')
-        plt.tight_layout()
-        plt.savefig(f'results/shap/local_case_{i}_{scenario}_{model_name}.png')
-        plt.close()
+    # Categorize cases: Positive = Belum Kompeten (0), Negative = Kompeten (1)
+    y_true = y_test.values
+    
+    # TP: Actual 0, Pred 0
+    tp_indices = np.where((y_true == 0) & (y_pred == 0))[0]
+    # TN: Actual 1, Pred 1
+    tn_indices = np.where((y_true == 1) & (y_pred == 1))[0]
+    # FP: Actual 1, Pred 0
+    fp_indices = np.where((y_true == 1) & (y_pred == 0))[0]
+    # FN: Actual 0, Pred 1
+    fn_indices = np.where((y_true == 0) & (y_pred == 1))[0]
+    
+    cases_to_plot = {
+        'TP': tp_indices[0] if len(tp_indices) > 0 else None,
+        'TN': tn_indices[0] if len(tn_indices) > 0 else None,
+        'FP': fp_indices[0] if len(fp_indices) > 0 else None,
+        'FN': fn_indices[0] if len(fn_indices) > 0 else None
+    }
+    
+    for case_type, idx in cases_to_plot.items():
+        if idx is not None:
+            plt.figure()
+            shap.plots.waterfall(shap_values_pos[idx], show=False)
+            plt.title(f'Local SHAP Waterfall - {case_type} - {scenario} {model_name}')
+            plt.tight_layout()
+            plt.savefig(f'results/shap/local_{case_type}_{scenario}_{model_name}.png')
+            plt.close()
         
-    # Export SHAP values for the positive class to CSV for manual analysis
-    shap_df = pd.DataFrame(shap_values_pos.values, columns=X_test.columns)
+    # Export SHAP values to CSV
+    shap_df = pd.DataFrame(shap_values_pos.values, columns=X_test_transformed.columns)
     shap_df.to_csv(f'results/shap/shap_values_{scenario}_{model_name}.csv', index=False)
     
     print(f"SHAP analysis complete for {scenario} {model_name}.")

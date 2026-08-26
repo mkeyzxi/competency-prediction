@@ -1,0 +1,8 @@
+Stage,Count
+Raw Data,158
+Missing Final (Excluded),0
+P0 (Raw Valid),158
+Early Exit (Excluded from P1),5
+P1 (Eligible),153
+Attendance Ineligible (Excluded from P2),35
+P2 (Strict Eligible),123
