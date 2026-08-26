@@ -51,7 +51,7 @@ def get_param_grid(model_name: str):
             'model__min_samples_leaf': [1, 2, 3, 4, 5],
             'model__max_features': ['sqrt', 'log2', None],
             'model__ccp_alpha': [0.0, 0.005, 0.01, 0.015, 0.02],
-            'model__class_weight': [None, 'balanced'],
+            'model__class_weight': [None],
         }
     elif model_name == 'RandomForest':
         return {
@@ -61,7 +61,7 @@ def get_param_grid(model_name: str):
             'model__min_samples_leaf': [1, 2, 3, 4, 5],
             'model__max_features': ['sqrt', 'log2', 0.5, 0.7, 1.0],
             'model__criterion': ['gini', 'entropy', 'log_loss'],
-            'model__class_weight': [None, 'balanced', 'balanced_subsample'],
+            'model__class_weight': [None],
         }
     elif model_name == 'LogisticRegression':
         return {

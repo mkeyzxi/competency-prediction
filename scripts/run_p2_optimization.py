@@ -6,7 +6,8 @@ import json
 import warnings
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from sklearn.pipeline import Pipeline
+from imblearn.pipeline import Pipeline
+from imblearn.over_sampling import SMOTE
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from src.preprocessing import preprocess_data
@@ -69,7 +70,10 @@ def run_experiment(df_featured, pop_name, scenario, model_name, use_selector=Fal
     else:
         raise ValueError(f"Unknown model {model_name}")
         
-    steps = [('imputer', imputer)]
+    steps = [
+        ('imputer', imputer),
+        ('smote', SMOTE(random_state=42))
+    ]
     if use_selector:
         steps.append(('selector', DynamicTopKSelector(random_state=42)))
         
