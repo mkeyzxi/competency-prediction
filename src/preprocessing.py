@@ -43,32 +43,56 @@ def preprocess_data(df, config_path='configs/attendance_mapping.yaml'):
     df['Attendance_Ineligible_Flag'] = (df['absence_count'] >= 4).astype(int)
     
     # 4. Target Labeling
-    # Convert Final_Individu to numeric
     df['Final_Individu'] = pd.to_numeric(df['Final_Individu'], errors='coerce')
     
-    # Exclude missing finals from target? The PRD says "Masukkan quality issue; perbaiki dari sumber resmi atau keluarkan dari modelling."
-    # We will mark them and drop from the modeling 'eligible' dataset.
+    # Missing final mask
+    missing_final = df['Final_Individu'].isna()
+    
     df['Competency_Label'] = (df['Final_Individu'] >= 75).astype(int)
     df['Competency_Name'] = df['Competency_Label'].map({1: 'Kompeten', 0: 'Belum Kompeten'})
     
-    # Save excluded and eligible
     os.makedirs('data/processed', exist_ok=True)
+    os.makedirs('results/reports', exist_ok=True)
     
-    # Excluded: missing final or ineligible (Early Exit is subsumed by Ineligible since >7 is >=4)
-    excluded_mask = df['Final_Individu'].isna() | (df['Attendance_Ineligible_Flag'] == 1)
+    # P0: Raw Valid (hanya keluarkan missing final)
+    df_p0 = df[~missing_final].copy()
     
-    df_excluded = df[excluded_mask].copy()
-    df_eligible = df[~excluded_mask].copy()
+    # P1: Eligible (tanpa Early Exit)
+    df_p1 = df_p0[df_p0['Early_Exit_Flag'] == 0].copy()
     
+    # P2: Strict Eligible (tanpa Attendance Ineligible)
+    df_p2 = df_p0[df_p0['Attendance_Ineligible_Flag'] == 0].copy()
+    
+    # Audit trail
+    audit_data = [
+        {"Stage": "Raw Data", "Count": len(df)},
+        {"Stage": "Missing Final (Excluded)", "Count": missing_final.sum()},
+        {"Stage": "P0 (Raw Valid)", "Count": len(df_p0)},
+        {"Stage": "Early Exit (Excluded from P1)", "Count": (df_p0['Early_Exit_Flag'] == 1).sum()},
+        {"Stage": "P1 (Eligible)", "Count": len(df_p1)},
+        {"Stage": "Attendance Ineligible (Excluded from P2)", "Count": (df_p0['Attendance_Ineligible_Flag'] == 1).sum()},
+        {"Stage": "P2 (Strict Eligible)", "Count": len(df_p2)}
+    ]
+    pd.DataFrame(audit_data).to_csv('results/reports/population_audit.csv', index=False)
+    
+    df_excluded = df[missing_final].copy()
     df_excluded.to_csv('data/processed/excluded.csv', index=False)
-    df_eligible.to_csv('data/processed/eligible.csv', index=False)
+    
+    df_p0.to_csv('data/processed/population_P0.csv', index=False)
+    df_p1.to_csv('data/processed/population_P1.csv', index=False)
+    df_p2.to_csv('data/processed/population_P2.csv', index=False)
+    
+    # Simpan master untuk compatibility dengan script yang belum terupdate
+    df_p0.to_csv('data/processed/eligible.csv', index=False)
     df.to_csv('data/processed/master_clean.csv', index=False)
     
-    return df_eligible
+    return df_p0, df_p1, df_p2
 
 if __name__ == "__main__":
     df_interim = pd.read_csv('data/interim/combined_data.csv')
-    df_clean = preprocess_data(df_interim)
+    df_p0, df_p1, df_p2 = preprocess_data(df_interim)
     print(f"Master clean shape: {df_interim.shape}")
-    print(f"Eligible shape: {df_clean.shape}")
-    print("Columns:", df_clean.columns.tolist())
+    print(f"P0 Raw Valid: {df_p0.shape}")
+    print(f"P1 Eligible: {df_p1.shape}")
+    print(f"P2 Strict Eligible: {df_p2.shape}")
+    print("Columns:", df_p0.columns.tolist())

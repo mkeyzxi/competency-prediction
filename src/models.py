@@ -1,7 +1,10 @@
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.dummy import DummyClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import StandardScaler
 from src.utils import load_config
 
 def get_model(model_name: str, config_path: str = 'configs/experiment_config.yaml'):
@@ -16,13 +19,22 @@ def get_model(model_name: str, config_path: str = 'configs/experiment_config.yam
     
     if model_name == 'DecisionTree':
         clf = DecisionTreeClassifier(random_state=random_state)
+        scaler = 'passthrough'
     elif model_name == 'RandomForest':
         clf = RandomForestClassifier(random_state=random_state)
+        scaler = 'passthrough'
+    elif model_name == 'Dummy':
+        clf = DummyClassifier(strategy="most_frequent", random_state=random_state)
+        scaler = 'passthrough'
+    elif model_name == 'LogisticRegression':
+        clf = LogisticRegression(random_state=random_state, max_iter=1000)
+        scaler = StandardScaler()
     else:
         raise ValueError(f"Unknown model {model_name}")
         
     return Pipeline([
         ('imputer', imputer),
+        ('scaler', scaler),
         ('model', clf)
     ])
 
@@ -33,17 +45,27 @@ def get_param_grid(model_name: str):
     """
     if model_name == 'DecisionTree':
         return {
-            'model__max_depth': [None, 3, 5, 7, 10],
-            'model__min_samples_split': [2, 5, 10],
-            'model__min_samples_leaf': [1, 2, 4],
-            'model__class_weight': [None, 'balanced']
+            'model__criterion': ['gini', 'entropy', 'log_loss'],
+            'model__max_depth': [2, 3, 4, 5, 6, 7, 8, 9, 10],
+            'model__min_samples_split': [2, 4, 6, 8, 10],
+            'model__min_samples_leaf': [1, 2, 3, 4, 5],
+            'model__max_features': ['sqrt', 'log2', None],
+            'model__ccp_alpha': [0.0, 0.005, 0.01, 0.015, 0.02],
+            'model__class_weight': [None, 'balanced'],
         }
     elif model_name == 'RandomForest':
         return {
-            'model__n_estimators': [50, 100, 200],
-            'model__max_depth': [None, 5, 10],
-            'model__min_samples_split': [2, 5],
-            'model__min_samples_leaf': [1, 2],
-            'model__class_weight': [None, 'balanced', 'balanced_subsample']
+            'model__n_estimators': [200, 500, 800],
+            'model__max_depth': [None, 3, 4, 5, 6, 8],
+            'model__min_samples_split': [2, 4, 6, 8, 10],
+            'model__min_samples_leaf': [1, 2, 3, 4, 5],
+            'model__max_features': ['sqrt', 'log2', 0.5, 0.7, 1.0],
+            'model__criterion': ['gini', 'entropy', 'log_loss'],
+            'model__class_weight': [None, 'balanced', 'balanced_subsample'],
+        }
+    elif model_name == 'LogisticRegression':
+        return {
+            'model__C': [0.01, 0.1, 1.0, 10.0],
+            'model__class_weight': [None, 'balanced']
         }
     return {}

@@ -461,8 +461,34 @@ DATA A/C + B/D/E + PENILAIAN UAS
                │
                ▼
       Overall vs AC vs BDE
-           Reporting
+            Reporting
 ```
+
+## 22. Keputusan Metodologis Terkait Validitas Data dan Performa (Revisi Evaluasi)
+Berdasarkan tinjauan dan evaluasi terhadap iterasi awal model, beberapa penegasan metodologis penting telah disepakati untuk menjaga integritas keilmuan penelitian ini:
+
+### 22.1. Mempertahankan Nilai 0 (Zero-Value) sebagai Observasi Valid
+Nilai 0 pada tugas atau laporan bukanlah *missing value* atau anomali yang harus dihapus, melainkan wujud nyata dari perilaku akademik (misal: tidak mengumpulkan tugas). 
+- Jika sistem secara sah memberikan nilai 0 untuk tugas yang tidak dikerjakan, maka **0 dipertahankan secara mutlak**. 
+- Memodifikasi nilai 0 menjadi nilai lain (imputasi, median, drop) demi menaikkan performa model (akurasi) adalah manipulasi observasi yang mencederai keabsahan ilmiah. Korelasi alami (walaupun rendah) antara nilai 0 dan ketidaklulusan adalah pola yang secara sah harus ditemukan oleh model, bukan direkayasa oleh *engineer*.
+
+### 22.2. Definisi Tegas Populasi Penelitian (158 ke 122 Mahasiswa)
+Penurunan jumlah data dari 158 *raw students* menjadi 122 *eligible students* pada *featured dataset* bukanlah proses "membuang data yang membuat model jelek". Ini adalah proses seleksi populasi yang terdokumentasi dan terjustifikasi oleh aturan akademik (kelayakan praktikum).
+- **Early Exit / Ineligible**: Mahasiswa yang *absence count > 1* atau *absence count > 3* diidentifikasi sebagai peserta yang secara *de facto* tidak layak melanjutkan praktikum, sehingga di-*exclude* dari pemodelan utama.
+- **Missing Target (Final)**: Mahasiswa tanpa nilai evaluasi Final yang valid juga di-*exclude* secara spesifik (`reason = MISSING_FINAL`), karena target kompetensi tidak dapat dibentuk dari data yang kosong.
+Proses audit populasi ini mencatat angka riil peralihan dari 158 data mentah menuju 122 dataset final secara transparan.
+
+### 22.3. Pendekatan *Sensitivity Analysis* Alih-alih Rekayasa Data
+Demi memperkuat pembuktian ilmiah, penelitian melakukan eksperimen *sensitivity analysis* berlapis, mencakup:
+1. **Raw-Valid Data**: Melatih model dengan semua data sah, mempertahankan seluruh nilai 0 orisinal.
+2. **Eligible Population**: Meng-*exclude* populasi yang secara sah terkena `Early_Exit_Flag`.
+3. **Strict Eligible Population**: Meng-*exclude* peserta dengan `Attendance_Ineligible_Flag`.
+Perbedaan performa akibat pengurangan populasi ini menjadi temuan bahwa *exclusion* berdasarkan aturan akademik memengaruhi model, bukan karena kita memilah angka secara sepihak.
+
+### 22.4. Interpretasi Performa Realistis dan Limitasi Fitur S3
+Hasil uji coba menunjukkan bahwa Akurasi dan F1 macro pada dataset *strict eligible* berkisar antara **0.55 hingga 0.62**, dan skenario yang lebih kompleks (S3) tidak selalu lebih unggul dari skenario dasar (S1).
+- Performa ~0.60 adalah refleksi murni batasan dataset (tidak adanya korelasi sempurna antara tugas harian dengan ujian final). Ini bukan sebuah kegagalan riset, melainkan *insight* valid tentang dinamika kelas terkait.
+- Pada kelompok BDE, perhitungan `Respons_TP_Gap` pada skenario S3 akan secara konsisten bernilai 0 karena TP dan Respons tergabung pada skor tunggal. Maka, wajar apabila S3 berpotensi menurunkan model; hal tersebut bukan kerusakan model, melainkan konfirmasi logis bahwa fitur turunan (*derived features*) yang dipaksakan pada arsitektur hibrid tidak selamanya memberi informasi prediktif baru.
 
 ## Lampiran A. Mapping Konfigurasi yang Direkomendasikan
 ```yaml

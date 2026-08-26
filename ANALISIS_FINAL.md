@@ -1,71 +1,71 @@
-# Laporan Hasil Analisis Komprehensif (SINTA 2) - *Audit Recall Teroptimasi*
+# Analisis Final: Prediksi Kompetensi Praktikum Logika Pemrograman
 
-Laporan ini menyajikan hasil dari 4 eksperimen utama untuk memprediksi kelulusan (kompetensi) mahasiswa pada praktikum Logika Pemrograman. Data dikumpulkan dari dua dosen dengan skema penilaian yang berbeda (AC dan BDE). Berdasarkan audit terbaru, parameter optimasi (`GridSearchCV`) dan pengaturan bobot (`class_weight='balanced_subsample'`) telah diperbaiki untuk menargetkan performa metrik pada kelas **Belum Kompeten (0)** demi kebutuhan *Early Warning System*.
+Dokumen ini merupakan rangkuman evaluasi, analisis kendala model, penilaian kualitas data mentah, serta temuan *explainability* (XAI) dari keseluruhan eksperimen (Eksperimen Utama, Robustness, dan Feature Selection).
 
-## 1. Perbandingan Model dan Set Fitur (Eksperimen 1)
+---
 
-Eksperimen pertama bertujuan untuk membandingkan 3 skenario ekstraksi fitur (S1: Basic Means, S2: Completion Rates, S3: Relational Gaps). Evaluasi dilakukan dengan `RepeatedStratifiedKFold` (5 split, 5 ulangan) guna mendapatkan Confidence Interval (CI) 95%. 
+## 1. Apakah Data Mentahnya "Buruk"?
 
-**Tabel 1: Rata-Rata Cross Validation (Fokus: Belum Kompeten)**
+Secara objektif, data mentah Anda **tidak buruk**, tetapi **sangat terbatas (kecil) dan berisik (*noisy*)**. Ada beberapa karakteristik dari data yang mendikte seluruh perilaku model:
 
-| Skenario | Model | CV F1-Score | CI 95% F1-Score | CV Recall | CV Precision |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| S1 | Decision Tree | 0.607 ± 0.104 | [0.563, 0.651] | 0.691 | 0.556 |
-| S1 | Random Forest | 0.640 ± 0.092 | [0.601, 0.679] | 0.690 | 0.615 |
-| S2 | Decision Tree | 0.593 ± 0.105 | [0.548, 0.637] | 0.655 | 0.556 |
-| S2 | Random Forest | 0.640 ± 0.107 | [0.595, 0.685] | 0.681 | 0.625 |
-| S3 | Decision Tree | 0.552 ± 0.105 | [0.507, 0.596] | 0.611 | 0.520 |
-| S3 | Random Forest | 0.659 ± 0.121 | [0.608, 0.710] | 0.701 | 0.639 |
+### A. *Small Sample Size* & Variansi Tinggi
+Populasi utama Anda (P2 - Strict Eligible) hanya berisi **122 mahasiswa**. 
+- Dalam pemisahan 80% Train / 20% Test, model di-*training* pada ~97 sampel dan diuji pada **~25 sampel**.
+- *Dummy Classifier* (memprediksi kelas mayoritas secara membabi buta) mendapatkan akurasi 60%. Ini berarti dari 25 sampel *test set*, sekitar 15 mahasiswa adalah "Kompeten" dan 10 "Belum Kompeten".
+- Pada skala 25 sampel, **1 mahasiswa yang salah tebak akan mengubah akurasi sebesar 4%**. Lonjakan akurasi dari 60% ke 64% ke 68% hanyalah perbedaan dari 1 atau 2 mahasiswa yang tebakannya kebetulan benar/salah. Ini membuat hasil *test set* memiliki variansi yang sangat tinggi dan sulit dipercaya sebagai indikator tunggal.
 
-**Analisis Skenario 1 (Pascaperbaikan):**
-- **Kenaikan Signifikan:** Melalui optimasi yang menargetkan kelas "Belum Kompeten", nilai CV Recall melonjak tinggi ke kisaran **68%-70%** (berbanding ~50-57% sebelum audit).
-- **Rekomendasi Set Fitur:** Meskipun S3 secara CV menunjukkan performa tertinggi (F1 0.659), S2 sangat dekat (F1 0.640, Recall 0.681). Mengingat S2 difokuskan pada proporsi penyelesaian (Completion Rate) yang lebih kebal terhadap perbedaan skema, S2 dipertahankan sebagai fokus *Context Robustness*. Precision di angka ~62% merupakan *trade-off* yang masuk akal (beberapa alarm palsu, tapi tidak berlebihan, demi menangkap sebagian besar yang akan gagal).
+### B. *Label Noise* & Inkonsistensi Manusia
+Target kita adalah `Competency_Label` yang diturunkan dari nilai `Final_Individu` (>= 75). 
+Masalahnya, nilai akhir sering kali dipengaruhi faktor eksternal di luar 8 pertemuan praktikum awal, seperti:
+- Mahasiswa rajin namun mendadak sakit atau *blank* saat ujian akhir.
+- Mahasiswa malas namun berhasil "menebak" atau menyontek saat ujian akhir.
+- Subjektivitas asisten praktikum dalam menilai laporan harian vs objektivitas mesin ujian.
+Faktor-faktor ini menciptakan *irreducible error* (keributan yang tidak bisa dihilangkan) di mana data historis (praktikum M1-M8) tidak akan pernah bisa memprediksi ujian akhir dengan akurasi 100%.
 
-## 2. Analisis Peringatan Dini / Temporal Early Warning (Eksperimen 2)
+---
 
-Eksperimen ini mengevaluasi apakah model Random Forest (dengan fitur S2) dapat memprediksi ketidaklulusan mahasiswa secara dini. 
+## 2. Kendala Model (Mengapa Sulit Tembus 75%+)
 
-**Tabel 2: Performa Prediksi Seiring Berjalannya Waktu**
+### A. Overfitting & "The Curse of Dimensionality"
+Ketika kita beralih dari **S1** (9 fitur) menuju **S4** (32 fitur) dan **S5** (29 fitur), performa CV (*Cross-Validation*) pada *Random Forest* meningkat hingga ~68-69%. Namun, performa pada *Test Set* justru stagnan di angka 60-64%.
+- Ini adalah gejala klasik **Overfitting**. Model dengan pohon keputusan (*Decision Tree / Random Forest*) dengan 122 baris dan 30+ kolom akan sangat mudah untuk "menghafal" data *training*, sehingga gagal saat menghadapi 25 data *test*.
+- Hal ini terbukti pada hasil S5 dengan *Top-10 Feature Selection*: Akurasi tesnya naik menjadi 64% dibanding *Top-25/Top-29* (60%). Dengan memotong fitur menjadi 10, model dipaksa untuk lebih general dan tidak menghafal *noise*.
 
-| Cutoff | CV F1-Score | CI 95% F1 | CV Recall | Test F1-Score | Test Recall |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Minggu 3 (M3)** | 0.618 ± 0.128 | [0.564, 0.672] | 0.659 | 0.636 | 0.700 |
-| **Minggu 5 (M5)** | 0.644 ± 0.098 | [0.602, 0.686] | 0.723 | 0.608 | 0.700 |
-| **Minggu 7 (M7)** | 0.661 ± 0.103 | [0.617, 0.704] | 0.723 | 0.500 | 0.500 |
-| **Pre-Final** | 0.640 ± 0.107 | [0.595, 0.685] | 0.681 | 0.555 | 0.500 |
+### B. *Data Leakage* pada Evaluasi Awal (Terpecahkan)
+Sebelumnya Anda melihat angka 72% pada Random Forest (S5 Top-25). Seperti yang sudah diuji pada eksperimen `run_p2_optimization.py`, angka tersebut adalah hasil dari **Data Leakage**. Saat *feature selection* dikurung dengan benar di dalam *Nested CV*, akurasi aslinya memang turun ke 64%. Jadi, akurasi "asli" dari Random Forest untuk data ini memang berkisar di 64%-68%, bukan 72%. 
 
-**Analisis Skenario 2:**
-- **Momen Kritis:** Menariknya, prediksi pada Minggu ke-5 (M5) sudah sangat optimal, mencapai CV Recall **72.3%** dan Test Recall **70%**. 
-- Ini membuktikan bahwa **asisten laboratorium bisa meluncurkan intervensi seawal M5**, mengingat menunda hingga M7 tidak memberikan kenaikan Recall yang berarti pada dataset tak kasat mata (Test Set).
+### C. *Logistic Regression* Menjadi *Baseline* Terkuat
+Mengejutkannya, pada Eksperimen P2 S4, **Logistic Regression** (model paling sederhana) berhasil mencapai:
+- **Test Accuracy**: 68.00%
+- **Test Balanced Accuracy**: 70.00%
+- **Recall (Belum Kompeten)**: 80.00%
+Ini membuktikan bahwa untuk data dengan ukuran *sample* sangat kecil dan dimensi tinggi, **batas linear (*linear boundary*) jauh lebih kokoh (robust)** daripada batas non-linear kompleks yang dibuat oleh Random Forest.
 
-## 3. Ketahanan Konteks / Context Robustness (Eksperimen 3)
+---
 
-Pendekatan *Leave-Group-Out* digunakan untuk menguji apakah fitur S2 kebal (robust) terhadap perbedaan aturan main dosen.
+## 3. Insight dari Feature Importance & SHAP
 
-**Tabel 3: Generalisasi Skema Penilaian (Model: Random Forest S2)**
+Meskipun akurasi terbentur di angka ~65-70%, model telah berhasil mengidentifikasi pola kelulusan (*Early Warning System*) yang sangat valid dan logis. Dari *output feature importance* pada Random Forest S5, kita melihat:
 
-| Skenario Latih -> Uji | Test Accuracy | Test Recall (Belum Kompeten) | Test Precision | Test F1-Score |
-| :--- | :--- | :--- | :--- | :--- |
-| **Latih di AC -> Uji di BDE** | 0.615 | 0.969 | 0.563 | 0.713 |
-| **Latih di BDE -> Uji di AC** | 0.672 | 0.053 | 1.000 | 0.100 |
+1. **`Laporan_Trend` (15.5%)** & **`Laporan_Mean` (15.2%)**: Ini adalah 2 fitur absolut terpenting. Model melihat bahwa rata-rata nilai laporan sangat krusial, dan yang **lebih krusial** adalah trennya: apakah nilai laporannya membaik atau memburuk dari paruh pertama ke paruh kedua praktikum.
+2. **`Respons_Trend` (10.3%)**: Tren kecepatan atau kualitas respons (Tanya Jawab / partisipasi) juga menjadi indikator sangat penting.
+3. **Fitur Kehadiran Terpinggirkan**: `Attendance_PreFinal_Rate` hanya memiliki kontribusi sangat kecil (0.3%). Ini membuktikan hipotesis awal bahwa mahasiswa yang datang (*hadir*) belum tentu kompeten jika nilai laporan dan respons mereka buruk. *Quality over quantity*.
 
-**Analisis Skenario 3:**
-- **Ketahanan Asimetris yang Ekstrem:** Model yang dilatih dengan standar pengumpulan ketat (AC) memiliki Recall yang sangat agresif (96.9%) saat dibawa ke kelas fleksibel (BDE). Artinya ia berhasil membunyikan alarm bagi hampir seluruh mahasiswa berisiko, dengan Precision 56.3% (tingkat toleransi *false positive* yang cukup baik).
-- Sebaliknya, model yang dididik dalam budaya telat (BDE) menjadi sangat "pemaaf" dan buta terhadap standar AC, sehingga hanya mampu mendeteksi 5.3% mahasiswa gagal.
-- **Nilai Novelty SINTA 2:** Data pendidikan heterogen **tidak boleh** sekadar digabung (pooled). Model prediksi kinerja akademik membawa "nilai dan standar" bawaan dari budaya kelas asalnya.
+Berdasarkan *beeswarm plot* dari **SHAP**:
+- Nilai SHAP tinggi (merah) pada `Laporan_Trend` akan sangat kuat mendorong prediksi mahasiswa menjadi "Kompeten" (1). 
+- Sebaliknya, penurunan tren (biru) pada respons dan laporan adalah "Lampu Merah" (red flag) yang mendeteksi mahasiswa yang akan gagal di ujian akhir (mendorong prediksi ke "Belum Kompeten").
 
-## 4. Penjelasan Model (TreeSHAP) (Eksperimen 4)
+---
 
-TreeSHAP (fokus pada prediksi Belum Kompeten) mengungkapkan mekanisme pengambilan keputusan. File lengkap dapat dilihat di folder `results/shap/`.
+## 4. Kesimpulan untuk Skripsi
 
-1. **Global Importance:**
-   - Fitur terkait Laporan (*Laporan_Completion_Rate*, *Laporan_Mean*) tetap menjadi variabel dominan. Ini mencerminkan bahwa komitmen penulisan laporan praktikum adalah cerminan utama dari potensi kompetensi individu di akhir semester.
+Kendala eksperimen ini **bukan** berarti skripsi Anda gagal. Sebaliknya, hal-hal inilah yang harus diangkat sebagai "Finding" utama dalam skripsi dan *paper* Anda:
 
-2. **Local Interpretability (Waterfall Plots):**
-   - **True Positive (Tepat Prediksi Gagal):** Mahasiswa yang terdeteksi secara dini sering kali sudah menunjukkan pola bolong-bolong dalam pengumpulan *Laporan* sejak minggu ke-2 dan ke-3.
-   - **False Negative (Gagal Memprediksi):** Kasus mahasiswa rajin hadir dan mengumpulkan tugas asal-asalan sering kali menipu model. Kehadiran fisik (yang terekam) tidak menjamin perolehan nilai final yang tinggi, menyebabkan prediksi *miss*.
+1. **Jangan klaim akurasi artifisial tinggi**. Akui bahwa pada ukuran *sample* 122, akurasi stabil berada di rentang 65-70%.
+2. **Kekuatan ada pada SHAP**. Buktikan bahwa sistem peringatan dini (*Early Warning System*) berbasis ML dapat mendeteksi mahasiswa berisiko gagal tidak hanya dari kehadirannya, melainkan dari **penurunan tren laporan dan respons**. Tunjukkan gambar SHAP `beeswarm` dan `local_TP`/`local_FN` sebagai kontribusi penelitian (XAI).
+3. **Feature Selection itu Kritis**. Tunjukkan dalam metodologi Anda bahwa melakukan seleksi fitur secara ketat (S5 Top-10) atau mendesain fitur *domain-knowledge* secara manual mampu mengurangi efek *Curse of Dimensionality* pada data yang kecil.
+4. **Logistic Regression dan Decision Tree adalah model yang lebih praktis**. Untuk ukuran sampel kecil, *Logistic Regression* menahan *overfitting*, sedangkan *Decision Tree* (yang sudah dituning) menghasilkan model *white-box* yang *rules*-nya bisa dibaca langsung oleh dosen pengajar untuk melakukan intervensi (misal: "Jika Laporan_Trend < -10 dan TP_Mean < 60, panggil mahasiswa").
 
-## 5. Kesimpulan Publikasi
-
-1. **Efektivitas Evaluasi Metrik:** Penggunaan optimasi hiperparameter berbasis *Recall (pos_label=0)* dan *balanced_subsample* sukses meningkatkan laju deteksi mahasiswa berisiko dari ~55% menjadi ~70%. Penurunan *Precision* akibat hal ini (berada di angka ~60%) sangat bisa ditoleransi dalam skema Sistem Peringatan Dini.
-2. **Timing & Konteks:** Mitigasi optimal berada di **Minggu ke-5**, dan pengembangan sistem lintas-dosen di masa depan harus selalu menggunakan model yang dilatih pada himpunan data dengan kebijakan yang lebih ketat, guna menghindari fenomena kebutaan prediktif (seperti kasus BDE->AC).
+**Next Step**:
+- Gunakan grafik *SHAP Global Importance* dan *Beeswarm* untuk presentasi hasil.
+- Bila ada waktu, bongkar berkas `error_analysis_P2_S5_RandomForest.csv` secara manual. Jika mahasiswa yang diprediksi salah secara konsisten ternyata memiliki anomali spesifik (seperti nilai UAS yang bertolak belakang drastis dengan nilai harian), Anda bisa memasukkan argumen "*Irreducible Human Error in Final Exam Grading*" sebagai batasan penelitian di skripsi Anda.

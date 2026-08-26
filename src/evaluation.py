@@ -6,7 +6,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 import scipy.stats as stats
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, make_scorer
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score, 
+    confusion_matrix, make_scorer, balanced_accuracy_score, roc_auc_score
+)
 from sklearn.model_selection import cross_validate, RepeatedStratifiedKFold
 from src.utils import load_config
 
@@ -35,13 +38,13 @@ def evaluate_cv(model, X_train, y_train, config_path='configs/experiment_config.
     
     cv = RepeatedStratifiedKFold(n_splits=cv_splits, n_repeats=n_repeats, random_state=random_state)
     
-    # We define positive class as 0 (Belum Kompeten)
     scoring = {
         'accuracy': make_scorer(accuracy_score),
+        'balanced_accuracy': make_scorer(balanced_accuracy_score),
         'precision': make_scorer(precision_score, average='macro', zero_division=0),
         'recall': make_scorer(recall_score, average='macro', zero_division=0),
         'f1': make_scorer(f1_score, average='macro', zero_division=0),
-        'specificity': make_scorer(specificity_score, pos_label=0)
+        'roc_auc': make_scorer(roc_auc_score, response_method='predict_proba', multi_class='ovr')
     }
     
     scores = cross_validate(model, X_train, y_train, cv=cv, scoring=scoring)
@@ -64,25 +67,46 @@ def evaluate_cv(model, X_train, y_train, config_path='configs/experiment_config.
         
     return results
 
-def evaluate_test(model, X_test, y_test, scenario_name, model_name, output_dir='results/confusion_matrix'):
+def evaluate_test(model, X_test, y_test, scenario_name, model_name,
+                  threshold=None, output_dir='results/confusion_matrix'):
     """
     Evaluates on test set and saves confusion matrix.
+    
+    If threshold is provided and the model supports predict_proba,
+    predictions are made using that threshold instead of the default 0.50.
     """
-    y_pred = model.predict(X_test)
+    if threshold is not None and hasattr(model, "predict_proba"):
+        try:
+            y_prob = model.predict_proba(X_test)[:, 1]
+            y_pred = (y_prob >= threshold).astype(int)
+        except Exception:
+            y_pred = model.predict(X_test)
+    else:
+        y_pred = model.predict(X_test)
     
     results = {
         'test_accuracy': accuracy_score(y_test, y_pred),
+        'test_balanced_accuracy': balanced_accuracy_score(y_test, y_pred),
         'test_precision': precision_score(y_test, y_pred, average='macro', zero_division=0),
         'test_recall': recall_score(y_test, y_pred, average='macro', zero_division=0),
-        'test_f1': f1_score(y_test, y_pred, average='macro', zero_division=0),
-        'test_specificity': specificity_score(y_test, y_pred, pos_label=0)
+        'test_f1': f1_score(y_test, y_pred, average='macro', zero_division=0)
     }
+    
+    try:
+        y_prob_test = model.predict_proba(X_test)[:, 1]
+        results['test_roc_auc'] = roc_auc_score(y_test, y_prob_test)
+    except:
+        results['test_roc_auc'] = np.nan
+        
+    results['test_recall_belum_kompeten'] = recall_score(y_test, y_pred, pos_label=0, zero_division=0)
     
     # Confusion Matrix
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
     plt.figure(figsize=(6, 4))
+    
+    thresh_label = f' (t={threshold})' if threshold is not None else ''
     sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=['Belum Kompeten (0)', 'Kompeten (1)'], yticklabels=['Belum Kompeten (0)', 'Kompeten (1)'])
-    plt.title(f'Confusion Matrix - {scenario_name} - {model_name}')
+    plt.title(f'Confusion Matrix - {scenario_name} - {model_name}{thresh_label}')
     plt.ylabel('Actual')
     plt.xlabel('Predicted')
     

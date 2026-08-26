@@ -18,24 +18,30 @@ def main():
     # Feature Engineering
     df_featured = compute_features(df)
     
-    # 3. Save feature sets based on scenarios
     os.makedirs('data/processed', exist_ok=True)
     
-    scenarios = ['S1', 'S2', 'S3']
-    for scenario in scenarios:
-        features = get_features(scenario)
-        if features:
-            # Keep metadata for evaluation and context analysis
-            keep_cols = ['Competency_Label', 'Competency_Name', 'NIM', 'Class', 'Scoring_Scheme']
-            cols_to_save = features + [c for c in keep_cols if c in df_featured.columns]
-            df_scenario = df_featured[cols_to_save]
-            
-            out_path = f'data/processed/featured_{scenario}.csv'
-            df_scenario.to_csv(out_path, index=False)
-            print(f"Saved {scenario} dataset to {out_path} with shape {df_scenario.shape}")
-            
-    # Save the full dataset for easy loading in experiments
-    df_featured.to_csv('data/processed/featured_full.csv', index=False)
+    populations = ['P0', 'P1', 'P2']
+    scenarios = ['S1', 'S2', 'S3', 'S4']
+    
+    for pop in populations:
+        df_pop = pd.read_csv(f'data/processed/population_{pop}.csv')
+        df_pop_featured = compute_features(df_pop)
+        
+        for scenario in scenarios:
+            features = get_features(scenario)
+            if features:
+                # Keep metadata for evaluation and context analysis
+                keep_cols = ['Competency_Label', 'Competency_Name', 'NIM', 'Class', 'Scoring_Scheme']
+                cols_to_save = features + [c for c in keep_cols if c in df_pop_featured.columns]
+                df_scenario = df_pop_featured[cols_to_save]
+                
+                out_path = f'data/processed/featured_{pop}_{scenario}.csv'
+                df_scenario.to_csv(out_path, index=False)
+                print(f"Saved {pop} {scenario} dataset to {out_path} with shape {df_scenario.shape}")
+                
+        # Save the full dataset for easy loading in experiments
+        df_pop_featured.to_csv(f'data/processed/featured_{pop}_full.csv', index=False)
+        
     print("Features built successfully.")
 
 if __name__ == "__main__":
