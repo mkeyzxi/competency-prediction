@@ -26,7 +26,8 @@ class DynamicTopKSelector(BaseEstimator, TransformerMixin):
             actual_k = min(int(self.k), n_features)
             
         # Base model for computing importances
-        clf = RandomForestClassifier(n_estimators=100, random_state=self.random_state, n_jobs=-1)
+        # Removed n_jobs=-1 to avoid joblib warnings during nested CV
+        clf = RandomForestClassifier(n_estimators=100, random_state=self.random_state)
         
         # If X is a dataframe, keep it, otherwise ensure it's handled properly
         if isinstance(X, pd.DataFrame):
@@ -34,16 +35,18 @@ class DynamicTopKSelector(BaseEstimator, TransformerMixin):
         else:
             X_arr = X
             
-        # Impute NaNs just for the importance calculation because RF cannot handle NaNs natively
-        # (Assuming imputer is run BEFORE this step in the pipeline, so X_arr shouldn't have NaNs, 
-        # but just in case, we assume pipeline structure: Imputer -> Selector -> Classifier)
-        
-        clf.fit(X_arr, y)
-        
         if self.importance_type == 'gini':
+            clf.fit(X_arr, y)
             importances = clf.feature_importances_
         elif self.importance_type == 'permutation':
-            result = permutation_importance(clf, X_arr, y, n_repeats=5, random_state=self.random_state, n_jobs=-1)
+            from sklearn.model_selection import train_test_split
+            # Create an inner validation set to prevent leakage/overfitting in selection
+            X_in_train, X_in_val, y_in_train, y_in_val = train_test_split(
+                X_arr, y, test_size=0.2, random_state=self.random_state, stratify=y
+            )
+            clf.fit(X_in_train, y_in_train)
+            # Use n_jobs=None to avoid nested joblib warnings
+            result = permutation_importance(clf, X_in_val, y_in_val, n_repeats=5, random_state=self.random_state, n_jobs=None)
             importances = result.importances_mean
         else:
             raise ValueError("importance_type must be 'gini' or 'permutation'")

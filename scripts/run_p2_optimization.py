@@ -48,8 +48,8 @@ def generate_error_analysis(model, X_test, y_test, df_test_raw, y_pred, y_prob, 
     print("  Breakdown:")
     print(df_analysis['Prediction_Type'].value_counts())
 
-def run_experiment(df_featured, pop_name, scenario, model_name, use_selector=False, config_path='configs/experiment_config.yaml'):
-    print(f"\n--- Running {model_name} on {scenario} (Feature Selection: {use_selector}) ---")
+def run_experiment(df_featured, pop_name, cutoff, scenario, model_name, use_selector=False, config_path='configs/experiment_config.yaml'):
+    print(f"\n--- Running {model_name} on {cutoff} {scenario} (Feature Selection: {use_selector}) ---")
     
     features = get_features(scenario)
     X_train_full, X_test_full, y_train, y_test = get_train_test_split(df_featured, config_path)
@@ -115,10 +115,10 @@ def run_experiment(df_featured, pop_name, scenario, model_name, use_selector=Fal
     df_test_raw = df_featured.loc[X_test.index].copy()
     generate_error_analysis(
         best_model, X_test, y_test, df_test_raw, y_pred, y_prob, 
-        f'results/reports/error_analysis_{pop_name}_{scenario}_{model_name}.csv'
+        f'results/reports/error_analysis_{pop_name}_{cutoff}_{scenario}_{model_name}.csv'
     )
     
-    save_model(best_model, f'models/{pop_name}_{scenario}_{model_name}_optimized.pkl')
+    save_model(best_model, f'models/{pop_name}_{cutoff}_{scenario}_{model_name}_optimized.pkl')
     
     return {
         'population': pop_name,
@@ -133,42 +133,55 @@ def run_experiment(df_featured, pop_name, scenario, model_name, use_selector=Fal
 
 def main():
     print("=" * 60)
-    print("P2 OPTIMIZATION (Strict Eligible)")
+    print("EARLY WARNING SYSTEM OPTIMIZATION (Strict Eligible - P2)")
     print("=" * 60)
     
     df_interim = pd.read_csv('data/interim/combined_data.csv')
     df_p0, df_p1, df_p2 = preprocess_data(df_interim)
-    df_p2_featured = compute_features(df_p2, cutoff_session='PreFinal')
-    
-    print(f"P2 Dataset shape: {df_p2_featured.shape}")
     
     results = []
     
-    # Experiment 2 & 3: Standard Tuning (No Selection) on S5 and S6
-    for scenario in ['S5', 'S6']:
-        for model in ['DecisionTree', 'RandomForest']:
-            res = run_experiment(df_p2_featured, 'P2', scenario, model, use_selector=False)
-            results.append(res)
-            
-    # Experiment 1: Nested CV Feature Selection on S5 and S6
-    for scenario in ['S5', 'S6']:
-        for model in ['DecisionTree', 'RandomForest']:
-            res = run_experiment(df_p2_featured, 'P2', scenario, model, use_selector=True)
-            results.append(res)
-            
+    cutoffs = ['C1', 'C2', 'C3', 'C4', 'C_Full']
+    
+    for cutoff in cutoffs:
+        print(f"\n{'='*40}")
+        print(f"EVALUATING TEMPORAL CUTOFF: {cutoff}")
+        print(f"{'='*40}")
+        
+        df_p2_featured = compute_features(df_p2, cutoff_session=cutoff)
+        print(f"P2 Dataset shape for {cutoff}: {df_p2_featured.shape}")
+        
+        # We focus on the best feature scenario S6 for the Temporal Analysis
+        # Both with and without Feature Selection
+        scenario = 'S6'
+        
+        for use_sel in [False, True]:
+            for model in ['DecisionTree', 'RandomForest']:
+                res = run_experiment(df_p2_featured, 'P2', cutoff, scenario, model, use_selector=use_sel)
+                res['cutoff'] = cutoff
+                results.append(res)
+                
     df_results = pd.DataFrame(results)
     
+    # Format CV metrics as Mean ± SD
+    df_results['cv_accuracy'] = df_results.apply(
+        lambda row: f"{row['cv_accuracy_mean']:.4f} ± {row['cv_accuracy_std']:.4f}", axis=1
+    )
+    df_results['cv_balanced_accuracy'] = df_results.apply(
+        lambda row: f"{row['cv_balanced_accuracy_mean']:.4f} ± {row['cv_balanced_accuracy_std']:.4f}", axis=1
+    )
+    
     os.makedirs('results/metrics', exist_ok=True)
-    df_results.to_csv('results/metrics/p2_optimization_results.csv', index=False)
+    df_results.to_csv('results/metrics/temporal_optimization_results.csv', index=False)
     
     print("\n" + "=" * 60)
-    print("SUMMARY — P2 Optimization Results")
+    print("SUMMARY — Temporal Optimization Results (Early Warning System)")
     print("=" * 60)
     
     metrics = [
-        'scenario', 'model', 'feature_selection', 'best_threshold',
-        'cv_accuracy_mean', 'test_accuracy',
-        'cv_balanced_accuracy_mean', 'test_balanced_accuracy'
+        'cutoff', 'scenario', 'model', 'feature_selection', 'best_threshold',
+        'cv_accuracy', 'test_accuracy',
+        'cv_balanced_accuracy', 'test_balanced_accuracy'
     ]
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', 1000)

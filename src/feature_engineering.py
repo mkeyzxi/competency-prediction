@@ -5,13 +5,15 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     df = df.copy()
     
     # Determine the index limits based on cutoff_session
-    if cutoff_session == 'M3':
-        idx_max = 3
-    elif cutoff_session == 'M5':
+    if cutoff_session == 'C1' or cutoff_session == 'M4':
+        idx_max = 4
+    elif cutoff_session == 'C2' or cutoff_session == 'M5':
         idx_max = 5
-    elif cutoff_session == 'M7':
+    elif cutoff_session == 'C3' or cutoff_session == 'M6':
+        idx_max = 6
+    elif cutoff_session == 'C4' or cutoff_session == 'M7':
         idx_max = 7
-    elif cutoff_session == 'PreFinal':
+    elif cutoff_session == 'C_Full' or cutoff_session == 'PreFinal':
         idx_max = 8
     else:
         raise ValueError(f"Unknown cutoff_session: {cutoff_session}")
