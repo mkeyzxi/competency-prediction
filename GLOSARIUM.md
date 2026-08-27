@@ -39,20 +39,25 @@ Pada proyek dengan ketidakseimbangan kelas (*imbalanced data*), metrik akurasi b
 
 1. **Balanced Accuracy (Akurasi Berimbang)**  
    *Metrik utama (Utara/North Star) dalam proyek ini*. Dihitung dari rata-rata Sensitivitas (kemampuan mendeteksi status Kompeten) dan Spesifisitas (kemampuan mendeteksi status Belum Kompeten). Sebuah model tidak akan mendapat nilai *Balanced Accuracy* tinggi jika ia hanya pintar menebak lulus tapi buta dalam menebak mahasiswa gagal.
-2. **Mean ± SD (Standar Deviasi)**  
+2. **F1-Score (Harmonic Mean)**  
+   Keseimbangan harmonis antara *Precision* dan *Recall*. F1-Score digunakan secara khusus (terutama dalam eksperimen seleksi model) untuk memastikan model handal dalam menangani dominasi kelas mayoritas tanpa mengorbankan pendeteksian kelas minoritas.
+3. **Mean ± SD (Standar Deviasi)**  
    Simbol kestabilan. Jika model mencetak *Test Accuracy* 95% namun memiliki SD ± 0.17 (sangat lebar deviasinya), berarti model tersebut rapuh secara generalisasi (*overfitting/hold-out illusion*). Model yang tangguh diincar pada SD yang lebih sempit (misal ± 0.11).
-3. **Precision & Recall**  
-   - *Precision*: Jika sistem memprediksi mahasiswa "Gagal", seberapa yakin tebakan tersebut benar?
-   - *Recall*: Dari seluruh mahasiswa yang nyatanya Gagal, berapa persen yang berhasil tertangkap sistem radar peringatan dini kita?
+4. **Precision & Recall**  
+   - *Precision*: Jika sistem memprediksi mahasiswa "Gagal", seberapa yakin tebakan tersebut benar? Tingginya presisi meminimalisir alarm palsu (*False Positives*).
+   - *Recall*: Dari seluruh mahasiswa yang nyatanya Gagal, berapa persen yang berhasil tertangkap sistem radar peringatan dini kita? Tingginya recall meminimalisir mahasiswa berisiko yang lolos dari radar (*False Negatives*).
 
 ---
 
 ## 5. Glosarium Istilah Teknis (Technical Terms) untuk Sidang/Jurnal
 
+* **Early Warning System (EWS)**: Sistem Peringatan Dini. Dalam AI pendidikan, ini adalah model yang berusaha memprediksi kegagalan seawal mungkin sebelum nilai akhir keluar, agar ada waktu untuk intervensi.
 * **Explainable AI (XAI)**: Sebuah sub-bidang AI yang bertujuan membuat "kotak hitam" (*black box*) algoritma peramal menjadi transparan dan bisa dijelaskan secara logis kepada manusia (dosen/praktisi).
 * **SHAP (SHapley Additive exPlanations)**: Metode interpretasi yang didasarkan pada Teori Permainan Koperasi (*Cooperative Game Theory*). SHAP membagi-bagikan (mendistribusikan) kontribusi setiap fitur (misal: Rata-rata Laporan) terhadap prediksi akhir (Lulus/Gagal) secara sangat adil.
 * **Beeswarm Plot**: Grafik utama SHAP yang menggabungkan sebaran distribusi data dan magnitudo dampak (warna merah tinggi, warna biru rendah). Sangat kuat untuk memvisualisasikan korelasi arah variabel terhadap keputusan akhir.
 * **Data Leakage (Kebocoran Data)**: Kesalahan metodologi terfatal dalam AI, yaitu ketika algoritma tanpa sengaja mempelajari informasi dari set tes (data masa depan/kunci jawaban) selama fase pelatihan. Dalam penelitian ini, dicegah melalui eksekusi SMOTE secara murni di dalam *inner CV fold*.
-* **False Negative (FN) Error Analysis**: Dalam eksperimen kita, ini adalah kelompok mahasiswa yang oleh komputer diprediksi "Akan Gagal", namun kenyataannya mereka "Berhasil Lulus" (*Late-bloomers* atau telat beradaptasi).
+* **Nested Cross-Validation (CV Bersarang)**: Teknik evaluasi tingkat lanjut di mana proses pencarian parameter terbaik (*Hyperparameter Tuning*) dilakukan secara terisolasi di dalam proses uji silang (*Cross-Validation*) luar, guna mencegah model menjadi bias terhadap data latih yang spesifik.
+* **False Negative (FN) / Late-Droppers**: Kelompok mahasiswa yang diprediksi aman/Lulus oleh komputer, namun kenyataannya mereka Gagal. Lazimnya merupakan *Late-Droppers* (awal semester bagus, akhir semester tiba-tiba anjlok).
+* **False Positive (FP) / Late-Bloomers**: Alarm palsu. Mahasiswa yang diprediksi "Akan Gagal", namun kenyataannya mereka "Berhasil Lulus". Lazimnya mereka adalah *Late-Bloomers* (telat beradaptasi di awal, namun mengejar ketertinggalan di akhir).
 * **Hold-Out Illusion**: Terjadi ketika hasil evaluasi pada satu set tes tertentu sangat bagus, seolah-olah model tersebut sempurna. Namun ketika diuji secara komprehensif, performanya runtuh.
 * **Feature Engineering (Rekayasa Fitur)**: Proses mendaur ulang data mentah mingguan (M1-M8) menjadi agregat bermakna, seperti mencari Nilai Maksimal, Rata-Rata Awal, hingga Tren Deviasi Standar, guna menyuapi model algoritma secara lebih komprehensif.
