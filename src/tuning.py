@@ -8,7 +8,7 @@ import warnings
 from src.utils import load_config
 from src.models import get_param_grid
 
-def tune_hyperparameters(model, model_name, X_train, y_train, config_path='configs/experiment_config.yaml', custom_param_grid=None):
+def build_search_estimator(model, model_name, config_path='configs/experiment_config.yaml', custom_param_grid=None):
     config = load_config(config_path)
     cv_splits = config['cv']['n_splits']
     random_state = config['random_state']
@@ -18,33 +18,36 @@ def tune_hyperparameters(model, model_name, X_train, y_train, config_path='confi
     param_grid = custom_param_grid if custom_param_grid is not None else get_param_grid(model_name)
     
     if not param_grid:
+        return model
+        
+    bal_acc = make_scorer(balanced_accuracy_score)
+    
+    total_combinations = len(ParameterGrid(param_grid))
+    n_iter = min(50, total_combinations) # reduced for nested CV performance
+    
+    random_search = RandomizedSearchCV(
+        estimator=model,
+        param_distributions=param_grid,
+        n_iter=n_iter,
+        scoring=bal_acc,
+        cv=cv,
+        n_jobs=-1,
+        random_state=random_state
+    )
+    return random_search
+
+def tune_hyperparameters(model, model_name, X_train, y_train, config_path='configs/experiment_config.yaml', custom_param_grid=None):
+    search_estimator = build_search_estimator(model, model_name, config_path, custom_param_grid)
+    
+    if search_estimator == model:
         model.fit(X_train, y_train)
         return model, {}
         
-    
-    # User requested: Optimize for F1 of "Belum Kompeten" (0)
-    f1_belum_kompeten = make_scorer(f1_score, pos_label=0)
-    
-    # Calculate total parameter combinations
-    total_combinations = len(ParameterGrid(param_grid))
-    n_iter = min(100, total_combinations)
-    
-    # Use RandomizedSearchCV instead of GridSearchCV to prevent combinatorial explosion
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
-        random_search = RandomizedSearchCV(
-            estimator=model,
-            param_distributions=param_grid,
-            n_iter=n_iter,
-            scoring=f1_belum_kompeten,
-            cv=cv,
-            n_jobs=-1,
-            random_state=random_state
-        )
-    
-    random_search.fit(X_train, y_train)
-    
-    return random_search.best_estimator_, random_search.best_params_
+        search_estimator.fit(X_train, y_train)
+        
+    return search_estimator.best_estimator_, search_estimator.best_params_
 
 def evaluate_thresholds(model, X, y, thresholds=np.arange(0.30, 0.75, 0.05)):
     """

@@ -2,14 +2,15 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
+from imblearn.pipeline import Pipeline
+from imblearn.over_sampling import SMOTE
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 from src.utils import load_config
 
 def get_model(model_name: str, config_path: str = 'configs/experiment_config.yaml'):
     """
-    Returns a pipeline with an imputer and the model.
+    Returns a pipeline with an imputer, optional scaler/smote, and the model.
     """
     config = load_config(config_path)
     random_state = config.get('random_state', 42)
@@ -32,11 +33,17 @@ def get_model(model_name: str, config_path: str = 'configs/experiment_config.yam
     else:
         raise ValueError(f"Unknown model {model_name}")
         
-    return Pipeline([
+    steps = [
         ('imputer', imputer),
-        ('scaler', scaler),
-        ('model', clf)
-    ])
+        ('scaler', scaler)
+    ]
+    
+    if model_name != 'Dummy':
+        steps.append(('smote', SMOTE(random_state=random_state)))
+        
+    steps.append(('model', clf))
+    
+    return Pipeline(steps)
 
 def get_param_grid(model_name: str):
     """
