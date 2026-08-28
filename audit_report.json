@@ -1,0 +1,200 @@
+{
+    "total_sheets_A_E": 101,
+    "total_final": 56,
+    "missing_nim_A_E": 0,
+    "missing_nim_FINAL": 56,
+    "unique_kelas_final": [
+        "A",
+        "D",
+        "E",
+        "B"
+    ],
+    "missing_nama_A_E": 5,
+    "missing_nama_FINAL": 0,
+    "merged_both": 56,
+    "merged_left_only": 45,
+    "merged_right_only": 0,
+    "unmatched_A_E": [
+        {
+            "Nama_x": NaN,
+            "Kelas": "A"
+        },
+        {
+            "Nama_x": NaN,
+            "Kelas": "B"
+        },
+        {
+            "Nama_x": NaN,
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": NaN,
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": NaN,
+            "Kelas": "E"
+        },
+        {
+            "Nama_x": "ACHMAD ALFANI RIZKY",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "ADELIA UTAMI PUTRI",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "AFIQA AULIA AHSANI",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "AHMAD ALDIALIF SJATTAR SOEATMOJO",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "Ahmad Syahid",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "ANDI BASO DJIDAN HASRI",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "ANDI MUHAMMAD AKRAM AKIL",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "ASTRID ADELIA",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "AURA ZAHRA SALSABILA",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "DWI WAHYUNI",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "HARUN AR RASYID",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "HILDA INAYAH",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "KHALIL FAHRI",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "MIFTAHUL KHAIRAT",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "Muh. Anwar Syafriawan",
+            "Kelas": "A"
+        },
+        {
+            "Nama_x": "Muh. Anwar Syafriawan",
+            "Kelas": "B"
+        },
+        {
+            "Nama_x": "Muh. Anwar Syafriawan",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "Muh. Anwar Syafriawan",
+            "Kelas": "E"
+        },
+        {
+            "Nama_x": "MUH. KAMIL ARIF",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "MUH. LINGKAR FINANDHI",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "MUH. RIFAI RAMADHANI",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "Muhammad Alif Hardhy Anugrah",
+            "Kelas": "A"
+        },
+        {
+            "Nama_x": "Muhammad Alif Hardhy Anugrah",
+            "Kelas": "B"
+        },
+        {
+            "Nama_x": "Muhammad Alif Hardhy Anugrah",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "Muhammad Alif Hardhy Anugrah",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "Muhammad Alif Hardhy Anugrah",
+            "Kelas": "E"
+        },
+        {
+            "Nama_x": "MUHAMMAD FAUZAN RAMADHAN",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "MUHAMMAD HAIDAR ALI",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "MUHAMMAD MIRZA HAFIZ",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "MUHAMMAD RYAAS RAHMAT",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "NABIL HAKIM",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "NASIRATUNNAS",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "NASSIR MUBARAK MOHAMMED IBRAHIM",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "NAYLA AINUNNISA",
+            "Kelas": "D"
+        },
+        {
+            "Nama_x": "NUR HIKMAH",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "NUR OKTAVIA HSB",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "RIZQ KHALAD",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "SAHRUL",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "ST NURHADANIATI",
+            "Kelas": "C"
+        },
+        {
+            "Nama_x": "USWATUN HASANAH",
+            "Kelas": "C"
+        }
+    ],
+    "unmatched_FINAL": []
+}

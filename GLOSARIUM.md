@@ -1,63 +1,53 @@
 # Glosarium & Gambaran Besar Proyek: Klasifikasi dan Sistem Peringatan Dini Kelulusan Praktikum
 
-Dokumen ini disusun sebagai panduan menyeluruh (helikopter *view*) untuk membantu Anda dalam menyusun naskah skripsi, paper SINTA 2, ataupun menghadapi sidang pertanggungjawaban penelitian. Di sini dijelaskan konsep dasar, alasan pemilihan teknologi, kerangka solusi, metrik evaluasi, serta istilah-istilah teknis penting.
+Dokumen ini disusun sebagai panduan menyeluruh (helikopter *view*) untuk membantu Anda dalam menyusun naskah skripsi, paper SINTA 2, ataupun menghadapi sidang pertanggungjawaban penelitian. Di sini dijelaskan konsep dasar, alasan pemilihan teknologi, kerangka solusi, metrik evaluasi mutakhir, serta istilah-istilah teknis penting sesuai dengan standar audit penelitian terbaru.
 
 ---
 
-## 1. Gambaran Besar Proyek (The Big Picture)
-Proyek ini adalah sebuah penelitian berbasis *Machine Learning* yang bertujuan untuk mengubah kumpulan log nilai mingguan praktikum (Tugas Pendahuluan, Laporan, Respons) menjadi sebuah **Sistem Peringatan Dini (Early Warning System)**. 
+## 1. Gambaran Besar Proyek (*The Big Picture*)
+Proyek ini adalah sebuah penelitian berbasis *Machine Learning* yang bertujuan untuk mengubah kumpulan log nilai mingguan praktikum (Tugas Pendahuluan, Laporan, Respons) menjadi sebuah **Sistem Peringatan Dini (*Early Warning System*)**. 
 
-Bukan sekadar melakukan klasifikasi di akhir semester, sistem ini didesain untuk mendeteksi seawal mungkin (pada minggu ke-5 atau ke-6) mana mahasiswa yang berisiko "Belum Kompeten" (gagal) agar instansi pendidikan dapat melakukan intervensi penyelamatan (remedial, bimbingan).
+Bukan sekadar melakukan klasifikasi kelulusan di akhir semester, sistem ini didesain secara spesifik menggunakan pendekatan **Temporal Cutoff** untuk mendeteksi seawal mungkin (misalnya pada minggu ke-5 atau ke-6) mana mahasiswa yang berisiko "Belum Kompeten" agar pengajar dapat melakukan intervensi penyelamatan (remedial, bimbingan).
 
 ---
 
-## 2. Apa yang Digunakan & Kenapa Digunakan?
+## 2. Metodologi dan Algoritma Utama
 
-| Teknologi / Algoritma | Kenapa Digunakan? |
+| Teknologi / Metode | Alasan Penggunaan |
 | :--- | :--- |
-| **Python & Scikit-Learn** | Standar industri dan akademik yang paling kokoh untuk perancangan jalur pipa data (*pipeline*) dan klasifikasi pembelajaran mesin. |
-| **Random Forest & Decision Tree** | Dipilih karena merupakan algoritma berbasis pohon (*tree-based*). Algoritma ini tidak mengharuskan data berdistribusi normal, tahan terhadap pencilan (*outliers*), dan cara pengambilan keputusannya sangat selaras (kompatibel) dengan ekstraksi transparansi nilai **TreeSHAP** (Explainable AI). *Random Forest* berfungsi menghasilkan kestabilan prediksi, sementara *Decision Tree* berfungsi merepresentasikan logika sederhana. |
-| **SMOTE** *(Synthetic Minority Over-sampling Technique)* | Data lulus ("Kompeten") terlalu mendominasi dibandingkan data gagal. Jika dibiarkan, model akan menebak "lulus semua" demi akurasi tinggi (*dummy trap*). SMOTE digunakan untuk mensintesis data bayangan pada kelas minoritas sehingga mesin belajar mengenali pola mahasiswa gagal dengan seimbang. |
-| **Repeated Stratified K-Fold CV** | Digunakan karena ukuran data kita kecil (hanya 123 sampel valid). Melakukan satu kali pemisahan (*hold-out split*) rentan memberikan estimasi akurasi yang "beruntung tinggi" (*Hold-out illusion*). Pengujian berulang (contoh: 25 kali diacak) memastikan model kita benar-benar stabil. |
-| **Permutation Importance** *(Nested Selector)* | Mengidentifikasi fitur terpenting dengan mengacak isi suatu fitur, lalu melihat seberapa besar akurasi hancur. Fitur dengan daya hancur tertinggi berarti fitur tersebut sangat esensial. |
+| **Python & Scikit-Learn** | Standar industri dan akademik yang paling kokoh untuk perancangan *machine learning pipeline*. |
+| **Random Forest & Decision Tree** | Algoritma berbasis pohon (*tree-based*) yang tahan terhadap pencilan (*outliers*) dan tidak mengharuskan data berdistribusi normal. Sifatnya *interpretable* dan mendukung pembacaan *feature importance* via **TreeSHAP**. *Decision Tree* merepresentasikan logika sederhana (sebagai *baseline* non-linear), sementara *Random Forest* menghasilkan prediksi *ensemble* yang kuat. |
+| **SMOTE (*Synthetic Minority Over-sampling Technique*)** | Data mahasiswa "Kompeten" (78) terlalu mendominasi dibandingkan yang "Belum Kompeten" (11). SMOTE mensintesis data bayangan kelas minoritas agar algoritma tidak bias menebak "lulus semua". |
+| **Nested Cross-Validation (CV Bersarang)** | Digunakan untuk mencegah ***Selection Bias***. Pemilihan hyperparameter, *balancing* (SMOTE), dan fitur (*feature engineering*) hanya boleh dilakukan di *Inner Loop CV*. Sedangkan laporan skor akhir hanya dievaluasi pada *Outer Loop Test Fold*. |
 
 ---
 
-## 3. Solusi Kunci (*The Core Solution*)
+## 3. Metrik Evaluasi Spesifik (Imbalanced & EWS)
 
-Penelitian ini memecahkan masalah mendasar yang kerap diremehkan oleh peneliti lain, yaitu **Bias Durasi Kelas**. Kelas A/C selesai di minggu ke-6, sementara B/D/E di minggu ke-8.
+Pada set data yang sangat timpang (89 total vs 11 target minoritas), Akurasi dan ROC-AUC bisa menipu. Evaluasi sistem Anda dikunci pada metrik berikut:
 
-**Solusi Ilmiah yang Diterapkan:**
-Menggunakan mekanisme **Temporal Cutoff** (*Common Window*). Seluruh data mentah diseragamkan potongannya. Semua mahasiswa dinilai setara HANYA sampai batas minggu tertentu (misalnya `C2` = Minggu ke-5, `C3` = Minggu ke-6). 
-Metode ini secara elegan mengubah masalah "*missing value* sistematis" menjadi sebuah eksperimen pembuktian *Sistem Peringatan Dini*: *"Buktikan pada minggu ke berapakah prediksinya paling stabil?"*
-
----
-
-## 4. Metrik Evaluasi
-
-Pada proyek dengan ketidakseimbangan kelas (*imbalanced data*), metrik akurasi biasa sangat menyesatkan. Berikut metrik utama yang digunakan:
-
-1. **Balanced Accuracy (Akurasi Berimbang)**  
-   *Metrik utama (Utara/North Star) dalam proyek ini*. Dihitung dari rata-rata Sensitivitas (kemampuan mendeteksi status Kompeten) dan Spesifisitas (kemampuan mendeteksi status Belum Kompeten). Sebuah model tidak akan mendapat nilai *Balanced Accuracy* tinggi jika ia hanya pintar menebak lulus tapi buta dalam menebak mahasiswa gagal.
-2. **F1-Score (Harmonic Mean)**  
-   Keseimbangan harmonis antara *Precision* dan *Recall*. F1-Score digunakan secara khusus (terutama dalam eksperimen seleksi model) untuk memastikan model handal dalam menangani dominasi kelas mayoritas tanpa mengorbankan pendeteksian kelas minoritas.
-3. **Mean ± SD (Standar Deviasi)**  
-   Simbol kestabilan. Jika model mencetak *Test Accuracy* 95% namun memiliki SD ± 0.17 (sangat lebar deviasinya), berarti model tersebut rapuh secara generalisasi (*overfitting/hold-out illusion*). Model yang tangguh diincar pada SD yang lebih sempit (misal ± 0.11).
-4. **Precision & Recall**  
-   - *Precision*: Jika sistem memprediksi mahasiswa "Gagal", seberapa yakin tebakan tersebut benar? Tingginya presisi meminimalisir alarm palsu (*False Positives*).
-   - *Recall*: Dari seluruh mahasiswa yang nyatanya Gagal, berapa persen yang berhasil tertangkap sistem radar peringatan dini kita? Tingginya recall meminimalisir mahasiswa berisiko yang lolos dari radar (*False Negatives*).
+1. **Precision BK (Presisi Belum Kompeten)**  
+   Dari semua mahasiswa yang "diberi label peringatan/gagal" oleh radar AI, berapa persen yang *nyata-nyata* akan gagal? Presisi tinggi berarti sistem jarang mengeluarkan **Alarm Palsu** (*False Positives*). Ini penting untuk efisiensi operasional intervensi dosen.
+2. **Recall BK (Sensitivitas Minoritas)**  
+   Dari total seluruh mahasiswa yang memang akhirnya "Gagal", berapa persen yang berhasil diselamatkan/ditangkap oleh radar AI? Recall tinggi berarti sistem meminimalisir mahasiswa berisiko yang lolos tak terdeteksi (*False Negatives*).
+3. **PR-AUC (*Precision-Recall Area Under Curve*)**  
+   Standar emas baru untuk data sangat *imbalanced*. Jauh lebih representatif dan ketat dibandingkan kurva ROC-AUC karena PR-AUC berfokus langsung pada performa prediksi kelas minoritas.
+4. **Balanced Accuracy (Akurasi Berimbang)**  
+   Rata-rata dari Sensitivitas kelas positif dan spesifisitas kelas negatif. Model harus pintar menebak lulus sekaligus pintar menebak gagal.
+5. **Mean ± SD (Standar Deviasi) / 95% CI**  
+   Karena sampel sangat kecil, akurasi pada satu iterasi CV bisa melompat drastis (±33%). Skor rata-rata *telanjang* tidak valid. Wajib menuliskan skor sebagai rentang kepercayaan atau deviasi stabil (Contoh: `0.947 ± 0.07`).
 
 ---
 
-## 5. Glosarium Istilah Teknis (Technical Terms) untuk Sidang/Jurnal
+## 4. Glosarium Istilah Teknis (Technical Terms) untuk Sidang/Jurnal
 
-* **Early Warning System (EWS)**: Sistem Peringatan Dini. Dalam AI pendidikan, ini adalah model yang berusaha memprediksi kegagalan seawal mungkin sebelum nilai akhir keluar, agar ada waktu untuk intervensi.
-* **Explainable AI (XAI)**: Sebuah sub-bidang AI yang bertujuan membuat "kotak hitam" (*black box*) algoritma peramal menjadi transparan dan bisa dijelaskan secara logis kepada manusia (dosen/praktisi).
-* **SHAP (SHapley Additive exPlanations)**: Metode interpretasi yang didasarkan pada Teori Permainan Koperasi (*Cooperative Game Theory*). SHAP membagi-bagikan (mendistribusikan) kontribusi setiap fitur (misal: Rata-rata Laporan) terhadap prediksi akhir (Lulus/Gagal) secara sangat adil.
-* **Beeswarm Plot**: Grafik utama SHAP yang menggabungkan sebaran distribusi data dan magnitudo dampak (warna merah tinggi, warna biru rendah). Sangat kuat untuk memvisualisasikan korelasi arah variabel terhadap keputusan akhir.
-* **Data Leakage (Kebocoran Data)**: Kesalahan metodologi terfatal dalam AI, yaitu ketika algoritma tanpa sengaja mempelajari informasi dari set tes (data masa depan/kunci jawaban) selama fase pelatihan. Dalam penelitian ini, dicegah melalui eksekusi SMOTE secara murni di dalam *inner CV fold*.
-* **Nested Cross-Validation (CV Bersarang)**: Teknik evaluasi tingkat lanjut di mana proses pencarian parameter terbaik (*Hyperparameter Tuning*) dilakukan secara terisolasi di dalam proses uji silang (*Cross-Validation*) luar, guna mencegah model menjadi bias terhadap data latih yang spesifik.
-* **False Negative (FN) / Late-Droppers**: Kelompok mahasiswa yang diprediksi aman/Lulus oleh komputer, namun kenyataannya mereka Gagal. Lazimnya merupakan *Late-Droppers* (awal semester bagus, akhir semester tiba-tiba anjlok).
-* **False Positive (FP) / Late-Bloomers**: Alarm palsu. Mahasiswa yang diprediksi "Akan Gagal", namun kenyataannya mereka "Berhasil Lulus". Lazimnya mereka adalah *Late-Bloomers* (telat beradaptasi di awal, namun mengejar ketertinggalan di akhir).
-* **Hold-Out Illusion**: Terjadi ketika hasil evaluasi pada satu set tes tertentu sangat bagus, seolah-olah model tersebut sempurna. Namun ketika diuji secara komprehensif, performanya runtuh.
-* **Feature Engineering (Rekayasa Fitur)**: Proses mendaur ulang data mentah mingguan (M1-M8) menjadi agregat bermakna, seperti mencari Nilai Maksimal, Rata-Rata Awal, hingga Tren Deviasi Standar, guna menyuapi model algoritma secara lebih komprehensif.
+* **Early Warning System (EWS)**: Sistem Peringatan Dini. Memprediksi potensi kegagalan secara prediktif sebelum keputusan final (nilai akhir) diterbitkan.
+* **Temporal Cutoff (Jendela Waktu)**: Mekanisme memotong seluruh catatan data mentah pada batas waktu tertentu (Misal C1, C2, C3). Semua prediksi AI dihitung hanya menggunakan amunisi data dari masa lalu (sebelum cutoff).
+* **Data Leakage (Kebocoran Data Temporal)**: Kesalahan metodologi fatal ketika algoritma tanpa sengaja "mengintip" atau menggunakan informasi masa depan (setelah batas *cutoff* atau *test set*) selama proses pelatihan model atau perhitungan rata-rata.
+* **Selection Bias / Optimistic Bias**: Kecurangan statistik yang tidak disadari, di mana peneliti menjalankan ratusan kombinasi CV (hyperparameter, balancing, *feature set*) lalu mengambil "satu nilai yang paling tinggi" sebagai klaim generalisasi. Diselesaikan menggunakan *Nested Cross-Validation*.
+* **OOF (Out-Of-Fold) Prediction**: Prediksi yang dihasilkan oleh model pada *validation fold* (data yang tidak ikut dilatih) selama *Cross-Validation*. Dalam *Repeated CV*, prediksi probabilitas OOF ini diagregasikan (rata-rata) per baris mahasiswa.
+* **Explainable AI (XAI) & SHAP**: Sub-bidang AI yang menjelaskan alasan *black-box* mengambil keputusan. **SHAP** mendistribusikan kontribusi setiap fitur (misal: Kehadiran) secara wajar.
+* **SHAP Sensitivity**: Fenomena ketika nilai kepentingan (kontribusi) SHAP sebuah fitur anjlok (misal dari 0.049 menjadi 0.000) hanya karena 3 subjek spesifik dihilangkan. Menunjukkan bahwa fitur tersebut bukan "Universal", melainkan sensitif terhadap kondisi tertentu.
+* **False Negative (FN) / *Late-Droppers***: Mahasiswa berisiko yang lolos dari peringatan dini sistem. Secara akademik, mereka seringkali memulai semester dengan cemerlang namun terjerembap di pekan-pekan terakhir (*Late-Droppers*).
+* **False Positive (FP) / *Late-Bloomers***: "Alarm Palsu". Mahasiswa yang diprediksi akan gagal, tetapi membuktikan mereka sanggup lulus. Secara akademik, mereka adalah orang yang lambat beradaptasi di awal namun mampu mengejar ketertinggalan (*Late-Bloomers*).
+* **No Final Attendance**: Kasus ekstrem (*error analysis*) mahasiswa yang *dropout* fungsional (tidak mengikuti praktikum final). Deteksi kasus-kasus seperti ini harus dianggap sebagai pembuktian fungsionalitas peringatan dini.

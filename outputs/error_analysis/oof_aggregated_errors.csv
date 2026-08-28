@@ -1,0 +1,90 @@
+NIM,Nama,Kelas,Actual,Label_Reason,Probability_BK,Predicted,Error_Type
+idx_0,ABDUL MUJIB SUPARDIN,A,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_1,ADEN HENDRAWAN M,A,1,Final_Score>=75,0.06,1,Correct
+idx_10,Muhammad Alif Hardhy Anugrah,A,0,No_Final_Attendance,1.0,0,Correct
+idx_11,Muh. Anwar Syafriawan,A,0,No_Final_Attendance,0.9966666666666667,0,Correct
+idx_12,AL ISHAN ANUGRAH,B,1,Final_Score>=75,0.10333333333333333,1,Correct
+idx_13,ANDI MUHAMMAD FERYL AMIRAWAN,B,1,Final_Score>=75,0.01,1,Correct
+idx_14,ATSILAH MA'ISAH,B,1,Final_Score>=75,0.02,1,Correct
+idx_15,FAIDZ AL-HAFIDZ,B,1,Final_Score>=75,0.02666666666666667,1,Correct
+idx_16,FATURRAHMAN AHMADI,B,0,Final_Score<75,0.6766666666666667,0,Correct
+idx_17,FAUZAN ADZIM,B,0,Final_Score<75,0.9933333333333333,0,Correct
+idx_18,FEBI KIRANA,B,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_19,KHAERUL ASLAN,B,1,Final_Score>=75,0.7066666666666667,0,False Positive
+idx_2,AMITHA WAHDINI,A,1,Final_Score>=75,0.023333333333333334,1,Correct
+idx_20,M. AL FAIZ,B,1,Final_Score>=75,0.0,1,Correct
+idx_21,MUH SYAMSUL JAMIL,B,1,Final_Score>=75,0.06666666666666667,1,Correct
+idx_22,MUH. ABDILLAH HM.,B,1,Final_Score>=75,0.036666666666666674,1,Correct
+idx_23,MUHAMMAD AIMAN YAZID SYAM,B,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_24,MUHAMMAD ZULFIKAR HASRUL,B,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_25,MUNAWAR B.,B,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_26,MUSYAYYADA,B,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_27,MUZAMIL SULIMAN ABDELHAMID MOHAMED,B,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_28,MUZAMMILUL KHAIR,B,1,Final_Score>=75,0.0,1,Correct
+idx_29,NURAISYAH. S,B,1,Final_Score>=75,0.03333333333333333,1,Correct
+idx_3,MUH. YUSUF RIS KILKODA,A,1,Final_Score>=75,0.03333333333333333,1,Correct
+idx_30,RAHUL MUHAMMAD AKHYAR,B,1,Final_Score>=75,0.02666666666666667,1,Correct
+idx_31,RIYADHUL GINAN ARHAM,B,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_32,SARAH FITRA RAMADHANI,B,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_33,TSABITHA JAHRA,B,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_34,WIRA FADHIL,B,1,Final_Score>=75,0.0,1,Correct
+idx_35,ACHMAD ALFANI RIZKY,C,1,Final_Score>=75,0.01,1,Correct
+idx_36,ADELIA UTAMI PUTRI,C,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_37,AFIQA AULIA AHSANI,C,1,Final_Score>=75,0.0,1,Correct
+idx_38,ANDI BASO DJIDAN HASRI,C,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_39,ANDI MUHAMMAD AKRAM AKIL,C,1,Final_Score>=75,0.04,1,Correct
+idx_4,MUHAMMAD HAIKAL,A,1,Final_Score>=75,0.03333333333333333,1,Correct
+idx_40,AURA ZAHRA SALSABILA,C,1,Final_Score>=75,0.01,1,Correct
+idx_41,DWI WAHYUNI,C,1,Final_Score>=75,0.0,1,Correct
+idx_42,HARUN AR RASYID,C,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_43,HILDA INAYAH,C,1,Final_Score>=75,0.0,1,Correct
+idx_44,KHALIL FAHRI,C,1,Final_Score>=75,0.0,1,Correct
+idx_45,MIFTAHUL KHAIRAT,C,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_46,MUH. KAMIL ARIF,C,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_47,MUH. RIFAI RAMADHANI,C,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_48,MUHAMMAD FAUZAN RAMADHAN,C,1,Final_Score>=75,0.07,1,Correct
+idx_49,NABIL HAKIM,C,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_5,NABILA AULIA SABITA,A,1,Final_Score>=75,0.0,1,Correct
+idx_50,NASIRATUNNAS,C,1,Final_Score>=75,0.0,1,Correct
+idx_51,NASSIR MUBARAK MOHAMMED IBRAHIM,C,1,Final_Score>=75,0.056666666666666664,1,Correct
+idx_52,NUR HIKMAH,C,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_53,NUR OKTAVIA HSB,C,1,Final_Score>=75,0.0,1,Correct
+idx_54,RIZQ KHALAD,C,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_55,SAHRUL,C,1,Final_Score>=75,0.0,1,Correct
+idx_56,ST NURHADANIATI,C,1,Final_Score>=75,0.02666666666666667,1,Correct
+idx_57,USWATUN HASANAH,C,1,Final_Score>=75,0.01,1,Correct
+idx_58,Ahmad Syahid,C,0,No_Final_Attendance,0.9966666666666667,0,Correct
+idx_59,AHMAD ALDIALIF SJATTAR SOEATMOJO,D,0,Final_Score<75,0.91,0,Correct
+idx_6,NUR SYAFITRI,A,1,Final_Score>=75,0.02666666666666667,1,Correct
+idx_60,AHMAD GIMNASTIAR,D,1,Final_Score>=75,0.02666666666666667,1,Correct
+idx_61,ALYA SYAHWA,D,1,Final_Score>=75,0.023333333333333334,1,Correct
+idx_62,ANDIKA SAPUTRA ALMAR,D,1,Final_Score>=75,0.03,1,Correct
+idx_63,ASTRID ADELIA,D,0,Final_Score<75,0.37333333333333335,1,False Negative
+idx_64,DHIWA ALIEF CAPRILLO,D,1,Final_Score>=75,0.030000000000000002,1,Correct
+idx_65,EZYA LASAHARI,D,1,Final_Score>=75,0.04,1,Correct
+idx_66,GIFARI RAHMAN,D,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_67,MAIMUN NURUL IRSYAD,D,1,Final_Score>=75,0.01,1,Correct
+idx_68,MUH.HAIKAL SOSSONG,D,1,Final_Score>=75,0.21,1,Correct
+idx_69,MUH. LINGKAR FINANDHI,D,0,Final_Score<75,1.0,0,Correct
+idx_7,NURUL FAJRIN RAMADHANI,A,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_70,MUH. SYAHID RAMADHAN,D,1,Final_Score>=75,0.013333333333333334,1,Correct
+idx_71,MUHAMMAD HAIDAR ALI,D,0,Final_Score<75,1.0,0,Correct
+idx_72,MUHAMMAD MIRZA HAFIZ,D,0,Final_Score<75,1.0,0,Correct
+idx_73,MUHAMMAD RYAAS RAHMAT,D,1,Final_Score>=75,0.15,1,Correct
+idx_74,MUH. SYADIQIN DWI ALFARIZA DARWIS,D,1,Final_Score>=75,0.3433333333333333,1,Correct
+idx_75,NAYLA AINUNNISA,D,0,Final_Score<75,1.0,0,Correct
+idx_76,RIZQI RAMADHAN,D,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_77,SITI HARDIANTI ASHARI,D,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_78,Nurul Raehan,E,1,Final_Score>=75,0.016666666666666666,1,Correct
+idx_79,Nur Faiqatunnisa,E,1,Final_Score>=75,0.006666666666666667,1,Correct
+idx_8,SALSABILLAH ASIFAH JUSMAN,A,1,Final_Score>=75,0.02,1,Correct
+idx_80,Siti Fatimah Aszhara,E,1,Final_Score>=75,0.06,1,Correct
+idx_81,Yunita Alfia Ningsi,E,1,Final_Score>=75,0.0,1,Correct
+idx_82,Warda Khairah,E,1,Final_Score>=75,0.0,1,Correct
+idx_83,Nurfahira,E,1,Final_Score>=75,0.0033333333333333335,1,Correct
+idx_84,Andi Nur Ainun Inriani. S,E,1,Final_Score>=75,0.01,1,Correct
+idx_85,Nur Zakiyah Tamsir,E,1,Final_Score>=75,0.03333333333333333,1,Correct
+idx_86,Tasya Sahwasal Sabila,E,1,Final_Score>=75,0.0,1,Correct
+idx_87,Mega Wahyuni,E,1,Final_Score>=75,0.02,1,Correct
+idx_88,Shalsabila M,E,1,Final_Score>=75,0.01,1,Correct
+idx_9,SRI ENRI ANANDAYANI,A,1,Final_Score>=75,0.016666666666666666,1,Correct

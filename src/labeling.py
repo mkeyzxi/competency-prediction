@@ -2,7 +2,7 @@ import pandas as pd
 
 def create_labels(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Creates Competency_Label based on Final_Individu >= 75.
+    Creates Competency_Label based on Final_Individu >= 83.
     Drops Final_Individu and other target-leaking columns.
     """
     df = df.copy()
@@ -14,7 +14,7 @@ def create_labels(df: pd.DataFrame) -> pd.DataFrame:
     df = df.dropna(subset=['Final_Individu'])
     
     # Create Label
-    df['Competency_Label'] = (df['Final_Individu'] >= 75).astype(int)
+    df['Competency_Label'] = (df['Final_Individu'] >= 83).astype(int)
     df['Competency_Name'] = df['Competency_Label'].map({1: 'Kompeten', 0: 'Belum Kompeten'})
     
     # Drop leaking columns

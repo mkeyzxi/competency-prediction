@@ -227,5 +227,66 @@ def compute_features(df: pd.DataFrame, cutoff_session='PreFinal') -> pd.DataFram
     
     df['Overall_Recent_Mean'] = df['Performance_Late_Mean']
     df['Overall_Trend'] = df['Performance_Trend']
-    
+
+    # ================================================================
+    # EWS: EARLY WARNING SYSTEM FEATURES (for incremental testing)
+    # ================================================================
+
+    # 1. Absence_Streak_Max: longest consecutive absence streak
+    #    Students who miss 3 sessions in a row are at higher risk
+    #    than those who miss sporadically.
+    if pre_final_cols:
+        def max_absence_streak(row):
+            streak = 0
+            max_streak = 0
+            for col in pre_final_cols:
+                if row[col] == 0:
+                    streak += 1
+                    max_streak = max(max_streak, streak)
+                else:
+                    streak = 0
+            return max_streak
+        df['Absence_Streak_Max'] = df.apply(max_absence_streak, axis=1)
+    else:
+        df['Absence_Streak_Max'] = 0
+
+    # 2. Performance_Decline_Flag: binary flag if second-half performance
+    #    drops more than 1 SD below first-half. Captures "late droppers".
+    if all_score_cols and len(all_score_cols) >= 4:
+        overall_std = df[all_score_cols].std(axis=1, ddof=0)
+        decline = df.get('Performance_Early_Mean', 0) - df.get('Performance_Late_Mean', 0)
+        df['Performance_Decline_Flag'] = (decline > overall_std).astype(int)
+    else:
+        df['Performance_Decline_Flag'] = 0
+
+    # 3. Zero_Score_Count: number of tasks with score == 0
+    #    More meaningful than mean because it captures non-submission.
+    if all_score_cols:
+        df['Zero_Score_Count'] = (df[all_score_cols] == 0).sum(axis=1)
+    else:
+        df['Zero_Score_Count'] = 0
+
+    # 4. Cumulative_Completion_Trend: are they getting more or less diligent?
+    #    Compare completion rate of second half vs first half of available tasks.
+    if all_score_cols and len(all_score_cols) >= 4:
+        mid = len(all_score_cols) // 2
+        first_half_completion = (df[all_score_cols[:mid]] > 0).mean(axis=1)
+        second_half_completion = (df[all_score_cols[mid:]] > 0).mean(axis=1)
+        df['Cumulative_Completion_Trend'] = second_half_completion - first_half_completion
+    else:
+        df['Cumulative_Completion_Trend'] = 0.0
+
+    # 5. Early_Performance_Composite: weighted average of first 2 sessions
+    #    Early indicator of adaptation ability.
+    early_cols = []
+    for cols_group in [tp_cols, respon_cols, laporan_cols]:
+        if len(cols_group) >= 2:
+            early_cols.extend(cols_group[:2])
+        elif cols_group:
+            early_cols.extend(cols_group)
+    if early_cols:
+        df['Early_Performance_Composite'] = df[early_cols].mean(axis=1)
+    else:
+        df['Early_Performance_Composite'] = np.nan
+
     return df

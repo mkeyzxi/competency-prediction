@@ -1,0 +1,40 @@
+{
+  "model": "DecisionTree",
+  "scenario": "S3_E",
+  "balancing": "None",
+  "threshold": 0.52,
+  "n_features": 7,
+  "features": [
+    "Attendance_PreFinal_Rate",
+    "TP_Mean",
+    "Laporan_Mean",
+    "TP_Completion_Rate",
+    "Laporan_Completion_Rate",
+    "Performance_Std",
+    "Early_Performance_Composite"
+  ],
+  "cv_metrics": {
+    "recall_bk": 0.7914285714285715,
+    "balanced_accuracy": 0.65,
+    "f2_bk": 0.7367654477153261
+  },
+  "holdout_metrics": {
+    "test_accuracy": 0.7777777777777778,
+    "test_balanced_accuracy": 0.7777777777777777,
+    "test_precision_macro": 0.7922077922077921,
+    "test_recall_macro": 0.7777777777777777,
+    "test_f1_macro": 0.775,
+    "test_recall_bk": 0.8888888888888888,
+    "test_precision_bk": 0.7272727272727273,
+    "test_f1_bk": 0.8,
+    "test_f2_bk": 0.851063829787234,
+    "test_roc_auc": 0.8950617283950617,
+    "test_pr_auc": 0.8458825125491792
+  },
+  "best_params": {
+    "model__min_samples_split": 10,
+    "model__min_samples_leaf": 5,
+    "model__max_depth": 4,
+    "model__criterion": "entropy"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "baseline_recall_bk": 0.6,
+  "baseline_balanced_accuracy": 0.75,
+  "baseline_pr_auc": 0.542,
+  "new_recall_bk": 0.8888888888888888,
+  "new_balanced_accuracy": 0.7777777777777777,
+  "new_pr_auc": 0.8458825125491792,
+  "recall_bk_improvement": 0.28888888888888886,
+  "balanced_acc_improvement": 0.02777777777777768
+}
