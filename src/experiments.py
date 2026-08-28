@@ -58,8 +58,8 @@ def run_error_analysis(test_predictions, df_featured, pop_name):
 
 def run_all_experiments(df_featured: pd.DataFrame, pop_name: str, config_path: str = 'configs/experiment_config.yaml'):
     config = load_config(config_path)
-    # The models to test are defined here. Let's explicitly test Dummy, LR, DT, RF
-    model_names = ['Dummy', 'LogisticRegression', 'DecisionTree', 'RandomForest']
+    # The models to test are defined here. Let's explicitly test Dummy, DT, RF
+    model_names = ['Dummy', 'DecisionTree', 'RandomForest']
     scenarios = ['S1', 'S2', 'S3', 'S4', 'S5']
     
     forbidden_columns = ['final', 'nilai_akhir', 'predikat', 'flowchart', 'kodingan', 'final_kelompok', 'nim', 'nama']

@@ -48,7 +48,7 @@ def preprocess_data(df, config_path='configs/attendance_mapping.yaml'):
     # Missing final mask
     missing_final = df['Final_Individu'].isna()
     
-    df['Competency_Label'] = (df['Final_Individu'] >= 75).astype(int)
+    df['Competency_Label'] = (df['Final_Individu'] >= 83).astype(int)
     df['Competency_Name'] = df['Competency_Label'].map({1: 'Kompeten', 0: 'Belum Kompeten'})
     
     os.makedirs('data/processed', exist_ok=True)

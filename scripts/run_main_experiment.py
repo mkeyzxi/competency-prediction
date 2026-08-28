@@ -1,6 +1,6 @@
 """
 Eksperimen Utama: Fokus pada populasi P2 (Strict Eligible).
-Model: Dummy, LogisticRegression, DecisionTree, RandomForest.
+Model: Dummy, DecisionTree, RandomForest.
 Skenario: S1, S2, S3, S4, S5.
 Tambahan: Top-K Feature Selection untuk RF pada S5.
 """
@@ -160,7 +160,7 @@ def main():
     results.to_csv('results/metrics/model_comparison.csv', index=False)
     
     # Baseline comparison
-    baseline_df = results[results['model'].isin(['Dummy', 'LogisticRegression'])]
+    baseline_df = results[results['model'].isin(['Dummy'])]
     baseline_df.to_csv('results/reports/baseline_comparison.csv', index=False)
     
     # --- Phase 2: Top-K Feature Selection ---

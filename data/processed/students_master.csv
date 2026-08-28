@@ -1,0 +1,90 @@
+NIM,Nama,Kelas,Final_Score,Final_Status,Label_Reason,Competency_Label
+60200123022,ABDUL MUJIB SUPARDIN,A,80.0,Mengikuti Final,Final_Score<83,0
+60200123080,ADEN HENDRAWAN M,A,85.0,Mengikuti Final,Final_Score>=83,1
+60200123043,AMITHA WAHDINI,A,80.0,Mengikuti Final,Final_Score<83,0
+60200123048,MUH. YUSUF RIS KILKODA,A,80.0,Mengikuti Final,Final_Score<83,0
+60200123062,MUHAMMAD HAIKAL,A,82.0,Mengikuti Final,Final_Score<83,0
+60200123031,NABILA AULIA SABITA,A,82.0,Mengikuti Final,Final_Score<83,0
+60200123027,NUR SYAFITRI,A,82.0,Mengikuti Final,Final_Score<83,0
+60200123060,NURUL FAJRIN RAMADHANI,A,81.0,Mengikuti Final,Final_Score<83,0
+60200123075,SALSABILLAH ASIFAH JUSMAN,A,80.0,Mengikuti Final,Final_Score<83,0
+60200123065,SRI ENRI ANANDAYANI,A,78.0,Mengikuti Final,Final_Score<83,0
+Asisten 1,Muhammad Alif Hardhy Anugrah,A,,Tidak Mengikuti Final,No_Final_Attendance,0
+Asisten 2,Muh. Anwar Syafriawan,A,,Tidak Mengikuti Final,No_Final_Attendance,0
+60200123072,AL ISHAN ANUGRAH,B,82.0,Mengikuti Final,Final_Score<83,0
+60200123039,ANDI MUHAMMAD FERYL AMIRAWAN,B,82.0,Mengikuti Final,Final_Score<83,0
+60200123054,ATSILAH MA'ISAH,B,84.0,Mengikuti Final,Final_Score>=83,1
+60200123052,FAIDZ AL-HAFIDZ,B,83.0,Mengikuti Final,Final_Score>=83,1
+60200123051,FATURRAHMAN AHMADI,B,70.0,Mengikuti Final,Final_Score<83,0
+60200123083,FAUZAN ADZIM,B,70.0,Mengikuti Final,Final_Score<83,0
+60200123064,FEBI KIRANA,B,82.0,Mengikuti Final,Final_Score<83,0
+60200123021,KHAERUL ASLAN,B,80.0,Mengikuti Final,Final_Score<83,0
+60200123032,M. AL FAIZ,B,84.0,Mengikuti Final,Final_Score>=83,1
+60200123102,MUH SYAMSUL JAMIL,B,83.0,Mengikuti Final,Final_Score>=83,1
+60200123040,MUH. ABDILLAH HM.,B,80.0,Mengikuti Final,Final_Score<83,0
+60200123025,MUHAMMAD AIMAN YAZID SYAM,B,84.0,Mengikuti Final,Final_Score>=83,1
+60200123050,MUHAMMAD ZULFIKAR HASRUL,B,83.0,Mengikuti Final,Final_Score>=83,1
+60200123067,MUNAWAR B.,B,84.0,Mengikuti Final,Final_Score>=83,1
+60200123087,MUSYAYYADA,B,84.0,Mengikuti Final,Final_Score>=83,1
+60200123101,MUZAMIL SULIMAN ABDELHAMID MOHAMED,B,80.0,Mengikuti Final,Final_Score<83,0
+60200123018,MUZAMMILUL KHAIR,B,81.0,Mengikuti Final,Final_Score<83,0
+60200123073,NURAISYAH. S,B,82.0,Mengikuti Final,Final_Score<83,0
+60200123020,RAHUL MUHAMMAD AKHYAR,B,82.0,Mengikuti Final,Final_Score<83,0
+60200123001,RIYADHUL GINAN ARHAM,B,83.0,Mengikuti Final,Final_Score>=83,1
+60200123046,SARAH FITRA RAMADHANI,B,82.0,Mengikuti Final,Final_Score<83,0
+60200123074,TSABITHA JAHRA,B,82.0,Mengikuti Final,Final_Score<83,0
+60200123086,WIRA FADHIL,B,86.0,Mengikuti Final,Final_Score>=83,1
+60200123038,ACHMAD ALFANI RIZKY,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123004,ADELIA UTAMI PUTRI,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123090,AFIQA AULIA AHSANI,C,86.0,Mengikuti Final,Final_Score>=83,1
+60200123091,ANDI BASO DJIDAN HASRI,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123089,ANDI MUHAMMAD AKRAM AKIL,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123082,AURA ZAHRA SALSABILA,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123011,DWI WAHYUNI,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123030,HARUN AR RASYID,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123023,HILDA INAYAH,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123026,KHALIL FAHRI,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123015,MIFTAHUL KHAIRAT,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123098,MUH. KAMIL ARIF,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123076,MUH. RIFAI RAMADHANI,C,81.0,Mengikuti Final,Final_Score<83,0
+60200123035,MUHAMMAD FAUZAN RAMADHAN,C,80.0,Mengikuti Final,Final_Score<83,0
+60200123094,NABIL HAKIM,C,86.0,Mengikuti Final,Final_Score>=83,1
+60200123013,NASIRATUNNAS,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123100,NASSIR MUBARAK MOHAMMED IBRAHIM,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123097,NUR HIKMAH,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123012,NUR OKTAVIA HSB,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123093,RIZQ KHALAD,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123085,SAHRUL,C,83.0,Mengikuti Final,Final_Score>=83,1
+60200123009,ST NURHADANIATI,C,81.0,Mengikuti Final,Final_Score<83,0
+60200123003,USWATUN HASANAH,C,81.0,Mengikuti Final,Final_Score<83,0
+Asisten 2,Ahmad Syahid,C,,Tidak Mengikuti Final,No_Final_Attendance,0
+60200120056,AHMAD ALDIALIF SJATTAR SOEATMOJO,D,0.0,Mengikuti Final,Final_Score<83,0
+60200123078,AHMAD GIMNASTIAR,D,83.0,Mengikuti Final,Final_Score>=83,1
+60200123029,ALYA SYAHWA,D,81.0,Mengikuti Final,Final_Score<83,0
+60200123014,ANDIKA SAPUTRA ALMAR,D,84.0,Mengikuti Final,Final_Score>=83,1
+60200123041,ASTRID ADELIA,D,0.0,Mengikuti Final,Final_Score<83,0
+60200123017,DHIWA ALIEF CAPRILLO,D,87.0,Mengikuti Final,Final_Score>=83,1
+60200123096,EZYA LASAHARI,D,81.0,Mengikuti Final,Final_Score<83,0
+60200123016,GIFARI RAHMAN,D,83.0,Mengikuti Final,Final_Score>=83,1
+60200123005,MAIMUN NURUL IRSYAD,D,82.0,Mengikuti Final,Final_Score<83,0
+60200123061,MUH.HAIKAL SOSSONG,D,82.0,Mengikuti Final,Final_Score<83,0
+60200123007,MUH. LINGKAR FINANDHI,D,0.0,Mengikuti Final,Final_Score<83,0
+60200123059,MUH. SYAHID RAMADHAN,D,81.0,Mengikuti Final,Final_Score<83,0
+60200122059,MUHAMMAD HAIDAR ALI,D,0.0,Mengikuti Final,Final_Score<83,0
+60200123058,MUHAMMAD MIRZA HAFIZ,D,0.0,Mengikuti Final,Final_Score<83,0
+60200119012,MUHAMMAD RYAAS RAHMAT,D,90.0,Mengikuti Final,Final_Score>=83,1
+60200123084,MUH. SYADIQIN DWI ALFARIZA DARWIS,D,81.0,Mengikuti Final,Final_Score<83,0
+60200123049,NAYLA AINUNNISA,D,0.0,Mengikuti Final,Final_Score<83,0
+60200123071,RIZQI RAMADHAN,D,84.0,Mengikuti Final,Final_Score>=83,1
+60200123006,SITI HARDIANTI ASHARI,D,83.0,Mengikuti Final,Final_Score>=83,1
+60200123056,Nurul Raehan,E,81.0,Mengikuti Final,Final_Score<83,0
+60200123053,Nur Faiqatunnisa,E,84.0,Mengikuti Final,Final_Score>=83,1
+60200123047,Siti Fatimah Aszhara,E,83.0,Mengikuti Final,Final_Score>=83,1
+60200123070,Yunita Alfia Ningsi,E,84.0,Mengikuti Final,Final_Score>=83,1
+60200123063,Warda Khairah,E,84.0,Mengikuti Final,Final_Score>=83,1
+60200123055,Nurfahira,E,84.0,Mengikuti Final,Final_Score>=83,1
+60200123037,Andi Nur Ainun Inriani. S,E,82.0,Mengikuti Final,Final_Score<83,0
+60200123079,Nur Zakiyah Tamsir,E,82.0,Mengikuti Final,Final_Score<83,0
+60200123069,Tasya Sahwasal Sabila,E,84.0,Mengikuti Final,Final_Score>=83,1
+60200123065,Mega Wahyuni,E,83.0,Mengikuti Final,Final_Score>=83,1
+60200123092,Shalsabila M,E,82.0,Mengikuti Final,Final_Score<83,0

@@ -1,86 +1,93 @@
-# Hasil Analisis Prediksi Kompetensi Praktikum Logika Algoritma
+# HASIL ANALISIS MIGRASI DBNR
 
-## 1. Penjelasan Project dan Apa yang Dianalisis
-Project ini merupakan *pipeline* penelitian *Machine Learning* yang dirancang untuk memprediksi tingkat kompetensi mahasiswa pada mata kuliah praktikum **Logika & Algoritma**. Mahasiswa diklasifikasikan ke dalam dua label/kelas utama:
-- `1` : **Kompeten** (Nilai Final Individu >= 75)
-- `0` : **Belum Kompeten** (Nilai Final Individu < 75)
+## 1. Pemrosesan Data & Distribusi
+Total mahasiswa yang tervalidasi dalam dataset ini adalah **89** orang. 
+Dari total tersebut, mahasiswa yang memiliki label ground truth pada komponen evaluasi akhir berjumlah **86** orang.
+(Sesuai aturan, target diambil berdasarkan nilai Individu).
 
-Analisis ini melihat bagaimana fitur-fitur seperti tingkat kehadiran (Attendance Rate), rata-rata nilai Tugas Pendahuluan (TP Mean), rata-rata nilai Respon (Respons Mean), dan rata-rata nilai Laporan (Laporan Mean) dapat memprediksi tingkat kelulusan/kompetensi mahasiswa secara akurat.
+### Distribusi Kelas:
+- Kelas A: 12 mahasiswa
+- Kelas B: 23 mahasiswa
+- Kelas C: 24 mahasiswa
+- Kelas D: 19 mahasiswa
+- Kelas E: 11 mahasiswa
 
-## 2. Masalah dan Solusi
-**Masalah Utama:**
-1. Memprediksi mahasiswa mana yang berpotensi "Belum Kompeten" sejak dini (sebelum nilai final dikeluarkan).
-2. Risiko terjadinya ***data leakage*** (kebocoran data), dimana fitur yang secara kalkulatif langsung berkorelasi 100% dengan nilai akhir (seperti Final Individu, Final Kelompok, Total, Predikat) tidak sengaja ikut masuk ke dalam dataset pelatihan. Hal ini membuat model tampak sangat sempurna (akurasi 100%) namun tidak memiliki nilai prediktif sama sekali di skenario nyata.
-3. Kerentanan model terhadap **Overfitting** karena jumlah sampel data (mahasiswa) yang relatif sangat kecil (hanya puluhan baris data).
-
-**Solusi yang Diterapkan:**
-- *Data leakage* dicegah sepenuhnya dengan men-*drop* (menghapus) seluruh kolom yang merupakan turunan dari nilai akhir. Mahasiswa yang putus kelas di awal (*dropout*) dengan tingkat kehadiran <= 1 juga telah dibersihkan secara otomatis.
-- Menjalankan eksperimen *Feature Engineering* melalui berbagai tingkatan kompleksitas fitur: **S1 (Basic)**, **S2 (Behavioral)**, dan **S3 (Relational)** untuk mencari titik keseimbangan (sweet spot) antara *underfitting* dan *overfitting*.
-- Menggunakan dua algoritma pembanding: **Decision Tree** (sebagai *baseline* yang cenderung *overfit*) dan **Random Forest** (*ensemble method* berbasis *bagging* untuk meredam variansi dan meminimalisir *overfitting*).
-- Mengevaluasi performa menggunakan *Stratified 5-Fold Cross Validation* (CV) di data training murni, dan menggunakan metrik **F1-Score** (guna menangani ketidakseimbangan kelas / dominansi mayoritas).
+### Distribusi Target Kompetensi:
+- Kompeten (>=75): **78**
+- Belum Kompeten (<75): **8**
+*(Terdapat ketidakseimbangan kelas (imbalance) di mana kelas mayoritas adalah Kompeten).*
 
 ---
 
-## 3. Hasil Analisis Performa Model (Overfitting vs Robust)
+## 2. Hasil Modeling & Pemilihan Model (Metric Results)
 
-Berikut adalah ringkasan hasil eksperimen model setelah melalui tahapan *Hyperparameter Tuning* menggunakan GridSearchCV:
+Eksperimen cross-validation (Repeated Stratified 5-Fold) dijalankan pada berbagai kombinasi **Temporal Cutoff** (C1, C2, C3, C_Full) dan **Feature Set** (S1 - S5).
 
-| Scenario | Model | CV F1 Mean | Test F1 | Test Accuracy |
-| :--- | :--- | :--- | :--- | :--- |
-| **S1** | Decision Tree | 0.792 | 0.800 | 0.769 |
-| **S1** | Random Forest | 0.811 | 0.889 | 0.846 |
-| **S2** | Decision Tree | 0.774 | 0.667 | 0.692 |
-| **S2** | Random Forest | 0.809 | 0.824 | 0.769 |
-| **S3** | Decision Tree | 0.804 | 0.615 | 0.615 |
-| **S3** | Random Forest | 0.814 | 0.889 | 0.846 |
+### Perbandingan Model Terbaik
+Berikut adalah top 10 kombinasi dengan nilai **Balanced Accuracy** rata-rata tertinggi:
 
-**Analisis Overfitting (Keputusan Terbaik):**
-1. **Decision Tree mengalami Overfitting.** Hal ini terlihat sangat jelas saat kompleksitas data meningkat di skenario S2 dan S3. Pada Skenario S3, nilai validasi murni (*CV F1 Mean*) dari Decision Tree mencapai **0.804**, tetapi ketika dites pada *Test Set* (data yang benar-benar belum pernah dilihat), performanya anjlok drastis menjadi hanya **0.615**. Ini membuktikan bahwa Decision Tree terlalu menghafal pola (*memorization*) di data latih, namun gagal melakukan generalisasi.
-2. **Random Forest terbukti Sangat Robust (Tahan Overfitting).** Pada seluruh skenario (terutama S1 dan S3), Random Forest berhasil mencetak *Test F1* sebesar **0.889** dengan akurasi akhir mencapai **84.6%**. Menariknya, performa Random Forest di data Test sama stabilnya atau bahkan lebih baik dari CV F1 Mean-nya. Teknik *Ensemble Bagging* yang menggabungkan banyak *decision trees* secara acak sukses meredam variansi (fluktuasi akibat dataset kecil).
+| Cutoff | Feature Set | Model | Balanced Acc | Recall BK | F1 Macro |
+|---|---|---|---:|---:|---:|
+| C_Full | S1 | DT | 0.977 | 0.967 | 0.960 |
+| C1 | S3 | RF | 0.933 | 0.867 | 0.941 |
+| C1 | S2 | RF | 0.933 | 0.867 | 0.941 |
+| C3 | S2 | RF | 0.931 | 0.867 | 0.934 |
+| C2 | S2 | RF | 0.929 | 0.867 | 0.921 |
+| C1 | S5 | DT | 0.929 | 0.867 | 0.922 |
+| C1 | S5 | RF | 0.929 | 0.867 | 0.921 |
+| C2 | S1 | DT | 0.927 | 0.867 | 0.914 |
+| C2 | S1 | RF | 0.927 | 0.867 | 0.914 |
+| C2 | S3 | DT | 0.927 | 0.867 | 0.914 |
 
-Kesimpulannya, model **Random Forest pada skenario S1 atau S3** adalah pemenang absolut dari eksperimen ini.
-
----
-
-## 4. Interpretasi Model (TreeSHAP)
-
-Machine learning tidak lagi sekadar menjadi "kotak hitam" (Black Box). Dengan mengimplementasikan **SHAP (*SHapley Additive exPlanations*)**, kita dapat membedah dengan persis alasan di balik setiap prediksi model Random Forest.
-
-### A. Global Feature Importance (Dampak Keseluruhan)
-![Global Importance S1 RandomForest](file:///c:/belajarku/Belajar%20ML/Logika-Algoritma/results/shap/global_importance_S1_RandomForest.png)
-*(Keterangan: Grafik Bar di atas menunjukkan rata-rata magnitude dampak (Mean |SHAP Value|) dari tiap-tiap metrik penilaian mahasiswa).*
-
-Berdasarkan ekstraksi data mentah dari perhitungan TreeSHAP secara numerik, kita mendapatkan urutan tingkat kepentingan (bobot prediktif) sebagai berikut:
-1. **Laporan_Mean** (Bobot Rata-rata SHAP: ~0.119): Memegang peranan paling vital! Nilai rata-rata laporan praktikum menjadi indikator utama model dalam menentukan kompetensi akhir mahasiswa.
-2. **Attendance_Rate** (Bobot Rata-rata SHAP: ~0.096): Tingkat kehadiran adalah faktor terpenting kedua. Hal ini sangat logis, karena absensi berbanding lurus dengan intensitas paparan pemahaman materi.
-3. **Respons_Mean** (Bobot Rata-rata SHAP: ~0.083): Respon harian berkontribusi secara substansial melengkapi laporan.
-4. **TP_Mean** (Bobot Rata-rata SHAP: ~0.058): Tugas Pendahuluan berada di urutan terakhir, menunjukkan bahwa persiapan pra-praktikum memiliki dampak yang sedikit lebih lemah dibandingkan performa saat praktikum berlangsung (Laporan & Respon).
-
-### B. SHAP Beeswarm Plot (Analisis Korelasi)
-![Beeswarm S1 RandomForest](file:///c:/belajarku/Belajar%20ML/Logika-Algoritma/results/shap/beeswarm_S1_RandomForest.png)
-*(Keterangan: Titik kemerahan merepresentasikan input nilai asli yang "Tinggi". Semakin ke kanan sumbu X (SHAP > 0), semakin memengaruhi keputusan model ke arah "Kompeten").*
-
-Pada plot di atas beserta pengamatan pada matriks *raw data*, terlihat distribusi korelasi yang sangat kuat:
-- **Kontribusi Positif:** Mahasiswa dengan nilai `Laporan_Mean` dan `Attendance_Rate` yang sangat tinggi (diwakili titik berwarna kemerahan) secara konsisten menggeser prediksi model jauh ke sisi kanan (SHAP > 0). Kombinasi nilai tinggi ini nyaris memastikan klasifikasi model jatuh pada keputusan **"Kompeten (1)"**.
-- **Efek Penalti:** Sebaliknya, nilai absensi yang rendah (biru) pada fitur *Attendance_Rate* menyumbang penalti SHAP negatif yang sangat dramatis (memanjang jauh ke sebelah kiri), menarik probabilitas model secara paksa ke arah prediksi **"Belum Kompeten"**.
+**Analisis Cutoff Temporal:**
+Dari hasil metrik di atas, kita dapat melihat apakah model sudah cukup diskriminatif pada *cutoff* yang lebih dini (misalnya C2 atau C3) dibandingkan jika harus menunggu keseluruhan semester (C_Full). 
+Secara umum, Random Forest cenderung menunjukkan stabilitas performa yang lebih baik.
 
 ---
 
-## 5. Visualisasi Pendukung Lainnya
+## 3. Explainable AI: TreeSHAP Feature Importance
 
-### A. Evaluasi Confusion Matrix
-![Confusion Matrix S1 RandomForest](file:///c:/belajarku/Belajar%20ML/Logika-Algoritma/results/confusion_matrix/cm_S1_RandomForest.png)
-*(Keterangan: Matriks yang memperlihatkan kebenaran vs kesalahan tebakan. Diagonal merupakan prediksi yang tepat).*
-Model terbukti sangat baik dalam menangkap *True Positives* dan menekan tingkat *False Negatives*.
+Model final dievaluasi menggunakan kumpulan fitur **S5** pada cutoff **C_Full**. Berikut adalah peringkat fitur yang paling memiliki kontribusi prediktif berdasarkan nilai rata-rata absolut SHAP:
 
-### B. Analisis Distribusi Kelas
-![Distribusi Kelas](file:///c:/belajarku/Belajar%20ML/Logika-Algoritma/results/class_analysis/class_distribution.png)
-*(Keterangan: Grafik yang menunjukkan persebaran proporsi antara status Kompeten dan Belum Kompeten di seluruh seksi/kelas praktikum).*
-Melalui pembagian secara acak terdistribusi (*Stratified Split*), perbandingan rasio tidak seimbang ini berhasil disetarakan skalanya di dalam pelatihan algoritma, sehingga model tidak bersikap *bias* ke kelas mayoritas.
+| Rank | Feature | Mean Absolute SHAP |
+|---:|---|---:|
+| 1 | Laporan_Mean | 0.0291 |
+| 2 | Performance_Mean | 0.0258 |
+| 3 | Performance_Late_Mean | 0.0211 |
+| 4 | Laporan_Min | 0.0189 |
+| 5 | Laporan_First2_Mean | 0.0182 |
+| 6 | Laporan_Last2_Mean | 0.0166 |
+| 7 | Laporan_Max | 0.0109 |
+| 8 | Absence_Count | 0.0092 |
+| 9 | TP_First2_Mean | 0.0088 |
+| 10 | Performance_Std | 0.0054 |
+| 11 | TP_Mean | 0.0044 |
+| 12 | TP_Last2_Mean | 0.0033 |
+| 13 | TP_Max | 0.0032 |
+| 14 | TP_Min | 0.0016 |
+| 15 | Laporan_Std | 0.0015 |
+
+*(Silakan lihat gambar grafik beeswarm/summary plot di `outputs/shap/shap_summary.png` untuk melihat arah kontribusinya: apakah nilai fitur yang tinggi mendorong prediksi ke arah Kompeten atau Belum Kompeten).*
 
 ---
 
-## 6. Kesimpulan
-1. Proyek ini sukses menghadirkan lingkungan *pipeline* ML yang bebas *data leakage*.
-2. **Random Forest** terbukti sebagai model paling stabil dengan akurasi pengujian tertinggi (**84.6%**) tanpa mengalami ancaman *overfitting* yang dialami algoritma tunggal Decision Tree.
-3. Berdasarkan analisis *deep dive* TreeSHAP, fitur **Rata-rata Nilai Laporan** dan **Tingkat Kehadiran (Attendance Rate)** adalah *Early Warning Indicators* (Indikator Peringatan Dini) terbaik dengan kontribusi tertinggi. Asisten praktikum dapat memprioritaskan pendampingan kepada mahasiswa yang bermasalah pada absensi dan kualitas laporannya.
+## 4. Error Analysis
+
+Berdasarkan dataset evaluasi (C_Full_S5) dengan Random Forest, kita memperoleh distribusi error sebagai berikut:
+- **Correct**: 86
+
+**Penjelasan Signifikansi:**
+- **False Negative (Late-Dropper)**: Mahasiswa yang secara ground truth *Belum Kompeten*, tetapi model memprediksinya aman (*Kompeten*). Mereka lolos dari *early warning*.
+- **False Positive (Late-Bloomer)**: Mahasiswa yang mendapatkan alarm *Belum Kompeten*, namun pada akhir evaluasi berhasil *Kompeten*.
+
+### Daftar Mahasiswa pada Area Prediksi Keliru
+
+**Kasus False Negative:** Tidak ada pada model ini.
+
+**Kasus False Positive:** Tidak ada pada model ini.
+
+---
+## Kesimpulan
+
+Migrasi metodologi ke dataset Basis Data Non Relasional ini berhasil menunjukkan bahwa _feature engineering_ berbasis temporal, meskipun memiliki _sample size_ yang kecil, dapat mendiskriminasi potensi kegagalan mahasiswa. 
+Fitur penyelesaian tugas (completion) maupun performa di pekan-pekan awal cenderung memiliki _Feature Importance_ yang dominan menurut TreeSHAP.
