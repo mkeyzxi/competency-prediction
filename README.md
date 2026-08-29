@@ -2,7 +2,7 @@
 
 Repositori ini berisi keseluruhan sistem (_pipeline_) eksperimen _Machine Learning_ untuk mendeteksi dini potensi kegagalan (Belum Kompeten) mahasiswa pada Praktikum Logika & Algoritma.
 
-Berdasarkan hasil analisis, kita menggunakan **Batas Kelulusan = 83** (Data sangat seimbang, tanpa _SMOTE_ maupun _ClassWeight_).
+Berdasarkan hasil analisis dan standarisasi nilai predikat unggul akademik (Zona Aman A-), kita menggunakan **Batas Kompetensi = 83**. Dataset diolah dalam kondisi murni (tanpa intervensi _oversampling_ seperti SMOTE) untuk menjaga keaslian distribusi dan mencegah *optimistic bias*.
 
 Berikut adalah panduan **LENGKAP** dan **BERURUTAN** untuk menjalankan seluruh eksperimen dari awal mula data mentah (Excel) hingga akhir (Grafik SHAP), tanpa perlu menyentuh atau mengubah satu baris kode pun!
 
@@ -19,7 +19,7 @@ python src/build_dataset.py
 ```
 
 **Apa yang terjadi?**
-Skrip ini akan mengambil data dari `DBNR.xlsx`, melabeli kelulusan mahasiswa berdasarkan ambang batas **83**, dan menyimpannya dalam format bersih (seperti `activities_long.csv` dan `students_labeled.csv`) di folder `data/processed/`.
+Skrip ini akan mengambil data dari `DBNR.xlsx`, melabeli kelulusan mahasiswa berdasarkan ambang batas akademik kompetensi **83**, dan menyimpannya dalam format bersih (seperti `activities_long.csv` dan `students_master.csv`) di folder `data/processed/`.
 
 ---
 
@@ -49,7 +49,7 @@ python scripts/run_baseline_experiments.py
 ```
 
 **Apa yang terjadi?**
-Sistem akan melatih _Decision Tree_ dan _Random Forest_ untuk S1 hingga S5 menggunakan _Nested Cross Validation_. Di akhir proses, sistem akan mencetak **Leaderboard** (Klasemen) di terminal Anda. (Spoiler: S3 akan keluar sebagai juara). Skrip ini juga otomatis menyimpan model S3 terbaik ke dalam folder `models/`.
+Sistem akan melatih _Decision Tree_ dan _Random Forest_ untuk S1 hingga S5 menggunakan _Nested Cross Validation_. Di akhir proses, sistem akan mencetak **Leaderboard** (Klasemen) evaluasi Retrospektif di terminal Anda. Skenario 3 (S3) akan keluar sebagai konfigurasi fitur historis terbaik. Skrip ini juga otomatis menyimpan model S3 terbaik ke dalam folder `models/`.
 
 ### 3B. Menghasilkan Grafik SHAP untuk S3 Dasar
 
@@ -77,7 +77,7 @@ python scripts/run_optimized_experiment.py
 ```
 
 **Apa yang terjadi?**
-Sistem akan menjalankan _Nested Cross Validation_ untuk membandingkan S3 Dasar dengan S3_A, S3_B, S3_C, S3_D, S3_E, dan S3_EWS. Setelah selesai, skrip otomatis memilih model yang benar-benar TERBAIK (S3_E) dan menyimpannya sebagai **Model Final** di folder `models/`.
+Sistem akan menjalankan _Nested Cross Validation_ membandingkan kelompok fitur EWS (S3_A hingga S3_EWS). Model yang dikonstruksi benar-benar ditutup matanya dari data masa depan (hanya menggunakan performa 2-3 minggu pertama). Setelah selesai, skrip mengevaluasi metrik (serta Confidence Interval) dan memilih model *Genuine EWS* terbaik (S3_E), lalu menyimpannya sebagai **Model Final** di folder `models/`.
 
 ### 4B. Menghasilkan Grafik SHAP untuk Model Final (S3_E)
 
@@ -94,6 +94,6 @@ Skrip ini akan melacak model final (S3_E) yang baru saja disimpan oleh Langkah 4
 
 ## 🎉 Kesimpulan
 
-Sekarang Anda dapat membuka folder `results/shap/` dan membandingkan _Feature Importance_ antara **S3 Dasar** dengan **S3_E Final**. Anda akan melihat bahwa Model Final kita kini berhasil mendeteksi potensi kegagalan dengan mengandalkan performa awal (_Early Performance_), yang menjadikannya sebuah _Early Warning System_ sejati!
+Sekarang Anda dapat membuka folder `results/shap/` dan membandingkan _Feature Importance_ antara **S3 Dasar** (Retrospektif) dengan **S3_E Final** (Genuine EWS). Anda akan melihat bahwa Model Final kita kini berhasil mendeteksi potensi kegagalan dengan mengandalkan performa awal (_Early Performance_) sebagai **kontributor prediktif tertinggi**, yang menjadikannya sebuah _Early Warning System_ yang andal secara metodologis!
 
 Selamat bereksperimen!

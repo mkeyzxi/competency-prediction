@@ -29,7 +29,18 @@
     "test_f1_bk": 0.8,
     "test_f2_bk": 0.851063829787234,
     "test_roc_auc": 0.8950617283950617,
-    "test_pr_auc": 0.8458825125491792
+    "test_pr_auc": 0.8458825125491792,
+    "test_tn": 6,
+    "test_fp": 3,
+    "test_fn": 1,
+    "test_tp": 8,
+    "test_specificity": 0.6666666666666666,
+    "test_recall_bk_ci_lower": 0.625,
+    "test_recall_bk_ci_upper": 1.0,
+    "test_balanced_accuracy_ci_lower": 0.5614610389610389,
+    "test_balanced_accuracy_ci_upper": 0.9545454545454546,
+    "test_f2_bk_ci_lower": 0.6246189024390244,
+    "test_f2_bk_ci_upper": 0.9804359243697478
   },
   "best_params": {
     "model__min_samples_split": 10,

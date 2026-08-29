@@ -1,581 +1,916 @@
-saya jalankan hasil sedang berjalan dibawah ini, saya tidak selesaikan karena memakan waktu sangat lama hampir 2 jam dan hasilnya tidak maksimal
+Mengapa Angka 83 Masuk Akal?Berdasarkan tinjauan akademik dan profesional, berikut adalah analisis mengenai pilihan angka tersebut:Batas "Ketuntasan Minimal" (KKM) yang Lebih Tinggi: Di bidang teknologi informasi (TIK), beberapa penelitian menunjukkan penetapan KKM rata-rata berada di angka 82 agar dianggap tuntas secara memadai. Memilih 83 berarti kamu menetapkan standar sedikit di atas rata-rata umum (80-82), yang memastikan orang tersebut benar-benar melampaui level "sekadar bisa".Target Nilai Rapor Aman: Untuk program studi Teknik Informatika yang kompetitif, rata-rata nilai rapor minimal biasanya dibidik di angka 80,00 – 85,00. Angka 83 berada tepat di tengah rentang "zona aman" tersebut.Predikat "A-" atau Unggul: Dalam banyak pedoman akademik (termasuk pedoman konversi nilai di UIN Alauddin Makassar), nilai di atas 80 umumnya sudah masuk dalam kategori A- atau predikat "Sangat Baik".Sistem Penilaian Asdos: Sebagai koordinator praktikum Teknik Informatika UINAM, menetapkan 83 sebagai nilai "aman" bagi asisten dosen sangat membantu dalam standarisasi objektivitas penilaian agar tidak terjebak pada angka rata-rata kelompok yang mungkin hanya berada di kisaran 80.Perbedaan "Bisa" vs "Kompeten"Secara teknis, perbedaan yang kamu maksud sejalan dengan definisi profesional:Bisa (Skill/Ability): Fokus pada kemampuan individu dalam melakukan tugas tertentu pada satu waktu.Kompeten (Competency): Kombinasi menyeluruh dari pengetahuan (kognitif), keterampilan (psikomotorik), dan sikap (afektif) yang diperlukan untuk menjalankan tanggung jawab secara efektif dan konsisten.
 
-muhma@mkeyzxi MINGW64 /c/belajarku/Belajar ML/Logika-Algoritma (migrate/bdnr)
-$ python scripts/run_optimized_experiment.py
-============================================================
-OPTIMASI TERKONTROL — EWS Competency Prediction
-Protokol: Model selected from CV only, holdout 1× at end
-============================================================
+Menurut saya, arah penelitian ini sudah jauh lebih kuat dan jauh lebih layak secara metodologis, tetapi naskahnya saat ini masih terlalu “menjual hasil” dan beberapa klaimnya lebih kuat daripada bukti yang tersedia. Untuk reviewer jurnal yang ketat, justru itu yang perlu dibenahi.
 
-Loaded: data/processed/featured_P2_full.csv ((123, 111))
-Features computed. Shape: (123, 116)
+Saya akan menilainya dari sisi ilmiah, bukan sekadar apakah hasil angkanya bagus.
 
-Train: 98 samples (BK=19, K=79)
-Test: 25 samples (BK=5, K=20)
-Test set is FROZEN. Not used for model selection.
+1. Gambaran besar: fondasinya sudah bagus
 
-[1/84] S3 | Dummy | None...
-CV Recall BK=0.000, BalAcc=0.500, F2_BK=0.000, Threshold=0.5
-[4/84] S3 | DecisionTree | None...
-CV Recall BK=0.310, BalAcc=0.583, F2_BK=0.301, Threshold=0.52
-[5/84] S3 | DecisionTree | SMOTE...
-CV Recall BK=0.503, BalAcc=0.603, F2_BK=0.427, Threshold=0.42
-[6/84] S3 | DecisionTree | ClassWeight...
-CV Recall BK=0.483, BalAcc=0.581, F2_BK=0.409, Threshold=0.66
-[7/84] S3 | RandomForest | None...
-CV Recall BK=0.213, BalAcc=0.572, F2_BK=0.224, Threshold=0.78
-[8/84] S3 | RandomForest | SMOTE...
-CV Recall BK=0.407, BalAcc=0.611, F2_BK=0.375, Threshold=0.8
-[9/84] S3 | RandomForest | ClassWeight...
-CV Recall BK=0.453, BalAcc=0.572, F2_BK=0.379, Threshold=0.68
-[10/84] S3 | GradientBoosting | None...
-CV Recall BK=0.243, BalAcc=0.565, F2_BK=0.247, Threshold=0.7
-[11/84] S3 | GradientBoosting | SMOTE...
-CV Recall BK=0.387, BalAcc=0.600, F2_BK=0.357, Threshold=0.8
-[13/84] S3_A | Dummy | None...
-CV Recall BK=0.000, BalAcc=0.500, F2_BK=0.000, Threshold=0.5
-[16/84] S3_A | DecisionTree | None...
-CV Recall BK=0.290, BalAcc=0.571, F2_BK=0.280, Threshold=0.52
-[17/84] S3_A | DecisionTree | SMOTE...
-CV Recall BK=0.383, BalAcc=0.530, F2_BK=0.323, Threshold=0.52
-[18/84] S3_A | DecisionTree | ClassWeight...
-CV Recall BK=0.500, BalAcc=0.509, F2_BK=0.380, Threshold=0.7
-[19/84] S3_A | RandomForest | None...
-CV Recall BK=0.190, BalAcc=0.564, F2_BK=0.203, Threshold=0.8
-[20/84] S3_A | RandomForest | SMOTE...
-CV Recall BK=0.397, BalAcc=0.606, F2_BK=0.366, Threshold=0.76
-[21/84] S3_A | RandomForest | ClassWeight...
-CV Recall BK=0.430, BalAcc=0.567, F2_BK=0.362, Threshold=0.66
-[22/84] S3_A | GradientBoosting | None...
-CV Recall BK=0.257, BalAcc=0.569, F2_BK=0.260, Threshold=0.64
-[23/84] S3_A | GradientBoosting | SMOTE...
-CV Recall BK=0.417, BalAcc=0.616, F2_BK=0.388, Threshold=0.8
-[25/84] S3_B | Dummy | None...
-CV Recall BK=0.000, BalAcc=0.500, F2_BK=0.000, Threshold=0.5
-[28/84] S3_B | DecisionTree | None...
-CV Recall BK=0.290, BalAcc=0.578, F2_BK=0.286, Threshold=0.52
-[29/84] S3_B | DecisionTree | SMOTE...
-CV Recall BK=0.483, BalAcc=0.542, F2_BK=0.384, Threshold=0.52
-[30/84] S3_B | DecisionTree | ClassWeight...
-CV Recall BK=0.477, BalAcc=0.493, F2_BK=0.360, Threshold=0.44
-[31/84] S3_B | RandomForest | None...
-CV Recall BK=0.190, BalAcc=0.566, F2_BK=0.203, Threshold=0.8
-[32/84] S3_B | RandomForest | SMOTE...
-CV Recall BK=0.410, BalAcc=0.605, F2_BK=0.376, Threshold=0.78
-[33/84] S3_B | RandomForest | ClassWeight...
-CV Recall BK=0.420, BalAcc=0.565, F2_BK=0.355, Threshold=0.8
-[34/84] S3_B | GradientBoosting | None...
-CV Recall BK=0.247, BalAcc=0.574, F2_BK=0.253, Threshold=0.28
-[35/84] S3_B | GradientBoosting | SMOTE...
-CV Recall BK=0.387, BalAcc=0.599, F2_BK=0.356, Threshold=0.7
-[37/84] S3_C | Dummy | None...
-CV Recall BK=0.420, BalAcc=0.565, F2_BK=0.355, Threshold=0.8
-[34/84] S3_B | GradientBoosting | None...
-CV Recall BK=0.247, BalAcc=0.574, F2_BK=0.253, Threshold=0.28
-[35/84] S3_B | GradientBoosting | SMOTE...
-CV Recall BK=0.387, BalAcc=0.599, F2_BK=0.356, Threshold=0.7
-[37/84] S3_C | Dummy | None...
-CV Recall BK=0.000, BalAcc=0.500, F2_BK=0.000, Threshold=0.5
-[40/84] S3_C | DecisionTree | None...
-CV Recall BK=0.300, BalAcc=0.579, F2_BK=0.291, Threshold=0.52
-[41/84] S3_C | DecisionTree | SMOTE...
-CV Recall BK=0.457, BalAcc=0.541, F2_BK=0.367, Threshold=0.78
-[42/84] S3_C | DecisionTree | ClassWeight...
-CV Recall BK=0.467, BalAcc=0.490, F2_BK=0.355, Threshold=0.44
-[43/84] S3_C | RandomForest | None...
-CV Recall BK=0.197, BalAcc=0.565, F2_BK=0.208, Threshold=0.78
-[44/84] S3_C | RandomForest | SMOTE...
-CV Recall BK=0.397, BalAcc=0.596, F2_BK=0.357, Threshold=0.8
-[45/84] S3_C | RandomForest | ClassWeight...
-CV Recall BK=0.430, BalAcc=0.563, F2_BK=0.359, Threshold=0.68
-[46/84] S3_C | GradientBoosting | None...
-CV Recall BK=0.277, BalAcc=0.581, F2_BK=0.273, Threshold=0.68
-[47/84] S3_C | GradientBoosting | SMOTE...
-CV Recall BK=0.397, BalAcc=0.610, F2_BK=0.374, Threshold=0.78
-[49/84] S3_D | Dummy | None...
-CV Recall BK=0.000, BalAcc=0.500, F2_BK=0.000, Threshold=0.5
-[52/84] S3_D | DecisionTree | None...
-CV Recall BK=0.263, BalAcc=0.552, F2_BK=0.255, Threshold=0.52
-[53/84] S3_D | DecisionTree | SMOTE...
-CV Recall BK=0.377, BalAcc=0.516, F2_BK=0.313, Threshold=0.64
-[54/84] S3_D | DecisionTree | ClassWeight...
-CV Recall BK=0.470, BalAcc=0.505, F2_BK=0.355, Threshold=0.42
-[55/84] S3_D | RandomForest | None...
-CV Recall BK=0.187, BalAcc=0.568, F2_BK=0.199, Threshold=0.8
-[56/84] S3_D | RandomForest | SMOTE...
-CV Recall BK=0.377, BalAcc=0.588, F2_BK=0.346, Threshold=0.8
-[57/84] S3_D | RandomForest | ClassWeight...
-Traceback (most recent call last):
+Saya melihat ada empat kekuatan utama.
 
-saran saya berikutnya adalah
-Ya. Setelah melihat log terbaru yang Anda hentikan, saya justru menyarankan Anda menyederhanakan eksperimen, bukan menambah semakin banyak model. Dengan 89 mahasiswa, 11 Belum Kompeten dan 78 Kompeten, saya akan tetap memakai Random Forest + Decision Tree, lalu fokus pada imbalance handling, parameter yang konservatif, dan threshold yang benar.
+Pertama, fokus penelitian sudah jelas.
+Bukan lagi sekadar “membandingkan Decision Tree dan Random Forest”, tetapi mencoba membangun early warning system untuk mendeteksi mahasiswa berisiko belum kompeten.
 
-Dan saya ingin menegaskan satu hal: jangan "membalance-kan" seluruh dataset 89 mahasiswa. Test set harus tetap mencerminkan kondisi asli. Pada desain Anda sendiri, prinsipnya memang imputer, balancing, feature selection, tuning, dan threshold ditempatkan di proses CV, sementara test disimpan untuk evaluasi akhir.
+Itu jauh lebih bermakna daripada penelitian ML pendidikan yang hanya berhenti pada:
 
-Keputusan saya untuk penelitian Anda
+model A akurasi 90%, model B 87%.
 
-Saya akan memakai tiga kondisi imbalance:
+Di penelitian Anda ada alur:
 
-Strategi DT RF Prioritas
-None ✓ ✓ Baseline
-Class Weight ✓ ✓ Utama
-SMOTE ✓ ✓ Pembanding
+data aktivitas mahasiswa → pembentukan indikator → prediksi BK → evaluasi → interpretasi SHAP → rekomendasi intervensi.
 
-Class Weight saya jadikan kandidat utama, sedangkan SMOTE tetap diuji sebagai pembanding.
+Itu sudah memiliki cerita penelitian yang lebih kuat.
 
-Alasannya sederhana: Anda hanya punya 11 mahasiswa BK. Setelah data masuk inner CV, jumlah kasus minoritas per fold menjadi sangat kecil. SMOTE masih boleh, tetapi sintetisasi dengan sedikit sekali titik minoritas bisa menjadi tidak stabil. Jadi saya tidak akan menjadikan SMOTE sebagai satu-satunya solusi.
+Kedua, keputusan meninggalkan SMOTE ketika kelas sudah hampir seimbang memang masuk akal.
 
-1. Saya tidak menyarankan langsung menggunakan SMOTE untuk "menyamakan 50:50"
+45 BK : 44 K jauh lebih sehat daripada 11 BK : 78 K.
 
-Jangan lakukan:
+Untuk kondisi seperti ini, saya justru setuju tidak memaksakan SMOTE. Dengan sampel hanya 89, membuat data sintetis malah dapat memperumit interpretasi.
 
-89 data
-↓
-SMOTE seluruh dataset
-↓
-CV
+Namun, saya tidak setuju alasan utamanya disebut “threshold 83 menghasilkan Gaussian ideal”. Itu salah secara konsep.
 
-Itu salah.
+Ketiga, pemilihan Recall BK sebagai perhatian utama sangat cocok dengan konsep EWS.
 
-Yang benar:
+Dalam sistem peringatan dini, kesalahan paling berbahaya memang:
 
-89 data
-↓
-Train / Test
-↓
-Train
-↓
-Inner CV
-├── Imputer
-├── SMOTE
-└── Model
+mahasiswa sebenarnya berisiko BK, tetapi model mengatakan dia aman.
 
-Test tetap 11 vs 78
+Itu adalah false negative.
 
-Dan bahkan dalam inner CV, saya sarankan SMOTE dibuat sebagai salah satu pilihan, bukan selalu aktif.
+Jadi orientasi pada:
 
-2. Saya juga melihat masalah dari log Anda: threshold
-
-Di output terlihat banyak:
-
-Threshold=0.68
-Threshold=0.70
-Threshold=0.76
-Threshold=0.78
-Threshold=0.80
-
-sementara Recall BK masih:
-
-0.397
-0.420
-0.457
-
-Jadi saya tidak akan langsung mempersempit threshold ke 0.2-0.5 seperti saran sebelumnya.
-
-Yang harus dipastikan lebih dulu adalah:
-
-threshold tersebut diterapkan terhadap probabilitas kelas mana?
-
-Karena target Anda:
-
-0 = Belum Kompeten
-1 = Kompeten
-
-Untuk Early Warning, saya sarankan kode threshold bekerja langsung dengan probabilitas Belum Kompeten, bukan probabilitas Kompeten.
-
-Contohnya:
-
-classes = model.classes\_
-bk_idx = list(classes).index(0)
-
-p_bk = model.predict_proba(X)[:, bk_idx]
-
-y_pred = np.where(
-p_bk >= threshold,
-0, # Belum Kompeten
-1 # Kompeten
-)
-
-Dengan cara ini:
-
-semakin besar p_bk, semakin kuat alasan memberi warning.
-
-Ini jauh lebih mudah diaudit.
-
-3. Threshold sebaiknya bukan dipaksa 0.5
-
-Untuk penelitian Anda, threshold 0.5 bukan sesuatu yang sakral.
-
-Saya malah menyarankan:
-
-0.20
-0.25
-0.30
-...
-0.80
-
-tetapi pemilihannya harus berdasarkan inner CV.
-
-Dan saya tidak akan memilih threshold berdasarkan Recall saja.
-
-Saya akan gunakan:
-
-Primary objective
-
+Recall BK
 F2-score BK
-
-karena Anda memang ingin memberi bobot lebih besar pada Recall.
-
-Dengan:
-
-fbeta_score(
-y_true,
-y_pred,
-beta=2,
-pos_label=0
-)
-
-Kemudian gunakan:
-
 Balanced Accuracy
+ROC-AUC / PR-AUC
 
-dan Precision BK
+memang jauh lebih masuk akal dibanding hanya mengutamakan Accuracy.
 
-sebagai evaluasi pendamping.
+Keempat, SHAP membuat penelitian Anda memiliki dimensi explainability.
 
-4. Parameter Decision Tree yang saya sarankan
+Ini penting karena pertanyaan penelitian menjadi bukan hanya:
 
-Untuk 89 mahasiswa, saya tidak mau DT tumbuh liar.
+“Apakah mahasiswa dapat diprediksi?”
 
-Gunakan ruang parameter kecil:
+tetapi juga:
 
-param_grid_dt = {
-"model**criterion": ["gini", "entropy"],
-"model**max_depth": [2, 3, 4, 5],
-"model**min_samples_split": [4, 6, 10],
-"model**min_samples_leaf": [2, 3, 5],
-"model\_\_class_weight": [None, "balanced"],
-}
+“Faktor apa yang paling berkaitan dengan prediksi tersebut?”
 
-Saya lebih menyukai:
+Ini memberikan nilai tambah yang cukup besar.
 
-max_depth = 2–5
-min_samples_leaf = 2–5
+2. Tetapi ada satu masalah besar: bagian Threshold 83
 
-daripada membiarkan:
+Ini menurut saya bagian yang paling perlu direvisi.
 
-max_depth = None
+Kalimat:
 
-Karena dataset Anda sangat kecil.
+“Secara ajaib, angka 83 membelah populasi data secara nyaris sempurna ke dalam distribusi Gaussian yang ideal”
 
-Eksperimen inti DT
-DT + None
-DT + ClassWeight
-DT + SMOTE
+sebaiknya jangan dipakai.
 
-Bukan 50 kombinasi DT yang berbeda.
+45 dan 44 memang hampir seimbang, tetapi:
 
-5. Parameter Random Forest
+45:44 ≠ distribusi Gaussian.
 
-Untuk RF, saya akan membuatnya sedikit lebih kuat daripada DT, tetapi tetap konservatif:
+Distribusi Gaussian berbicara mengenai bentuk distribusi suatu variabel kontinu, bukan sekadar jumlah anggota dua kelas.
 
-param_dist_rf = {
-"model**n_estimators": [200, 300, 500],
-"model**max_depth": [3, 4, 5, 6],
-"model**min_samples_split": [4, 6, 10],
-"model**min_samples_leaf": [1, 2, 3, 4],
-"model**max_features": ["sqrt", "log2"],
-"model**class_weight": [None, "balanced", "balanced_subsample"],
-}
+Selain itu:
 
-Saya tidak menyarankan langsung:
+“Skor 83 merupakan representasi nyata dari penguasaan materi yang mumpuni (secara universal setara dengan Grade B+ atau A-)”
 
-max_depth=None
+ini juga berbahaya.
 
-sebagai kandidat utama.
+Tidak ada aturan universal bahwa 83 selalu berarti B+ atau A-. Sistem penilaian setiap institusi/mata kuliah bisa berbeda.
 
-Untuk n=89, RF yang terlalu bebas dapat sangat cocok terhadap training data.
+Yang lebih ilmiah adalah:
 
-6. Jangan memakai SMOTE + class_weight sekaligus sebagai konfigurasi utama
-
-Ini penting.
-
-Saya tidak ingin Anda melakukan:
-
-SMOTE
-
-- class_weight='balanced'
-
-karena Anda sedang melakukan dua mekanisme kompensasi imbalance sekaligus.
-
-Bandingkan:
-
-RF + None
-RF + SMOTE
-RF + ClassWeight
-
-dan:
-
-DT + None
-DT + SMOTE
-DT + ClassWeight
-
-Dengan begitu hasil Anda bisa menjawab:
-
-strategi imbalance mana yang paling sesuai untuk RF dan DT?
-
-Ini jauh lebih bersih secara eksperimen.
-
-7. Inner CV saya malah akan kecilkan menjadi 3-fold
-
-Ini rekomendasi khusus karena dataset Anda hanya 89.
-
-Anda punya:
-
-$$ 11 \text{ BK} $$
-
-Dengan inner 5-fold, jumlah BK di validation fold sangat kecil.
-
-Saya lebih suka:
-
-Outer:
-RepeatedStratifiedKFold
-5 folds × beberapa repeat
-
-Inner:
-StratifiedKFold
-3 folds
-
-Jadi:
-
-Outer 5-fold
-↓
-Inner 3-fold
-
-Daripada:
-
-Outer 5-fold
-↓
-Inner 5-fold
-
-Dengan 11 kasus minoritas, 3-fold memberi inner training set yang lebih nyaman.
-
-8. Jangan lagi menjalankan 84 konfigurasi besar-besaran
-
-Ini menurut saya salah satu alasan proses Anda terlalu lama.
-
-Saya akan membuat eksperimen lebih kecil.
+Threshold 83 harus mempunyai justifikasi akademik yang independen dari hasil ML.
 
 Misalnya:
 
-DT
-None
-ClassWeight
-SMOTE
-RF
-None
-ClassWeight
-SMOTE
+83 berasal dari rubrik penilaian dosen;
+83 berasal dari standar kompetensi mata kuliah;
+83 berasal dari batas resmi kategori nilai;
+atau 83 merupakan threshold yang telah ditetapkan sebelum eksperimen.
 
-Total hanya:
+Itu sangat penting.
 
-$$ 6 \text{ konfigurasi inti} $$
+Kalau kenyataannya Anda mencoba:
 
-Kemudian setiap model dituning secara terbatas.
+75 → imbalance
+78 → masih imbalance
+80 → masih begitu
+83 → 45:44
 
-Tidak perlu langsung:
+lalu memilih 83 karena distribusinya paling enak untuk ML, reviewer bisa mengatakan:
 
-84+
+“Peneliti memilih target berdasarkan kenyamanan model.”
 
-kombinasi.
+Itu lebih buruk daripada memakai SMOTE.
 
-Lebih baik eksperimen kecil tetapi jelas dan bisa dijelaskan daripada eksperimen raksasa yang menghasilkan labirin angka.
+3. Jangan mengatakan “threshold tuning” kalau threshold dipilih berdasarkan keseimbangan data
 
-9. Tentang SMOTE, saya akan memakai k_neighbors kecil
+Ini terkait poin tadi.
 
-Karena minoritas Anda hanya 11.
+Judul:
 
-Jangan langsung:
+Pemilihan Threshold Natural
 
-SMOTE(k_neighbors=5)
+masih bisa dipertahankan kalau ada alasan akademiknya.
 
-sebagai satu-satunya konfigurasi.
+Tetapi bila sebenarnya 83 dipilih karena menghasilkan kelas 45:44, secara metodologis itu lebih tepat disebut:
 
-Saya sarankan:
+label construction based on predefined competency criterion
 
-SMOTE(
-k_neighbors=2,
-random_state=42
-)
+bukan “threshold tuning untuk mengatasi imbalance”.
 
-dan sebagai pembanding:
+Karena imbalance bukan masalah label yang harus diselesaikan dengan mengubah definisi kompetensi.
 
-SMOTE(
-k_neighbors=3,
-random_state=42
-)
+Prinsip pentingnya:
 
-Tetap harus terjadi di training fold.
+Definisi target harus ditetapkan karena alasan domain, bukan karena model menjadi lebih mudah.
 
-10. Target performanya bagaimana?
+Ini salah satu hal yang akan saya perbaiki paling dulu.
 
-Saya akan mengubah target Anda menjadi:
+4. Tidak menggunakan SMOTE: saya setuju
 
-Target minimum
-Recall BK ≥ 70%
-Balanced Accuracy ≥ 70%
-Target bagus
-Recall BK ≥ 80%
-Balanced Accuracy ≥ 75%
-Tetapi syaratnya:
+Bagian ini justru saya nilai bagus.
 
-Precision BK dan PR-AUC tidak boleh jatuh parah.
+Dengan:
 
-Jadi jangan lakukan:
+n = 89
+BK = 45
+K = 44
 
-"Pokoknya Recall 80%."
+Anda tidak memiliki alasan kuat untuk melakukan oversampling.
 
-Karena nanti Anda bisa membuat model yang memberi warning kepada hampir semua mahasiswa.
+Bahkan saya lebih suka:
 
-11. Kriteria memilih model final
+Original data → preprocessing → model → stratified validation
 
-Saya akan menetapkan ini sebelum melihat holdout:
+daripada:
 
-Ranking:
-Recall BK
+Original data → SMOTE → synthetic data → model
+
+untuk kasus sekecil ini.
+
+Tetapi saya tidak akan mengatakan:
+
+“SMOTE terbukti memicu bias optimistis.”
+
+Kecuali Anda benar-benar melakukan eksperimen pembanding yang menunjukkan itu.
+
+Lebih aman:
+
+“Eksperimen awal menunjukkan bahwa penggunaan SMOTE menghasilkan performa validasi yang lebih optimistis dibandingkan evaluasi pada data asli, sehingga pendekatan tanpa oversampling dipilih.”
+
+Itu berbasis hasil eksperimen.
+
+5. Bagian S3 menurut saya menarik, tetapi interpretasinya terlalu agresif
+
+Anda menulis:
+
+“S3 terbukti lebih tangguh.”
+
+dan
+
+“S4/S5 mengalami curse of dimensionality / overfitting.”
+
+Hati-hati.
+
+Dari tabel Anda hanya tahu:
+
+S3 lebih baik daripada S4/S5 pada holdout tertentu.
+
+Anda belum otomatis membuktikan bahwa penyebabnya adalah:
+
+Curse of Dimensionality.
+
+Itu hanya salah satu kemungkinan.
+
+Bisa juga:
+
+fitur tambahan redundant;
+fitur noisy;
+ukuran sampel terlalu kecil;
+feature interaction yang tidak stabil;
+hyperparameter;
+atau varians estimasi yang tinggi.
+
+Saya sarankan gunakan bahasa:
+
+“Penambahan fitur pada S4/S5 tidak memberikan peningkatan performa dan justru menurunkan performa holdout, yang mengindikasikan kemungkinan adanya fitur redundant/noisy atau peningkatan kompleksitas model.”
+
+Ini jauh lebih aman secara akademik.
+
+6. Ada masalah yang jauh lebih penting: ukuran dataset Anda
+
+Ini titik yang menurut saya sangat perlu diperhatikan.
+
+Anda hanya memiliki:
+
+89 mahasiswa
+
+Kemudian Anda memiliki:
+
+6, 15, bahkan 20 fitur.
+
+Ini berarti rasio:
+
+89 observasi vs 20 fitur
+
+sudah cukup kecil.
+
+Kemudian Anda menggunakan Decision Tree.
+
+Decision Tree sangat mudah membuat split yang sangat spesifik pada dataset kecil.
+
+Jadi angka seperti:
+
+Recall = 100%
+
+terlihat bagus, tetapi belum tentu stabil.
+
+Apalagi kalau holdout Anda kecil.
+
+Misalnya terdapat 9 mahasiswa BK pada test set, maka:
+
+8/9 = 88.89%
+
+dan:
+
+9/9 = 100%
+
+Artinya satu mahasiswa saja mengubah Recall hampir 11 poin persentase.
+
+Jadi:
+
+100%
+
+dan:
+
+88.89%
+
+sebenarnya secara statistik bisa tidak terlalu jauh jika denominatornya kecil.
+
+7. Saya justru menyarankan menambahkan Confidence Interval
+
+Ini menurut saya akan membuat penelitian Anda jauh lebih serius.
+
+Jangan hanya tulis:
+
+Recall = 88.89%
+
+Tambahkan misalnya:
+
+Recall = 88.89% (95% CI: ...)
+
+Begitu juga untuk:
+
 Balanced Accuracy
-F2 BK
+F2
+ROC-AUC
 PR-AUC
-Precision BK
-SD antar outer fold
 
-Lalu:
+Untuk dataset kecil, confidence interval akan membantu menunjukkan ketidakpastian estimasi.
 
-pilih kandidat terbaik berdasarkan outer CV.
+Bahkan kalau intervalnya lebar, itu bukan kelemahan yang harus disembunyikan. Justru menunjukkan Anda memahami keterbatasan data.
 
-Setelah kandidat dibekukan:
+8. Nested Cross-Validation Anda bagus, tetapi jangan otomatis menyebut “zero leakage”
 
-MODEL FINAL
+Ini juga harus diperhalus.
+
+Kalimat:
+
+“membuktikan performa ... adalah murni, sah”
+
+terlalu absolut.
+
+Nested CV membantu mencegah optimistic bias dari model selection/hyperparameter tuning, tetapi tidak otomatis menghapus semua kemungkinan leakage.
+
+Misalnya:
+
+Kasus 1 — feature engineering dilakukan sebelum CV
+
+Kalau Anda melakukan:
+
+seluruh dataset
 ↓
-fit seluruh training
+hitung mean/std/completion
 ↓
-HOLDOUT
+baru split CV
 
-Dan holdout hanya dibaca sekali.
+perlu diperiksa apakah ada informasi dari validation fold yang masuk ke training fold.
 
-Laporan Anda sendiri sudah menetapkan prinsip yang sama, yaitu test tidak digunakan untuk memilih threshold atau fitur.
+Kasus 2 — pemilihan fitur dilakukan sebelum CV
 
-12. Bagaimana saya melihat hasil sekarang?
+Misalnya:
 
-Dari log yang Anda tunjukkan:
+seluruh data
+↓
+pilih 6 fitur terbaik
+↓
+nested CV
 
-RF + SMOTE ~0.40 Recall
-RF + ClassWeight ~0.42-0.46 Recall
-DT + SMOTE ~0.48 Recall
+ini juga bisa menimbulkan leakage dalam feature selection.
 
-Ini sebenarnya memberi petunjuk awal bahwa:
+Kasus 3 — threshold dipilih berdasarkan seluruh dataset
 
-Class Weight mungkin lebih cocok daripada SMOTE pada sebagian konfigurasi Anda.
+Ini bahkan lebih penting.
 
-Tetapi saya belum akan menyebutnya pemenang karena eksperimennya dihentikan di tengah jalan.
+Kalau:
 
-Yang jelas, saya tidak melihat alasan untuk memaksakan SMOTE hanya karena dataset imbalance.
+seluruh dataset
+↓
+coba berbagai threshold
+↓
+pilih 83 karena paling bagus
+↓
+nested CV
 
-13. Saya juga tidak akan mengejar angka 0.975 lagi
+maka label construction sendiri sudah memanfaatkan seluruh data.
 
-Baseline lama Anda memang sangat tinggi, tetapi desain penelitian terbaru sudah menunjukkan bahwa pada dataset kecil, holdout dan CV bisa menghasilkan variasi cukup besar. Laporan penelitian Anda sendiri mencatat RF S3 memperoleh Test Balanced Accuracy 75%, sementara nested CV 0,6224, dan menekankan agar keduanya dibaca bersama.
+Jadi nested CV bukan obat untuk semua bentuk leakage.
 
-Jadi target saya untuk eksperimen baru bukan:
+9. Masalah paling besar untuk EWS: temporal leakage
 
-0.975
+Ini menurut saya malah lebih penting daripada SMOTE.
+
+Anda mengatakan EWS menggunakan:
+
+Early_Performance_Composite
+
+berdasarkan:
+
+2–3 minggu pertama.
+
+Itu bagus.
+
+Tetapi Anda harus mendefinisikan dengan sangat tegas:
+
+Pada saat minggu ke-2, model hanya boleh melihat informasi yang tersedia sampai minggu ke-2.
+
+Bukan:
+
+mahasiswa
+→ semua nilai semester
+→ hitung Early_Performance_Composite
 
 melainkan:
 
-Apakah kita bisa meningkatkan RF/DT dari baseline 75% Balanced Accuracy dan 60% Recall BK secara valid dan stabil?
+Minggu 1
+↓
+feature week 1
+↓
+Minggu 2
+↓
+feature week 1–2
+↓
+prediksi risiko
 
-Kalau ternyata:
+Atau:
 
-CV = 0.70
-Test = 0.74
-Recall = 70%
+Minggu 3
+↓
+feature minggu 1–3
+↓
+prediksi
 
-saya akan jauh lebih percaya pada itu daripada:
+Ini yang membuatnya benar-benar menjadi Early Warning System.
 
-CV = 0.90
-Test = 0.60 14. Desain final yang saya rekomendasikan
+10. Saya juga mempertanyakan Laporan_Mean
 
-Ini yang menurut saya paling pas untuk penelitian Anda:
+Ini sangat menarik secara ilmiah.
 
-                    89 MAHASISWA
+Anda mengatakan:
+
+Laporan_Mean menjadi feature paling dominan.
+
+Saya tidak akan langsung mengatakan:
+
+“model malas”
+
+atau:
+
+“kalkulator reaktif”.
+
+Sebenarnya ada kemungkinan yang lebih fundamental.
+
+Kalau Laporan_Mean merupakan komponen pembentuk nilai akhir/kompetensi, maka model memang secara alami akan menemukan bahwa Laporan_Mean sangat berkorelasi dengan target.
+
+Itu bukan kecerdasan model.
+
+Itu bisa merupakan target proximity.
+
+Misalnya target Anda:
+
+Final Score =
+40% Laporan
+30% TP
+20% Ujian
+10% Presensi
+
+lalu model diberi:
+
+Laporan_Mean
+
+tentu model akan sangat mudah memprediksi Final Score.
+
+Jadi pertanyaan reviewer:
+
+“Apa yang sebenarnya diprediksi? Kompetensi mahasiswa atau komponen dari nilai kompetensi?”
+
+Ini pertanyaan yang sangat penting.
+
+11. Ini justru bisa menjadi kontribusi penelitian Anda
+
+Anda dapat membagi eksperimen menjadi dua jenis.
+
+Model A — Full/retrospective prediction
+
+Menggunakan fitur akumulatif seperti:
+
+Laporan_Mean
+TP_Mean
+Attendance
+Completion
+Std
+
+Tujuannya:
+
+mengetahui kombinasi fitur yang paling mampu membedakan K dan BK.
+
+Model B — Genuine EWS
+
+Hanya menggunakan informasi sampai:
+
+minggu 2
+atau minggu 3.
+
+Misalnya:
+
+Early_Performance_Composite
+Early Attendance
+Early TP Completion
+Early Report Completion
+Early TP Mean
+Early Report Mean
+
+Tujuannya:
+
+mengetahui apakah risiko BK sudah dapat dideteksi sebelum semester berjalan jauh.
+
+Nah, ini jauh lebih kuat.
+
+Karena Anda tidak lagi sekadar berkata:
+
+“ML dapat memprediksi kompetensi.”
+
+Tetapi:
+
+“Seberapa dini kompetensi dapat diprediksi tanpa menggunakan informasi masa depan?”
+
+Itu pertanyaan penelitian yang jauh lebih menarik.
+
+12. Early_Performance_Composite juga harus diaudit
+
+Anda mengatakan:
+
+SHAP = 0.482
+
+dan menyimpulkan:
+
+“kegagalan adaptasi di dua minggu pertama adalah root cause”
+
+Ini terlalu kuat.
+
+SHAP tidak membuktikan:
+
+root cause.
+
+SHAP menunjukkan kontribusi fitur terhadap prediksi model, bukan hubungan kausal.
+
+Jadi:
+
+❌
+
+“Early Performance merupakan akar masalah kegagalan.”
+
+Lebih tepat:
+
+✅
+
+“Early Performance Composite merupakan fitur yang paling dominan dalam kontribusi prediktif model.”
+
+Kemudian:
+
+“Temuan ini mengindikasikan bahwa performa pada fase awal semester memiliki keterkaitan prediktif yang kuat dengan status kompetensi akhir.”
+
+Perbedaan kalimatnya kecil, tetapi secara ilmiah sangat besar.
+
+13. Bahkan SHAP 0.482 sendiri perlu konteks
+
+Jangan hanya mengatakan:
+
+SHAP = 0.482.
+
+Reviewer akan bertanya:
+
+0.482 dibandingkan apa?
+
+Anda sebaiknya menunjukkan:
+
+mean absolute SHAP;
+ranking fitur;
+distribusi SHAP;
+directionality;
+beeswarm plot;
+dependence plot untuk fitur utama.
+
+Misalnya:
+
+Early_Performance_Composite 0.482
+Laporan_Mean 0.309
+Performance_Std 0.187
+Attendance 0.0
+Completion 0.0
+
+Bagus.
+
+Tetapi kemudian tunjukkan:
+
+apakah nilai Early_Performance tinggi meningkatkan probabilitas K atau BK?
+
+Itu jauh lebih informatif.
+
+14. Saya juga akan mengubah istilah “pemenang mutlak” dan “State of The Art”
+
+Ini terlalu bombastis.
+
+Dari dataset:
+
+n = 89
+
+Anda tidak bisa mengatakan penelitian Anda menghasilkan:
+
+State of The Art
+
+karena SOTA berarti klaim komparatif terhadap penelitian/benchmark yang lebih luas.
+
+Lebih aman:
+
+best-performing configuration in this study
+
+atau:
+
+konfigurasi dengan performa terbaik pada eksperimen penelitian ini.
+
+Begitu juga:
+
+“nilai A dalam Machine Learning”
+
+sebaiknya dihilangkan.
+
+ROC-AUC 0.895 memang bagus, tetapi tidak ada standar ilmiah:
+
+ROC-AUC 0.895 = nilai A.
+
+15. Tabel Anda sendiri perlu diperiksa lagi
+
+Ada satu hal yang langsung menarik perhatian saya.
+
+Anda menulis:
+
+Skenario Model Fitur Recall BK Balanced Acc
+S3 DT 6 100% 77.78%
+S1 RF 3 88.89% 66.67%
+S2 RF 6 77.78% 77.78%
+S3 RF 6 77.78% 77.78%
+S4 RF 15 77.78% 72.22%
+S5 RF 20 77.78% 72.22%
+
+Di sini sebaiknya jangan hanya memilih pemenang berdasarkan Recall.
+
+Karena:
+
+S3 DT
+
+Recall BK = 100%
+
+tetapi:
+
+Balanced Accuracy = 77.78%
+
+sementara beberapa model:
+
+Recall = 77.78%
+
+Balanced Accuracy = 77.78%
+
+Artinya perlu ditunjukkan confusion matrix masing-masing.
+
+Untuk EWS saya malah ingin melihat:
+
+TP BK
+FN BK
+FP BK
+TN BK
+
+karena model yang Recall-nya 100% belum tentu paling praktis.
+
+Misalnya:
+
+Model A:
+Recall BK = 100%
+Precision BK = 50%
+
+Model B:
+Recall BK = 89%
+Precision BK = 90%
+
+Untuk intervensi akademik, Model B bisa jadi lebih berguna karena tidak terlalu banyak memberikan false alarm.
+
+16. Tambahkan Precision dan F2 secara eksplisit
+
+Karena Anda mendefinisikan BK sebagai positive class, tabel final sebaiknya minimal:
+
+Metric Score
+Recall BK 88.89%
+Precision BK ...
+F1 BK ...
+F2 BK 0.851
+Specificity ...
+Balanced Accuracy 77.78%
+ROC-AUC 0.895
+PR-AUC ...
+
+Kemudian confusion matrix.
+
+Ini akan membuat klaim EWS jauh lebih solid.
+
+17. PR-AUC justru sangat menarik untuk Anda
+
+Karena fokus Anda adalah:
+
+BK detection
+
+sebenarnya PR-AUC sering lebih informatif daripada hanya ROC-AUC ketika positive class menjadi fokus.
+
+Namun karena distribusi Anda sudah hampir 50:50, ROC-AUC tetap relevan.
+
+Saya akan mempertahankan keduanya:
+
+ROC-AUC → diskriminasi global
+
+PR-AUC → kemampuan mendeteksi kelas yang menjadi fokus
+
+18. Saya sangat menyarankan baseline yang sederhana
+
+Jangan hanya:
+
+Decision Tree vs Random Forest.
+
+Tambahkan baseline:
+
+Dummy Classifier
+
+Misalnya:
+
+most frequent
+
+atau:
+
+stratified
+
+Supaya pembaca tahu apakah model benar-benar memberikan nilai tambah.
+
+Kemudian:
+
+Dummy
+Logistic Regression
+Decision Tree
+Random Forest
+
+Tidak perlu puluhan algoritma.
+
+Justru sedikit model tetapi metodologinya kuat lebih bagus untuk penelitian Anda.
+
+19. Satu hal lagi: “kompetensi” harus benar-benar didefinisikan dengan sangat kuat
+
+Ini fundamental.
+
+Saat ini:
+
+K = ≥83
+BK = <83
+
+Tetapi reviewer akan bertanya:
+
+Mengapa 83?
+
+Dan lebih penting:
+
+Apakah nilai akhir benar-benar merepresentasikan kompetensi?
+
+Karena:
+
+nilai ≠ kompetensi secara otomatis.
+
+Anda perlu mendefinisikan:
+
+Kompetensi operasional dalam penelitian ini direpresentasikan melalui...
+
+Misalnya berdasarkan:
+
+rubrik kompetensi;
+threshold dosen;
+skor akhir;
+capaian minimum;
+atau kriteria resmi mata kuliah.
+
+Ini membuat target Anda legitimate.
+
+20. Saya akan mengubah framing penelitian
+
+Menurut saya penelitian Anda lebih kuat jika bukan dijual sebagai penelitian “mencari algoritma terbaik”.
+
+Framing terbaik justru:
+
+Early prediction of student competency using behavioral/academic activity features with explainable machine learning
+
+Kemudian ML adalah alatnya.
+
+Struktur kontribusinya menjadi:
+
+Research Question 1
+
+Apakah aktivitas akademik mahasiswa dapat digunakan untuk mendeteksi status kompetensi?
+
+Research Question 2
+
+Seberapa dini status tersebut dapat diprediksi?
+
+Research Question 3
+
+Fitur apa yang paling berkontribusi terhadap prediksi risiko BK?
+
+Research Question 4
+
+Apakah konfigurasi EWS berbasis aktivitas awal mampu mempertahankan performa tanpa synthetic oversampling?
+
+Menurut saya ini jauh lebih kuat.
+
+21. Bahkan saya melihat desain eksperimen yang lebih kuat dari versi Anda sekarang
+
+Saya akan membentuk penelitian seperti ini:
+
+                 DATA 89 MAHASISWA
                          │
-                  Stratified Split
-                   80%       20%
-                    │          │
-                  TRAIN       TEST
-                    │          │
-              Nested CV       │
-              Outer 5-fold     │
-                    │          │
-             Inner 3-fold      │
-                    │          │
-        ┌───────────┼──────────┐
-        │           │          │
-      None        SMOTE    ClassWeight
-        │           │          │
-        └───────────┼──────────┘
-                    │
-              ┌─────┴─────┐
-              │           │
-             DT          RF
-              │           │
-         Hyperparameter tuning
-              │
-         Threshold tuning
-              │
-          Outer validation
-              │
-       pilih kandidat final
-              │
-        ───────┴────────
-              │
-          LOCK MODEL
-              │
-          HOLDOUT TEST
-              │
-     ┌────────┼──────────┐
-     │        │          │
+                         ▼
+              Definisi Kompetensi
+                 Threshold = 83
+                         │
+                         ▼
+             ┌────────────────────┐
+             │   Feature Design   │
+             └────────────────────┘
+                  │            │
+          Retrospective       Early
+             Features        Features
+                  │            │
+                  ▼            ▼
+                 S3          S3_E
+                  │            │
+                  └──────┬─────┘
+                         ▼
+               Decision Tree / RF
+                         │
+                         ▼
+            Nested Stratified CV
+                         │
+                         ▼
+                 Final Holdout
+                         │
+              ┌──────────┴──────────┐
+              ▼                     ▼
+        Performance             Explainability
+       Recall/F2/AUC           SHAP Analysis
+              │                     │
+              └──────────┬──────────┘
+                         ▼
+                EWS Interpretation
+                         │
+                         ▼
+              Early-risk detection
 
-Recall Bal Acc PR-AUC
-│ │ │
-└────────┼──────────┘
-│
-Confusion Matrix
-│
-SHAP + Error
-Dan urutan eksperimen Anda sekarang seharusnya:
+Dan S3_E menjadi kontribusi utama, bukan sekadar model dengan skor tertinggi.
 
-Pertama: perbaiki/cek fungsi threshold berdasarkan p_BK.
+22. Hal yang menurut saya paling kuat dari penelitian Anda
 
-Kedua: kecilkan inner CV menjadi 3-fold.
+Ini justru bukan angka:
 
-Ketiga: bandingkan None vs SMOTE vs ClassWeight.
+ROC-AUC 0.895
 
-Keempat: gunakan parameter konservatif DT dan RF seperti di atas.
+atau:
 
-Kelima: jalankan ulang hanya RF + DT.
+Recall 88.89%.
 
-Keenam: pilih kandidat berdasarkan outer CV, bukan test.
+Hal paling menarik adalah pertanyaan:
 
-Ketujuh: baru evaluasi holdout.
+Apakah sinyal risiko ketidakkompetenan sudah terlihat pada 2–3 minggu pertama?
 
-Kesimpulan saya
+Kalau eksperimen Anda benar-benar membuktikan bahwa:
 
-Tidak, saya tidak menyarankan Anda sekadar "membalancekan dataset".
+Week 2–3 features
+↓
+88.89% BK recall
+↓
+tanpa SMOTE
+↓
+tanpa informasi masa depan
+↓
+nested CV + untouched holdout
 
-Untuk 89 mahasiswa, saya justru menyarankan:
+maka itu jauh lebih bernilai secara ilmiah daripada sekadar mendapatkan accuracy tinggi.
 
-RF + ClassWeight sebagai kandidat utama, RF + SMOTE sebagai pembanding, DT + ClassWeight sebagai pembanding non-ensemble, dan DT + SMOTE sebagai eksperimen tambahan.
+23. Tetapi saya akan menghapus beberapa frase dari laporan sekarang
 
-Dengan parameter dangkal dan konservatif, inner CV 3-fold, threshold CV-based, dan holdout dikunci.
+Saya tidak menyarankan menggunakan:
 
-Yang paling penting dari semuanya: audit kode threshold Anda sebelum menjalankan eksperimen baru. Dari log Threshold=0.68–0.80 saya justru lebih curiga pada arah probabilitas kelas dan mekanisme threshold daripada langsung menyalahkan imbalance. Kalau bagian itu ternyata terbalik, Anda bisa menghabiskan berjam-jam tuning model untuk memperbaiki masalah yang sebenarnya ada satu atau dua baris di kode.
+“secara ajaib”
+
+“distribusi Gaussian yang ideal”
+
+“pemenang mutlak”
+
+“State of The Art”
+
+“Dewa”
+
+“kalkulator mati”
+
+“akar masalah”
+
+“membuktikan secara matematis ... root cause”
+
+“nilai A dalam Machine Learning”
+
+“murni, sah”
+
+Bahasa tersebut bagus untuk presentasi informal, tetapi untuk manuskrip ilmiah justru dapat membuat reviewer merasa overclaiming.
+
+Gunakan:
+
+menunjukkan
+
+mengindikasikan
+
+memiliki kontribusi prediktif tertinggi
+
+konfigurasi terbaik dalam penelitian ini
+
+berkorelasi dengan
+
+berpotensi digunakan sebagai indikator dini
+
+Itu jauh lebih aman.
+
+24. Penilaian saya terhadap kondisi penelitian saat ini
+
+Kalau saya memberikan penilaian kasar dari sisi kesiapan ilmiah:
+
+Aspek Penilaian
+Relevansi masalah 9/10
+Ide EWS 9/10
+Pemilihan metrik 8.5/10
+Explainable AI 8.5/10
+Penggunaan nested CV 8.5/10
+Penanganan imbalance 8/10
+Feature engineering 8/10
+Validitas threshold 83 6/10
+Validitas klaim kausal SHAP 5/10
+Kekuatan statistik karena n=89 6/10
+Validasi temporal EWS harus diperkuat
+Gaya penulisan akademik 6/10
+
+Jadi menurut saya, penelitiannya sendiri sudah menarik; manuskripnya yang masih perlu didisiplinkan secara ilmiah.
+
+25. Kesimpulan saya
+
+Saya tidak akan membuang arah penelitian ini. Justru saya akan mempertahankan inti besarnya:
+
+Decision Tree + Early Performance + Explainable AI + Early Warning System + tanpa synthetic oversampling.
+
+Tetapi saya akan melakukan empat revisi prioritas:
+
+1. Justifikasi threshold 83 harus berasal dari domain/akademik, bukan karena kelas menjadi 45:44.
+
+2. Pisahkan jelas model retrospektif dengan model genuine EWS. Model EWS hanya boleh menggunakan informasi yang tersedia sampai minggu prediksi.
+
+3. Jangan menyebut SHAP sebagai bukti sebab-akibat. SHAP = kontribusi prediktif, bukan root cause.
+
+4. Perkuat validasi karena hanya ada 89 mahasiswa. Minimal confusion matrix, precision/recall/F2, confidence interval, stratified nested CV yang benar, dan holdout yang benar-benar untouched.
+
+Dan ada satu hal yang menurut saya sangat penting: sebelum menyebut S3_E sebagai model final, kita perlu audit formula setiap fitur—khususnya Early_Performance_Composite, Laporan_Mean, Performance_Std, completion rate, serta cara threshold 83 dibentuk—untuk memastikan tidak ada target leakage maupun temporal leakage. Itu bisa mengubah kesimpulan penelitian secara material.
+
+Kalau empat hal itu beres, menurut saya penelitian Anda akan terlihat jauh lebih matang daripada sekadar eksperimen klasifikasi mahasiswa biasa.

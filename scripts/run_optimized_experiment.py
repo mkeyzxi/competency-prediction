@@ -41,7 +41,7 @@ def run_cv_experiment_matrix(df_featured, pop_name,
     """
     config = load_config(config_path)
 
-    model_names = ['DecisionTree', 'RandomForest']
+    model_names = ['Dummy', 'DecisionTree', 'RandomForest']
     balancing_strategies = ['None']
     scenarios = ['S3', 'S3_A', 'S3_B', 'S3_C', 'S3_D', 'S3_E', 'S3_EWS']
 
@@ -229,9 +229,19 @@ def final_holdout_evaluation(best_config, df_featured,
     )
 
     print("\n--- HOLDOUT RESULTS ---")
+    
+    # Print Confusion Matrix Breakdown First
+    print(f"  Confusion Matrix: TP={test_results.get('test_tp', 0)}, FN={test_results.get('test_fn', 0)}, FP={test_results.get('test_fp', 0)}, TN={test_results.get('test_tn', 0)}")
+    print(f"  Specificity:      {test_results.get('test_specificity', 0.0):.4f}")
+    
     for k, v in sorted(test_results.items()):
+        if 'ci' in k or 'tp' in k or 'tn' in k or 'fp' in k or 'fn' in k or k == 'test_specificity':
+            continue # We print CIs separately
         if isinstance(v, float):
-            print(f"  {k}: {v:.4f}")
+            ci_str = ""
+            if f"{k}_ci_lower" in test_results:
+                ci_str = f" (95% CI: [{test_results[f'{k}_ci_lower']:.4f}, {test_results[f'{k}_ci_upper']:.4f}])"
+            print(f"  {k}: {v:.4f}{ci_str}")
         else:
             print(f"  {k}: {v}")
 
@@ -266,61 +276,86 @@ def final_holdout_evaluation(best_config, df_featured,
 
 def main():
     print("=" * 60)
-    print("OPTIMASI TERKONTROL — EWS Competency Prediction")
-    print("Protokol: Model selected from CV only, holdout 1× at end")
+    print("MULTI-CUTOFF EWS EXPERIMENT")
+    print("Protokol: Evaluasi S3_E (DecisionTree) pada W1, W2, W3, C_Full")
     print("=" * 60)
     print()
 
     pop = 'n89'
-    file_path = 'data/features/C_Full_S3_EWS.csv'
-
-    if not os.path.exists(file_path):
-        print(f"Dataset not found. Run src/build_dataset.py and src/features.py first.")
-        return
-
-    df = pd.read_csv(file_path)
-    print(f"Loaded: {file_path} ({df.shape})")
-
-    # Phase 1: CV experiment matrix
-    df_cv, X_train_full, X_test_full, y_train, y_test = \
-        run_cv_experiment_matrix(df, pop)
-
-    # Phase 2: Select best model (from CV only!)
-    best_config = select_best_model(df_cv)
-
-    # Phase 3: Final holdout evaluation (exactly once)
-    final_model, test_results, y_pred = final_holdout_evaluation(
-        best_config, df, X_train_full, X_test_full, y_train, y_test
-    )
-
-    # Save baseline comparison
-    baseline = {
-        'baseline_recall_bk': 0.60,
-        'baseline_balanced_accuracy': 0.75,
-        'baseline_pr_auc': 0.542,
-        'new_recall_bk': test_results.get('test_recall_bk', 0),
-        'new_balanced_accuracy': test_results.get('test_balanced_accuracy', 0),
-        'new_pr_auc': test_results.get('test_pr_auc', 0),
-    }
-    baseline['recall_bk_improvement'] = baseline['new_recall_bk'] - baseline['baseline_recall_bk']
-    baseline['balanced_acc_improvement'] = baseline['new_balanced_accuracy'] - baseline['baseline_balanced_accuracy']
-
-    with open('results/final/baseline_comparison.json', 'w') as f:
-        json.dump(baseline, f, indent=2)
-
+    cutoffs = ['W1', 'W2', 'W3', 'C_Full']
+    scenario = 'S3_E'
+    model_name = 'DecisionTree'
+    balancing = 'None'
+    
+    cutoff_results = []
+    
+    for cutoff in cutoffs:
+        file_path = f'data/features/{cutoff}_{scenario}.csv'
+        if not os.path.exists(file_path):
+            print(f"Dataset {file_path} not found. Skipping...")
+            continue
+            
+        df = pd.read_csv(file_path)
+        print(f"\n--- Menguji Cutoff: {cutoff} ---")
+        
+        # We run the pipeline for this cutoff
+        # We manually construct best_config to force selection of S3_E and DecisionTree
+        X_train_full, X_test_full, y_train, y_test = get_train_test_split(df)
+        
+        features = get_features(scenario)
+        available_features = [f for f in features if f in X_train_full.columns]
+        X_train = X_train_full[available_features]
+        X_test = X_test_full[available_features]
+        
+        # Inner CV for Threshold
+        base_model = get_model(model_name, balancing)
+        tuned_model, tuned_params = tune_hyperparameters(
+            base_model, model_name, X_train, y_train, balancing=balancing
+        )
+        _, best_threshold, _ = evaluate_thresholds(
+            tuned_model, X_train, y_train, optimize_for='f2_bk'
+        )
+        
+        # Outer CV for Metrics (just to log them)
+        cv_res = evaluate_cv(base_model, model_name, X_train, y_train)
+        
+        best_config = {
+            'scenario': scenario,
+            'model': model_name,
+            'balancing': balancing,
+            'best_threshold': best_threshold,
+            'cv_recall_bk_mean': cv_res['cv_recall_bk_mean'],
+            'cv_balanced_accuracy_mean': cv_res['cv_balanced_accuracy_mean'],
+            'cv_f2_bk_mean': cv_res['cv_f2_bk_mean'],
+            'best_params': json.dumps(tuned_params) if tuned_params else '{}'
+        }
+        
+        final_model, test_results, y_pred = final_holdout_evaluation(
+            best_config, df, X_train_full, X_test_full, y_train, y_test
+        )
+        
+        cutoff_results.append({
+            'Cutoff': cutoff,
+            'Threshold': best_threshold,
+            'CV_Recall_BK': cv_res['cv_recall_bk_mean'],
+            'CV_Balanced_Acc': cv_res['cv_balanced_accuracy_mean'],
+            'Test_Recall_BK': test_results['test_recall_bk'],
+            'Test_Specificity': test_results.get('test_specificity', 0),
+            'Test_Balanced_Acc': test_results['test_balanced_accuracy'],
+            'Test_TP': test_results.get('test_tp', 0),
+            'Test_FN': test_results.get('test_fn', 0),
+            'Test_FP': test_results.get('test_fp', 0),
+            'Test_TN': test_results.get('test_tn', 0)
+        })
+        
+    df_res = pd.DataFrame(cutoff_results)
     print("\n" + "=" * 60)
-    print("BASELINE COMPARISON")
+    print("HASIL KOMPARASI MULTI-CUTOFF")
     print("=" * 60)
-    print(f"Recall BK:    {baseline['baseline_recall_bk']:.1%} -> "
-          f"{baseline['new_recall_bk']:.1%} "
-          f"({'+' if baseline['recall_bk_improvement'] > 0 else '-'}"
-          f"{abs(baseline['recall_bk_improvement']):.1%})")
-    print(f"Balanced Acc: {baseline['baseline_balanced_accuracy']:.1%} -> "
-          f"{baseline['new_balanced_accuracy']:.1%} "
-          f"({'+' if baseline['balanced_acc_improvement'] > 0 else '-'}"
-          f"{abs(baseline['balanced_acc_improvement']):.1%})")
-    print(f"PR-AUC:       {baseline['baseline_pr_auc']:.3f} -> "
-          f"{baseline['new_pr_auc']:.3f}")
+    print(df_res.to_string(index=False))
+    
+    os.makedirs('results/final', exist_ok=True)
+    df_res.to_csv('results/final/cutoff_comparison.csv', index=False)
 
 
 if __name__ == "__main__":
