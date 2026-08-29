@@ -9,9 +9,9 @@ def create_features():
     df_students = pd.read_csv('data/processed/students_master.csv')
     
     cutoffs = {
-        'C1': {'Attendance': 2, 'Laporan': 1, 'TP': 1},
-        'C2': {'Attendance': 4, 'Laporan': 2, 'TP': 2},
-        'C3': {'Attendance': 5, 'Laporan': 3, 'TP': 3},
+        'W1': {'Attendance': 1, 'Laporan': 1, 'TP': 1},
+        'W2': {'Attendance': 2, 'Laporan': 2, 'TP': 2},
+        'W3': {'Attendance': 3, 'Laporan': 3, 'TP': 3},
         'C_Full': {'Attendance': 7, 'Laporan': 4, 'TP': 4}
     }
     

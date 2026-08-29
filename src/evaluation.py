@@ -12,6 +12,7 @@ from sklearn.metrics import (
     confusion_matrix, make_scorer, balanced_accuracy_score, roc_auc_score,
     average_precision_score, fbeta_score
 )
+from sklearn.utils import resample
 from sklearn.model_selection import cross_validate, RepeatedStratifiedKFold
 from src.utils import load_config
 from src.tuning import build_search_estimator
@@ -139,6 +140,47 @@ def evaluate_test(model, X_test, y_test, scenario_name, model_name,
 
     # Confusion Matrix
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
+    tp_bk, fn_bk, fp_bk, tn_bk = cm.ravel()
+    
+    results.update({
+        'test_tn': int(tn_bk),
+        'test_fp': int(fp_bk),
+        'test_fn': int(fn_bk),
+        'test_tp': int(tp_bk),
+        'test_specificity': tn_bk / (tn_bk + fp_bk) if (tn_bk + fp_bk) > 0 else 0.0,
+    })
+
+    # Bootstrap Confidence Intervals (95%)
+    n_iterations = 1000
+    boot_recalls = []
+    boot_bal_acc = []
+    boot_f2 = []
+    
+    X_test_arr = np.array(X_test)
+    y_test_arr = np.array(y_test)
+    
+    for i in range(n_iterations):
+        X_bs, y_bs = resample(X_test_arr, y_test_arr, random_state=i)
+        if threshold is not None and hasattr(model, "predict_proba"):
+            try:
+                p_bk_bs = model.predict_proba(X_bs)[:, 0]
+                y_pred_bs = np.where(p_bk_bs >= threshold, 0, 1)
+            except Exception:
+                y_pred_bs = model.predict(X_bs)
+        else:
+            y_pred_bs = model.predict(X_bs)
+            
+        boot_recalls.append(recall_score(y_bs, y_pred_bs, pos_label=0, zero_division=0))
+        boot_bal_acc.append(balanced_accuracy_score(y_bs, y_pred_bs))
+        boot_f2.append(fbeta_score(y_bs, y_pred_bs, beta=2, pos_label=0, zero_division=0))
+        
+    results['test_recall_bk_ci_lower'] = np.percentile(boot_recalls, 2.5)
+    results['test_recall_bk_ci_upper'] = np.percentile(boot_recalls, 97.5)
+    results['test_balanced_accuracy_ci_lower'] = np.percentile(boot_bal_acc, 2.5)
+    results['test_balanced_accuracy_ci_upper'] = np.percentile(boot_bal_acc, 97.5)
+    results['test_f2_bk_ci_lower'] = np.percentile(boot_f2, 2.5)
+    results['test_f2_bk_ci_upper'] = np.percentile(boot_f2, 97.5)
+
     plt.figure(figsize=(6, 4))
 
     thresh_label = f' (t={threshold})' if threshold is not None else ''

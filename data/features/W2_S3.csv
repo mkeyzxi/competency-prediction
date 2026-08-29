@@ -1,0 +1,90 @@
+Nama,Kelas,Competency_Label,Final_Score,Final_Status,Label_Reason,Attendance_PreFinal_Rate,TP_Mean,Laporan_Mean,TP_Completion_Rate,Laporan_Completion_Rate,Performance_Std
+ABDUL MUJIB SUPARDIN,A,0,80.0,Mengikuti Final,Final_Score<83,1.0,50.0,87.5,1.0,1.0,18.833148966649205
+ADEN HENDRAWAN M,A,1,85.0,Mengikuti Final,Final_Score>=83,1.0,52.5,50.0,1.0,1.0,2.165063509461097
+AMITHA WAHDINI,A,0,80.0,Mengikuti Final,Final_Score<83,1.0,50.0,70.0,1.0,1.0,17.320508075688775
+MUH. YUSUF RIS KILKODA,A,0,80.0,Mengikuti Final,Final_Score<83,1.0,55.0,77.5,1.0,1.0,14.737282653189496
+MUHAMMAD HAIKAL,A,0,82.0,Mengikuti Final,Final_Score<83,1.0,50.0,70.0,1.0,1.0,17.320508075688775
+NABILA AULIA SABITA,A,0,82.0,Mengikuti Final,Final_Score<83,1.0,85.0,87.5,1.0,1.0,6.49519052838329
+NUR SYAFITRI,A,0,82.0,Mengikuti Final,Final_Score<83,1.0,55.0,86.5,1.0,1.0,23.805199011980555
+NURUL FAJRIN RAMADHANI,A,0,81.0,Mengikuti Final,Final_Score<83,1.0,75.0,90.0,1.0,1.0,8.2915619758885
+SALSABILLAH ASIFAH JUSMAN,A,0,80.0,Mengikuti Final,Final_Score<83,1.0,50.0,70.0,1.0,1.0,17.320508075688775
+SRI ENRI ANANDAYANI,A,0,78.0,Mengikuti Final,Final_Score<83,1.0,50.0,87.5,1.0,1.0,19.48557158514987
+Muhammad Alif Hardhy Anugrah,A,0,,Tidak Mengikuti Final,No_Final_Attendance,0.0,,,0.0,0.0,
+Muh. Anwar Syafriawan,A,0,,Tidak Mengikuti Final,No_Final_Attendance,0.0,,,0.0,0.0,
+AL ISHAN ANUGRAH,B,0,82.0,Mengikuti Final,Final_Score<83,1.0,50.0,50.0,1.0,1.0,0.0
+ANDI MUHAMMAD FERYL AMIRAWAN,B,0,82.0,Mengikuti Final,Final_Score<83,1.0,80.0,71.5,1.0,1.0,21.194043974664204
+ATSILAH MA'ISAH,B,1,84.0,Mengikuti Final,Final_Score>=83,1.0,50.0,70.0,1.0,1.0,17.320508075688775
+FAIDZ AL-HAFIDZ,B,1,83.0,Mengikuti Final,Final_Score>=83,1.0,55.0,70.0,1.0,1.0,16.393596310755
+FATURRAHMAN AHMADI,B,0,70.0,Mengikuti Final,Final_Score<83,1.0,0.0,0.0,1.0,1.0,0.0
+FAUZAN ADZIM,B,0,70.0,Mengikuti Final,Final_Score<83,1.0,0.0,0.0,1.0,1.0,0.0
+FEBI KIRANA,B,0,82.0,Mengikuti Final,Final_Score<83,1.0,50.0,85.0,1.0,1.0,17.853571071357123
+KHAERUL ASLAN,B,0,80.0,Mengikuti Final,Final_Score<83,1.0,65.0,0.0,1.0,1.0,34.18698582794336
+M. AL FAIZ,B,1,84.0,Mengikuti Final,Final_Score>=83,1.0,95.0,90.0,1.0,1.0,5.5901699437494745
+MUH SYAMSUL JAMIL,B,1,83.0,Mengikuti Final,Final_Score>=83,1.0,25.0,70.0,1.0,1.0,31.917863337009262
+MUH. ABDILLAH HM.,B,0,80.0,Mengikuti Final,Final_Score<83,1.0,65.0,50.0,1.0,1.0,12.99038105676658
+MUHAMMAD AIMAN YAZID SYAM,B,1,84.0,Mengikuti Final,Final_Score>=83,1.0,60.0,70.0,1.0,1.0,16.583123951777
+MUHAMMAD ZULFIKAR HASRUL,B,1,83.0,Mengikuti Final,Final_Score>=83,1.0,70.0,85.0,1.0,1.0,8.2915619758885
+MUNAWAR B.,B,1,84.0,Mengikuti Final,Final_Score>=83,1.0,85.0,71.0,1.0,1.0,16.792855623746664
+MUSYAYYADA,B,1,84.0,Mengikuti Final,Final_Score>=83,1.0,90.0,70.0,1.0,1.0,18.708286933869708
+MUZAMIL SULIMAN ABDELHAMID MOHAMED,B,0,80.0,Mengikuti Final,Final_Score<83,1.0,50.0,88.0,1.0,1.0,19.05255888325765
+MUZAMMILUL KHAIR,B,0,81.0,Mengikuti Final,Final_Score<83,1.0,50.0,70.0,1.0,1.0,17.320508075688775
+NURAISYAH. S,B,0,82.0,Mengikuti Final,Final_Score<83,1.0,75.0,50.0,1.0,1.0,12.99038105676658
+RAHUL MUHAMMAD AKHYAR,B,0,82.0,Mengikuti Final,Final_Score<83,1.0,50.0,50.0,1.0,1.0,0.0
+RIYADHUL GINAN ARHAM,B,1,83.0,Mengikuti Final,Final_Score>=83,1.0,45.0,70.0,1.0,1.0,19.20286436967152
+SARAH FITRA RAMADHANI,B,0,82.0,Mengikuti Final,Final_Score<83,1.0,85.0,70.0,1.0,1.0,16.393596310755
+TSABITHA JAHRA,B,0,82.0,Mengikuti Final,Final_Score<83,1.0,90.0,84.0,1.0,1.0,8.774964387392123
+WIRA FADHIL,B,1,86.0,Mengikuti Final,Final_Score>=83,1.0,95.0,70.0,1.0,1.0,19.20286436967152
+ACHMAD ALFANI RIZKY,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,87.5,1.0,1.0,5.448623679425842
+ADELIA UTAMI PUTRI,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,92.5,1.0,1.0,2.165063509461097
+AFIQA AULIA AHSANI,C,1,86.0,Mengikuti Final,Final_Score>=83,1.0,90.0,85.0,1.0,1.0,4.330127018922194
+ANDI BASO DJIDAN HASRI,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,82.5,82.5,1.0,1.0,7.5
+ANDI MUHAMMAD AKRAM AKIL,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,65.0,75.0,1.0,1.0,11.726039399558575
+AURA ZAHRA SALSABILA,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,85.0,1.0,1.0,4.330127018922194
+DWI WAHYUNI,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,88.5,1.0,1.0,1.299038105676658
+HARUN AR RASYID,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,85.0,85.0,1.0,1.0,5.0
+HILDA INAYAH,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,85.0,92.5,1.0,1.0,5.448623679425842
+KHALIL FAHRI,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,92.5,1.0,1.0,2.165063509461097
+MIFTAHUL KHAIRAT,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,88.5,1.0,1.0,1.299038105676658
+MUH. KAMIL ARIF,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,85.0,87.5,1.0,1.0,6.49519052838329
+MUH. RIFAI RAMADHANI,C,0,81.0,Mengikuti Final,Final_Score<83,1.0,85.0,87.5,1.0,1.0,6.49519052838329
+MUHAMMAD FAUZAN RAMADHAN,C,0,80.0,Mengikuti Final,Final_Score<83,1.0,65.0,50.0,1.0,1.0,12.99038105676658
+NABIL HAKIM,C,1,86.0,Mengikuti Final,Final_Score>=83,1.0,90.0,89.0,1.0,1.0,0.5
+NASIRATUNNAS,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,90.0,1.0,1.0,2.1213203435596424
+NASSIR MUBARAK MOHAMMED IBRAHIM,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,65.0,50.0,1.0,1.0,12.99038105676658
+NUR HIKMAH,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,88.0,1.0,1.0,1.224744871391589
+NUR OKTAVIA HSB,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,85.0,1.0,1.0,4.330127018922194
+RIZQ KHALAD,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,82.5,1.0,1.0,6.49519052838329
+SAHRUL,C,1,83.0,Mengikuti Final,Final_Score>=83,1.0,90.0,85.0,1.0,1.0,4.330127018922194
+ST NURHADANIATI,C,0,81.0,Mengikuti Final,Final_Score<83,1.0,90.0,77.5,1.0,1.0,6.49519052838329
+USWATUN HASANAH,C,0,81.0,Mengikuti Final,Final_Score<83,1.0,90.0,83.5,1.0,1.0,4.085033659592048
+Ahmad Syahid,C,0,,Tidak Mengikuti Final,No_Final_Attendance,0.0,,,0.0,0.0,
+AHMAD ALDIALIF SJATTAR SOEATMOJO,D,0,0.0,Mengikuti Final,Final_Score<83,1.0,0.0,0.0,1.0,1.0,0.0
+AHMAD GIMNASTIAR,D,1,83.0,Mengikuti Final,Final_Score>=83,1.0,70.0,84.0,1.0,1.0,10.816653826391969
+ALYA SYAHWA,D,0,81.0,Mengikuti Final,Final_Score<83,1.0,70.0,87.5,1.0,1.0,16.723860200324566
+ANDIKA SAPUTRA ALMAR,D,1,84.0,Mengikuti Final,Final_Score>=83,1.0,50.0,80.0,1.0,1.0,15.0
+ASTRID ADELIA,D,0,0.0,Mengikuti Final,Final_Score<83,1.0,50.0,43.5,1.0,1.0,30.930365338935136
+DHIWA ALIEF CAPRILLO,D,1,87.0,Mengikuti Final,Final_Score>=83,1.0,65.0,75.0,1.0,1.0,12.24744871391589
+EZYA LASAHARI,D,0,81.0,Mengikuti Final,Final_Score<83,1.0,50.0,84.0,1.0,1.0,17.014699527173555
+GIFARI RAHMAN,D,1,83.0,Mengikuti Final,Final_Score>=83,1.0,70.0,85.0,1.0,1.0,16.393596310755
+MAIMUN NURUL IRSYAD,D,0,82.0,Mengikuti Final,Final_Score<83,1.0,60.0,87.5,1.0,1.0,15.562374497485916
+MUH.HAIKAL SOSSONG,D,0,82.0,Mengikuti Final,Final_Score<83,1.0,0.0,50.0,1.0,1.0,25.0
+MUH. LINGKAR FINANDHI,D,0,0.0,Mengikuti Final,Final_Score<83,1.0,0.0,0.0,1.0,1.0,0.0
+MUH. SYAHID RAMADHAN,D,0,81.0,Mengikuti Final,Final_Score<83,1.0,82.5,86.0,1.0,1.0,9.443913383762052
+MUHAMMAD HAIDAR ALI,D,0,0.0,Mengikuti Final,Final_Score<83,1.0,0.0,0.0,1.0,1.0,0.0
+MUHAMMAD MIRZA HAFIZ,D,0,0.0,Mengikuti Final,Final_Score<83,1.0,0.0,0.0,1.0,1.0,0.0
+MUHAMMAD RYAAS RAHMAT,D,1,90.0,Mengikuti Final,Final_Score>=83,1.0,60.0,60.0,1.0,1.0,0.0
+MUH. SYADIQIN DWI ALFARIZA DARWIS,D,0,81.0,Mengikuti Final,Final_Score<83,1.0,0.0,80.0,1.0,1.0,40.0
+NAYLA AINUNNISA,D,0,0.0,Mengikuti Final,Final_Score<83,1.0,0.0,0.0,1.0,1.0,0.0
+RIZQI RAMADHAN,D,1,84.0,Mengikuti Final,Final_Score>=83,1.0,82.5,90.0,1.0,1.0,4.14578098794425
+SITI HARDIANTI ASHARI,D,1,83.0,Mengikuti Final,Final_Score>=83,1.0,65.0,70.0,1.0,1.0,14.79019945774904
+Nurul Raehan,E,0,81.0,Mengikuti Final,Final_Score<83,1.0,55.0,82.5,1.0,1.0,14.922717580923388
+Nur Faiqatunnisa,E,1,84.0,Mengikuti Final,Final_Score>=83,1.0,90.0,87.0,1.0,1.0,2.598076211353316
+Siti Fatimah Aszhara,E,1,83.0,Mengikuti Final,Final_Score>=83,1.0,75.0,86.0,1.0,1.0,11.968709203585824
+Yunita Alfia Ningsi,E,1,84.0,Mengikuti Final,Final_Score>=83,1.0,80.0,84.0,1.0,1.0,8.48528137423857
+Warda Khairah,E,1,84.0,Mengikuti Final,Final_Score>=83,1.0,100.0,87.5,1.0,1.0,6.49519052838329
+Nurfahira,E,1,84.0,Mengikuti Final,Final_Score>=83,1.0,95.0,90.0,1.0,1.0,5.5901699437494745
+Andi Nur Ainun Inriani. S,E,0,82.0,Mengikuti Final,Final_Score<83,1.0,85.0,86.0,1.0,1.0,10.988630487917955
+Nur Zakiyah Tamsir,E,0,82.0,Mengikuti Final,Final_Score<83,1.0,75.0,79.5,1.0,1.0,19.30511590226798
+Tasya Sahwasal Sabila,E,1,84.0,Mengikuti Final,Final_Score>=83,1.0,100.0,90.0,1.0,1.0,5.0
+Mega Wahyuni,E,1,83.0,Mengikuti Final,Final_Score>=83,1.0,55.0,87.5,1.0,1.0,16.723860200324566
+Shalsabila M,E,0,82.0,Mengikuti Final,Final_Score<83,1.0,95.0,79.5,1.0,1.0,11.299889379989523
