@@ -9,8 +9,6 @@ NIM,Nama,Kelas,Final_Score,Final_Status,Label_Reason,Competency_Label
 60200123060,NURUL FAJRIN RAMADHANI,A,81.0,Mengikuti Final,Final_Score<83,0
 60200123075,SALSABILLAH ASIFAH JUSMAN,A,80.0,Mengikuti Final,Final_Score<83,0
 60200123065,SRI ENRI ANANDAYANI,A,78.0,Mengikuti Final,Final_Score<83,0
-Asisten 1,Muhammad Alif Hardhy Anugrah,A,,Tidak Mengikuti Final,No_Final_Attendance,0
-Asisten 2,Muh. Anwar Syafriawan,A,,Tidak Mengikuti Final,No_Final_Attendance,0
 60200123072,AL ISHAN ANUGRAH,B,82.0,Mengikuti Final,Final_Score<83,0
 60200123039,ANDI MUHAMMAD FERYL AMIRAWAN,B,82.0,Mengikuti Final,Final_Score<83,0
 60200123054,ATSILAH MA'ISAH,B,84.0,Mengikuti Final,Final_Score>=83,1
@@ -57,7 +55,6 @@ Asisten 2,Muh. Anwar Syafriawan,A,,Tidak Mengikuti Final,No_Final_Attendance,0
 60200123085,SAHRUL,C,83.0,Mengikuti Final,Final_Score>=83,1
 60200123009,ST NURHADANIATI,C,81.0,Mengikuti Final,Final_Score<83,0
 60200123003,USWATUN HASANAH,C,81.0,Mengikuti Final,Final_Score<83,0
-Asisten 2,Ahmad Syahid,C,,Tidak Mengikuti Final,No_Final_Attendance,0
 60200120056,AHMAD ALDIALIF SJATTAR SOEATMOJO,D,0.0,Mengikuti Final,Final_Score<83,0
 60200123078,AHMAD GIMNASTIAR,D,83.0,Mengikuti Final,Final_Score>=83,1
 60200123029,ALYA SYAHWA,D,81.0,Mengikuti Final,Final_Score<83,0
