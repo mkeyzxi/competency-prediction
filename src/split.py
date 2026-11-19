@@ -7,7 +7,11 @@ def get_train_test_split(df: pd.DataFrame, config_path: str = 'configs/experimen
     Performs train-test split according to config.
     Returns X_train, X_test, y_train, y_test
     """
-    config = load_config(config_path)
+    if config_path is None:
+        # Fallback defaults when called without a config file
+        config = {'split': {'test_size': 0.20, 'stratify': True}, 'random_state': 42}
+    else:
+        config = load_config(config_path)
     test_size = config['split']['test_size']
     random_state = config['random_state']
     stratify_flag = config['split']['stratify']

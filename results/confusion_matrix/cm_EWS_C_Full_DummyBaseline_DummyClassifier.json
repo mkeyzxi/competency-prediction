@@ -1,0 +1,23 @@
+{
+  "scenario": "EWS_C_Full_DummyBaseline",
+  "model": "DummyClassifier",
+  "threshold": null,
+  "confusion_matrix": {
+    "tp_bk": 0,
+    "fn_bk": 9,
+    "fp_bk": 0,
+    "tn_bk": 9
+  },
+  "metrics": {
+    "test_accuracy": 0.5,
+    "test_balanced_accuracy": 0.5,
+    "test_recall_bk": 0.0,
+    "test_precision_bk": 0.0,
+    "test_f1_bk": 0.0,
+    "test_f2_bk": 0.0,
+    "test_roc_auc": 0.5,
+    "test_pr_auc": 0.5,
+    "test_mcc": 0.0,
+    "test_specificity": 1.0
+  }
+}

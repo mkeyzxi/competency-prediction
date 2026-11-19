@@ -56,6 +56,9 @@ def main():
             if not row.notna().any() or not nama:
                 continue
                 
+            if 'asisten' in str(nim).lower() or 'asisten' in str(nama).lower():
+                continue
+                
             final_score = to_float(row[col_final])
             
             if pd.isna(final_score):
@@ -127,7 +130,7 @@ def main():
     print("Class Distribution:\n", df_students['Competency_Label'].value_counts())
     print("Label Reason Distribution:\n", df_students['Label_Reason'].value_counts())
     
-    assert len(df_students) == 89
+    assert len(df_students) == 86
     # Removed hardcoded assertions for specific class counts as the threshold was changed to 83
     
     df_students.to_csv('data/processed/students_master.csv', index=False)

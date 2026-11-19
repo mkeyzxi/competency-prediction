@@ -1,0 +1,57 @@
+{
+  "cutoff": "W3",
+  "model": "DecisionTree",
+  "scenario": "S3_E",
+  "balancing": "None",
+  "threshold": 0.2,
+  "n_features": 7,
+  "features": [
+    "Attendance_PreFinal_Rate",
+    "TP_Mean",
+    "Laporan_Mean",
+    "TP_Completion_Rate",
+    "Laporan_Completion_Rate",
+    "Performance_Std",
+    "Early_Performance_Composite"
+  ],
+  "cv_metrics": {
+    "recall_bk": 0.7980952380952381,
+    "recall_bk_std": 0.21998969260537574,
+    "balanced_accuracy": 0.6904761904761905,
+    "f2_bk": 0.749077714547539
+  },
+  "holdout_metrics": {
+    "test_accuracy": 0.7222222222222222,
+    "test_balanced_accuracy": 0.7222222222222222,
+    "test_precision_macro": 0.8214285714285714,
+    "test_recall_macro": 0.7222222222222222,
+    "test_f1_macro": 0.6989966555183946,
+    "test_recall_bk": 1.0,
+    "test_precision_bk": 0.6428571428571429,
+    "test_f1_bk": 0.782608695652174,
+    "test_f2_bk": 0.9,
+    "test_roc_auc": 0.7901234567901234,
+    "test_pr_auc": 0.7126984126984128,
+    "test_mcc": 0.5345224838248488,
+    "test_tn": 4,
+    "test_fp": 5,
+    "test_fn": 0,
+    "test_tp": 9,
+    "test_specificity": 0.4444444444444444,
+    "test_recall_bk_ci_lower": 1.0,
+    "test_recall_bk_ci_upper": 1.0,
+    "test_balanced_accuracy_ci_lower": 0.5555555555555556,
+    "test_balanced_accuracy_ci_upper": 0.8847222222222221,
+    "test_f2_bk_ci_lower": 0.7575757575757576,
+    "test_f2_bk_ci_upper": 0.9701492537313433,
+    "test_mcc_ci_lower": 0.24253562503633297,
+    "test_mcc_ci_upper": 0.7977240352174656
+  },
+  "best_params": {
+    "model__min_samples_split": 4,
+    "model__min_samples_leaf": 2,
+    "model__max_depth": 2,
+    "model__criterion": "gini"
+  },
+  "model_path": "models/FINAL_DecisionTree_S3_E_None_W3.pkl"
+}
