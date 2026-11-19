@@ -1,0 +1,23 @@
+{
+  "scenario": "EWS_W1_S3_E",
+  "model": "DecisionTree",
+  "threshold": 0.2,
+  "confusion_matrix": {
+    "tp_bk": 7,
+    "fn_bk": 2,
+    "fp_bk": 4,
+    "tn_bk": 5
+  },
+  "metrics": {
+    "test_accuracy": 0.6666666666666666,
+    "test_balanced_accuracy": 0.6666666666666667,
+    "test_recall_bk": 0.7777777777777778,
+    "test_precision_bk": 0.6363636363636364,
+    "test_f1_bk": 0.7,
+    "test_f2_bk": 0.7446808510638298,
+    "test_roc_auc": 0.7037037037037037,
+    "test_pr_auc": 0.6717171717171717,
+    "test_mcc": 0.34188172937891387,
+    "test_specificity": 0.5555555555555556
+  }
+}

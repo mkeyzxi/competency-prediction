@@ -1,0 +1,23 @@
+{
+  "scenario": "Baseline_S4",
+  "model": "RandomForest",
+  "threshold": 0.5,
+  "confusion_matrix": {
+    "tp_bk": 6,
+    "fn_bk": 3,
+    "fp_bk": 4,
+    "tn_bk": 5
+  },
+  "metrics": {
+    "test_accuracy": 0.6111111111111112,
+    "test_balanced_accuracy": 0.6111111111111112,
+    "test_recall_bk": 0.6666666666666666,
+    "test_precision_bk": 0.6,
+    "test_f1_bk": 0.631578947368421,
+    "test_f2_bk": 0.6521739130434783,
+    "test_roc_auc": 0.7777777777777778,
+    "test_pr_auc": 0.8086598586598588,
+    "test_mcc": 0.22360679774997896,
+    "test_specificity": 0.5555555555555556
+  }
+}

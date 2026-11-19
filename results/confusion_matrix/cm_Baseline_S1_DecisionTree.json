@@ -1,0 +1,23 @@
+{
+  "scenario": "Baseline_S1",
+  "model": "DecisionTree",
+  "threshold": 0.38,
+  "confusion_matrix": {
+    "tp_bk": 5,
+    "fn_bk": 4,
+    "fp_bk": 2,
+    "tn_bk": 7
+  },
+  "metrics": {
+    "test_accuracy": 0.6666666666666666,
+    "test_balanced_accuracy": 0.6666666666666667,
+    "test_recall_bk": 0.5555555555555556,
+    "test_precision_bk": 0.7142857142857143,
+    "test_f1_bk": 0.625,
+    "test_f2_bk": 0.5813953488372093,
+    "test_roc_auc": 0.7839506172839505,
+    "test_pr_auc": 0.6944444444444444,
+    "test_mcc": 0.34188172937891387,
+    "test_specificity": 0.7777777777777778
+  }
+}

@@ -10,10 +10,11 @@ import warnings
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     confusion_matrix, make_scorer, balanced_accuracy_score, roc_auc_score,
-    average_precision_score, fbeta_score
+    average_precision_score, fbeta_score, matthews_corrcoef
 )
 from sklearn.utils import resample
 from sklearn.model_selection import cross_validate, RepeatedStratifiedKFold
+import json
 from src.utils import load_config
 from src.tuning import build_search_estimator
 
@@ -135,13 +136,17 @@ def evaluate_test(model, X_test, y_test, scenario_name, model_name,
         results['test_roc_auc'] = roc_auc_score(y_test, y_prob_k)
         results['test_pr_auc'] = average_precision_score(y_test, y_prob_bk, pos_label=0)
     except Exception:
-        results['test_roc_auc'] = np.nan
-        results['test_pr_auc'] = np.nan
+        # Dummy / non-probability model — AUC metrics undefined
+        results['test_roc_auc'] = float('nan')
+        results['test_pr_auc'] = float('nan')
 
-    # Confusion Matrix
+    # Matthews Correlation Coefficient (overall association between prediction and label)
+    results['test_mcc'] = matthews_corrcoef(y_test, y_pred)
+
+    # Confusion Matrix (labels=[0,1] => BK as "positive" class)
     cm = confusion_matrix(y_test, y_pred, labels=[0, 1])
     tp_bk, fn_bk, fp_bk, tn_bk = cm.ravel()
-    
+
     results.update({
         'test_tn': int(tn_bk),
         'test_fp': int(fp_bk),
@@ -150,15 +155,16 @@ def evaluate_test(model, X_test, y_test, scenario_name, model_name,
         'test_specificity': tn_bk / (tn_bk + fp_bk) if (tn_bk + fp_bk) > 0 else 0.0,
     })
 
-    # Bootstrap Confidence Intervals (95%)
+    # Bootstrap Confidence Intervals (95%, B=1000 non-parametric resamples)
     n_iterations = 1000
     boot_recalls = []
     boot_bal_acc = []
     boot_f2 = []
-    
-    X_test_arr = np.array(X_test)
-    y_test_arr = np.array(y_test)
-    
+    boot_mcc = []
+
+    X_test_arr = np.asarray(X_test, dtype=float)
+    y_test_arr = np.asarray(y_test)
+
     for i in range(n_iterations):
         X_bs, y_bs = resample(X_test_arr, y_test_arr, random_state=i)
         if threshold is not None and hasattr(model, "predict_proba"):
@@ -169,31 +175,69 @@ def evaluate_test(model, X_test, y_test, scenario_name, model_name,
                 y_pred_bs = model.predict(X_bs)
         else:
             y_pred_bs = model.predict(X_bs)
-            
+
         boot_recalls.append(recall_score(y_bs, y_pred_bs, pos_label=0, zero_division=0))
         boot_bal_acc.append(balanced_accuracy_score(y_bs, y_pred_bs))
         boot_f2.append(fbeta_score(y_bs, y_pred_bs, beta=2, pos_label=0, zero_division=0))
-        
+        boot_mcc.append(matthews_corrcoef(y_bs, y_pred_bs))
+
     results['test_recall_bk_ci_lower'] = np.percentile(boot_recalls, 2.5)
     results['test_recall_bk_ci_upper'] = np.percentile(boot_recalls, 97.5)
     results['test_balanced_accuracy_ci_lower'] = np.percentile(boot_bal_acc, 2.5)
     results['test_balanced_accuracy_ci_upper'] = np.percentile(boot_bal_acc, 97.5)
     results['test_f2_bk_ci_lower'] = np.percentile(boot_f2, 2.5)
     results['test_f2_bk_ci_upper'] = np.percentile(boot_f2, 97.5)
+    results['test_mcc_ci_lower'] = np.percentile(boot_mcc, 2.5)
+    results['test_mcc_ci_upper'] = np.percentile(boot_mcc, 97.5)
 
-    plt.figure(figsize=(6, 4))
-
-    thresh_label = f' (t={threshold})' if threshold is not None else ''
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
-                xticklabels=['BK (0)', 'K (1)'],
-                yticklabels=['BK (0)', 'K (1)'])
-    plt.title(f'CM - {scenario_name} - {model_name}{thresh_label}')
-    plt.ylabel('Actual')
-    plt.xlabel('Predicted')
-
+    # ---- Figures & exports ----
     os.makedirs(output_dir, exist_ok=True)
-    plt.savefig(f'{output_dir}/cm_{scenario_name}_{model_name}.png', dpi=100,
-                bbox_inches='tight')
-    plt.close()
+    thresh_label = f' (t={threshold})' if threshold is not None else ''
+
+    # (1) Annotated confusion matrix with class names + % values
+    # Standard orientation: rows = Actual, columns = Predicted
+    # With labels=[0,1]: cm[0,0]=TP(BK), cm[0,1]=FN, cm[1,0]=FP, cm[1,1]=TN
+    fig, ax = plt.subplots(figsize=(5.5, 4.5))
+    cm_pct = cm / cm.sum()
+    annot = np.empty(cm.shape, dtype=object)
+    labels_cm = ['TP', 'FN', 'FP', 'TN']
+    for i in range(2):
+        for j in range(2):
+            annot[i, j] = f'{labels_cm[i*2+j]}\n{cm[i, j]} ' \
+                          f'({cm_pct[i, j] * 100:.0f}%)'
+    sns.heatmap(cm, annot=annot, fmt='', cmap='Blues', cbar=False, ax=ax,
+                xticklabels=['Pred: BK (0)', 'Pred: K (1)'],
+                yticklabels=['Actual: BK (0)', 'Actual: K (1)'],
+                linewidths=0)
+    ax.set_title(f'Confusion Matrix — {scenario_name} — {model_name}'
+                 f'{thresh_label}', fontsize=11)
+    ax.set_ylabel('Actual')
+    ax.set_xlabel('Predicted')
+    cm_path = f'{output_dir}/cm_{scenario_name}_{model_name}.png'
+    fig.savefig(cm_path, dpi=150, bbox_inches='tight')
+    plt.close(fig)
+
+    # (2) Save raw counts + metric table as JSON next to the plot
+    def _safe_float(v):
+        if isinstance(v, (float, np.floating)):
+            return float(v)
+        return v  # keep int / bool / None as-is
+
+    cm_json = {
+        'scenario': scenario_name,
+        'model': model_name,
+        'threshold': threshold,
+        'confusion_matrix': {
+            'tp_bk': int(tp_bk), 'fn_bk': int(fn_bk),
+            'fp_bk': int(fp_bk), 'tn_bk': int(tn_bk),
+        },
+        'metrics': {k: _safe_float(v) for k, v in results.items()
+                    if k in ('test_accuracy', 'test_balanced_accuracy',
+                             'test_recall_bk', 'test_precision_bk',
+                             'test_f1_bk', 'test_f2_bk', 'test_specificity',
+                             'test_mcc', 'test_roc_auc', 'test_pr_auc')},
+    }
+    with open(f'{output_dir}/cm_{scenario_name}_{model_name}.json', 'w') as f:
+        json.dump(cm_json, f, indent=2)
 
     return results, y_pred
